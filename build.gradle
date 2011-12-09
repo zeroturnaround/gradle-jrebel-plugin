@@ -1,0 +1,150 @@
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+
+apply plugin: 'groovy'
+apply plugin: 'signing'
+apply plugin: 'project-report'
+
+dependencies {
+	compile gradleApi()
+	groovy localGroovy()
+}
+
+apply plugin: 'maven'
+
+configurations {
+	deployerJars
+	published.extendsFrom archives, signatures
+}
+
+repositories { mavenCentral() }
+
+dependencies {
+	compile 'commons-lang:commons-lang:2.4'
+	testCompile 'junit:junit:4.8.2'
+	deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
+}
+
+group = 'org.zeroturnaround'
+version = '1.0.0-SNAPSHOT'
+
+targetCompatibility = "1.5"
+sourceCompatibility = "1.5"
+
+def pomFile = pom {
+	project {
+		name 'ZeroTurnaround JRebel Gradle plugin'
+		description 'ZeroTurnaround JRebel Gradle plugin'
+		url 'http://www.zeroturnaround.com/jrebel'
+		licenses {
+			license {
+				name 'The Apache Software License, Version 2.0'
+				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				distribution 'repo'
+			}
+		}
+		developers {
+			developer {
+				id 'IB'
+				name 'Igor Bljahhin'
+				email 'igor.bljahhin@zeroturnaround.com'
+			}
+		}
+		inceptionYear '2011'
+		scm {
+			url 'https://zeroturnaround.kilnhg.com/'
+			connection 'scm:hg:https://zeroturnaround.kilnhg.com/Repo/JRebel/Support/gradle-jr-plugin'
+			developerConnection 'scm:hg:https://zeroturnaround.kilnhg.com/Repo/JRebel/Support/gradle-jr-plugin'
+		}
+	}
+}
+
+uploadPublished {
+	repositories {
+		mavenDeployer {
+			configuration = configurations.deployerJars
+
+			repository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public/') {
+				authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
+			}
+
+			snapshotRepository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+				authentication(userName: nexusSnapshotsUsername, password: nexusSnapshotsPassword)
+			}
+
+			pom = pomFile
+		}
+	}
+
+	doFirst { bundle.execute() }
+}
+
+signing { sign configurations.archives }
+
+task release( dependsOn: uploadPublished ) { description = 'Releases the plugin, sign artifacts and upload them to Nexus. The bundle with artifacts for Sonatype is included into release.' }
+
+// Prepare bundle for Sonatype
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+class GeneratePomTask extends DefaultTask {
+	File destFile
+}
+
+task generatePom(type: GeneratePomTask) {
+	destFile = file("${buildDir}/generatedPoms/${project.name}-${project.version}.pom")
+
+	inputs.file project.buildFile
+	outputs.file destFile
+
+	doLast {
+		println "Generate POM into " + destFile
+
+		pomFile.writeTo(destFile)
+	}
+}
+
+task bundle( type: Zip, dependsOn: signArchives) {
+	description = 'Prepares the bundle with artifacts for Sonatype.'
+	classifier = 'bundle'
+
+	from('build/libs/') {
+		include 'gradle-jr-plugin-*.jar'
+		include 'gradle-jr-plugin-*.jar.asc'
+	}
+
+	from('build/generatedPoms/') {
+		include '*.pom'
+		include '*.pom.asc'
+	}
+
+	doFirst {
+		bundleFile = file("${buildDir}/distributions/${project.name}-${project.version}-bundle.zip")
+
+		println "Creating bundle ${bundleFile}"
+
+		configurations.add "publishBundle"
+		configurations.publishBundle.artifacts.add(new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new
+				Date(), bundleFile))
+	}
+}
+
+// Define list of artifacts
+
+artifacts {
+	archives (generatePom.destFile) {
+		name 'pom'
+		type 'pom'
+		builtBy generatePom
+	}
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
