@@ -51,9 +51,9 @@ def pomFile = pom {
 		}
 		inceptionYear '2011'
 		scm {
-			url 'https://zeroturnaround.kilnhg.com/'
-			connection 'scm:hg:https://zeroturnaround.kilnhg.com/Repo/JRebel/Support/gradle-jr-plugin'
-			developerConnection 'scm:hg:https://zeroturnaround.kilnhg.com/Repo/JRebel/Support/gradle-jr-plugin'
+			url 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
+			connection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
+			developerConnection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
 		}
 	}
 }
