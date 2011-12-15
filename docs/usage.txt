@@ -1,0 +1,1 @@
+Please read the introduction on ZeroTurnaround site: http://zeroturnaround.com/blog/jrebel-gradle-plugin-beta/

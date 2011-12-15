@@ -1,0 +1,31 @@
+NB! Build with Gradle 1.0-milestone-6 or higher
+
+!! You need to install PGP on your computer and generate PGP keys before making your first 
+!! release. The procedure is described here: 
+!! https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven
+!!
+!! Remember the passphrase of your PGP keys, it will be used in release process.
+
+!!
+
+Do not forget to put "gradle.properties" into your %HOMEPATH%/.gradle directory
+and store the following properties:
+
+nexusReleasesUsername = <nexus username for release repository>
+nexusReleasesPassword = <nexus password for release repository>
+
+nexusSnapshotsUsername = <nexus username for snapshots repository>
+nexusSnapshotsPassword = <nexus password for snapshots repository>
+
+signing.keyId = <the public key ID (an 8 character hexadecimal string)>
+signing.password = <the passphrase used to protect your private key>
+signing.secretKeyRingFile = <the absolute path to the secret key ring file containing your private key, like C:/Users/Igor Bljahhin/AppData/Roaming/gnupg/secring.gpg>
+
+!!
+
+To release to Maven Central:
+
+1. increase the version number in build.gradle
+
+2. execute "gradle release", this command will release the plugin, sign JAR and upload it 
+to our Nexus
