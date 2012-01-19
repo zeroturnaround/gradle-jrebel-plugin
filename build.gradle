@@ -63,7 +63,7 @@ uploadPublished {
 		mavenDeployer {
 			configuration = configurations.deployerJars
 
-			repository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public/') {
+			repository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
 				authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
 			}
 
