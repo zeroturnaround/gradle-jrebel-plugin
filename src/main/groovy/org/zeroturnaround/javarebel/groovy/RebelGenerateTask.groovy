@@ -231,18 +231,17 @@ class RebelGenerateTask extends DefaultTask {
 		if (builder) {
 			project.logger.info "Processing ${project.group}:${project.name} with packaging " + getPackaging();
 
-			def Writer w = null
+            project.logger.info "Generating \"${rebelXmlFile}\"..."
+
+			def Writer w = new StringWriter()
+            builder.writeXml(w)
 
 			if (isTrue(getShowGenerated())) {
 				try {
-					w = new StringWriter()
-					builder.writeXml(w)
 					println w.toString()
 				} catch (IOException _ignore) {
 				}
 			}
-
-			project.logger.info "Generating \"${rebelXmlFile}\"..."
 
 			try {
 				rebelXmlFile.parentFile.mkdirs()
