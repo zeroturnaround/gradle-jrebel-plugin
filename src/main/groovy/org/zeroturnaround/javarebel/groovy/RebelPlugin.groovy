@@ -12,10 +12,16 @@ class RebelPlugin implements Plugin<Project> {
 
 		// configure Rebel task
 		RebelGenerateTask generateRebelTask = project.tasks.add('generateRebel', RebelGenerateTask)
-
-		generateRebelTask.conventionMapping.packaging = {
-			project.rebel.packaging ? project.rebel.packaging : "jar"
-		}
+        
+        // set default value
+        generateRebelTask.conventionMapping.packaging = { "jar" }
+    
+        // check if WarPlugin is loaded to find out the type of the project 
+        for (plugin in project.plugins) {
+          if (plugin.class.name == "org.gradle.api.plugins.WarPlugin") {
+            generateRebelTask.conventionMapping.packaging = { "war" }
+          }
+        }
 
 		generateRebelTask.conventionMapping.rebelXmlDirectory = {
 			project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.file("${project.buildDir}" + File.separator + "classes")
