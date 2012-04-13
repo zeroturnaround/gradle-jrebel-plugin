@@ -116,8 +116,8 @@ task bundle( type: Zip, dependsOn: signArchives) {
 	classifier = 'bundle'
 
 	from('build/libs/') {
-		include 'gradle-jr-plugin-*.jar'
-		include 'gradle-jr-plugin-*.jar.asc'
+		include 'gradle-jrebel-plugin-*.jar'
+		include 'gradle-jrebel-plugin-*.jar.asc'
 	}
 
 	from('build/generatedPoms/') {
