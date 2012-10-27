@@ -3,18 +3,33 @@ package org.zeroturnaround.javarebel.groovy
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.WarPlugin
 
 
 class RebelPlugin implements Plugin<Project> {
 
+    private final static String GENERATE_REBEL = 'generateRebel'
+
     def void apply(Project project) {
+        // by default, register a dummy task that reports missing JavaPlugin
+        project.tasks.add(GENERATE_REBEL) << {
+            throw new IllegalStateException(
+                    "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
+                    "(via other plugins that apply it implicitly, like Groovy or War); please update your build")
+        }
+        // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
+        project.logger.info "Registering deferred Rebel plugin configuration..."
+        project.plugins.withType(JavaPlugin) { configure(project) }
+    }
+
+    private configure(Project project) {
         project.logger.info "Configuring Rebel plugin..."
 
         project.extensions.rebel = new RebelPluginExtension()
 
         // configure Rebel task
-        RebelGenerateTask generateRebelTask = project.tasks.add('generateRebel', RebelGenerateTask)
+        RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL, RebelGenerateTask)
 
         generateRebelTask.conventionMapping.rebelXmlDirectory = {
             project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.sourceSets.main.output.classesDir
