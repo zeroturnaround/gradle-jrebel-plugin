@@ -65,6 +65,9 @@ class RebelGenerateTask extends DefaultTask {
 		// project output directory
 		RebelClasspathResource r = new RebelClasspathResource();
 		r.setDirectory(fixFilePath(getClassesDirectory()));
+        if (!new File(r.directory).directory) {
+            return
+        }
 
 		if (defaultClasspath != null) {
 			r.setIncludes(defaultClasspath.getIncludes());
@@ -77,6 +80,9 @@ class RebelGenerateTask extends DefaultTask {
 	def buildDefaultClasspathResources(RebelXmlBuilder builder) throws BuildException {
         RebelClasspathResource r = new RebelClasspathResource();
         r.directory = fixFilePath(getResourcesDirectory())
+        if (!new File(r.directory).directory) {
+            return
+        }
 
         def resourcesClasspath = project.rebel.resourcesClasspath;
         if (resourcesClasspath) {
