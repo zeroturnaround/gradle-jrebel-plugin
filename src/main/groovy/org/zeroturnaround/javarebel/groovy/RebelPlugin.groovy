@@ -30,7 +30,7 @@ class RebelPlugin implements Plugin<Project> {
         }
 
 		generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
-			project.rebel.addResourcesDirToRebelXml ? project.rebel.addResourcesDirToRebelXml : "false"
+			project.rebel.addResourcesDirToRebelXml ? project.rebel.addResourcesDirToRebelXml : "true"
 		}
 
 		generateRebelTask.conventionMapping.showGenerated = {

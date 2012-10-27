@@ -75,7 +75,15 @@ class RebelGenerateTask extends DefaultTask {
 	}
 
 	def buildDefaultClasspathResources(RebelXmlBuilder builder) throws BuildException {
-		// TODO implement
+        RebelClasspathResource r = new RebelClasspathResource();
+        r.directory = fixFilePath(getResourcesDirectory())
+
+        def resourcesClasspath = project.rebel.resourcesClasspath;
+        if (resourcesClasspath) {
+            r.setIncludes(resourcesClasspath.getIncludes());
+            r.setExcludes(resourcesClasspath.getExcludes());
+        }
+        builder.addClasspathDir(r);
 	}
 
 	private void buildDefaultWeb(RebelXmlBuilder builder, RebelWebResource defaultWeb)  {
@@ -276,6 +284,14 @@ class RebelGenerateTask extends DefaultTask {
 			return project.sourceSets.main.output.classesDir
 		}
 	}
+
+    File getResourcesDirectory() {
+        if (project.rebel.resourcesDirectory) {
+            return project.rebel.resourcesDirectory
+        } else {
+            return project.sourceSets.main.output.resourcesDir
+        }
+    }
 
 	def String getRelativePath() {
 		if (project.rebel.relativePath) {
