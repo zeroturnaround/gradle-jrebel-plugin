@@ -39,6 +39,7 @@ public class RebelPluginTest {
         def task = project.tasks.generateRebel
         assertTrue(task instanceof RebelGenerateTask)
         assertTrue(task.packaging == 'jar')
+        assertTrue(project.tasks.classes in task.dependsOn)
     }
 
     @Test
@@ -50,6 +51,7 @@ public class RebelPluginTest {
         def task = project.tasks.generateRebel
         assertTrue(task instanceof RebelGenerateTask)
         assertTrue(task.packaging == 'jar')
+        assertTrue(project.tasks.classes in task.dependsOn)
     }
 
     @Test
@@ -61,6 +63,7 @@ public class RebelPluginTest {
         def task = project.tasks.generateRebel
         assertTrue(task instanceof RebelGenerateTask)
         assertTrue(task.packaging == 'war')
+        assertTrue(project.tasks.classes in task.dependsOn)
     }
 
     @Test
@@ -72,5 +75,6 @@ public class RebelPluginTest {
         def task = project.tasks.generateRebel
         assertTrue(task instanceof RebelGenerateTask)
         assertTrue(task.packaging == 'war')
+        assertTrue(project.tasks.classes in task.dependsOn)
     }
 }

@@ -30,6 +30,8 @@ class RebelPlugin implements Plugin<Project> {
 
         // configure Rebel task
         RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL, RebelGenerateTask)
+        // let everything be compiled and processed so that classes / resources directories are there
+        generateRebelTask.dependsOn(project.tasks.classes)
 
         generateRebelTask.conventionMapping.rebelXmlDirectory = {
             project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.sourceSets.main.output.classesDir
