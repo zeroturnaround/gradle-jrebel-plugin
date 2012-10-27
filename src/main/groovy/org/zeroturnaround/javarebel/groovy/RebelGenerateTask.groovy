@@ -171,7 +171,7 @@ class RebelGenerateTask extends DefaultTask {
 	}
 
 	def String fixFilePath(File file) {
-		File baseDir = project.buildFile.getParentFile();
+		File baseDir = project.projectDir
 
 		if (file.isAbsolute() && !isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
 			return StringUtils.replace(getCanonicalPath(file), '\\', '/')
@@ -220,7 +220,7 @@ class RebelGenerateTask extends DefaultTask {
 		project.logger.info "rebel.packaging = " + getPackaging()
 
 		// find rebel.xml location
-		def File rebelXmlFile
+		def File rebelXmlFile = null
 
 		if (getRebelXmlDirectory()) {
 			rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml")
@@ -229,12 +229,12 @@ class RebelGenerateTask extends DefaultTask {
 		// find build.gradle location
 		def File buildXmlFile = project.buildFile
 
-		if (!isTrue(getAlwaysGenerate()) && rebelXmlFile.exists() && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
+		if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
 			return;
 		}
 
 		// find the type of the project
-		def builder
+		def builder = null
 
 		if (getPackaging() == "jar") {
 			builder = buildJar()
@@ -337,7 +337,7 @@ class RebelGenerateTask extends DefaultTask {
 		if (project.rebel.rootPath)
 			return project.rebel.rootPath
 		else
-			return project.buildFile.parentFile.absolutePath
+			return project.projectDir
 	}
 
 	def boolean isRelativeToPath(File baseDir, File file) throws BuildException {
