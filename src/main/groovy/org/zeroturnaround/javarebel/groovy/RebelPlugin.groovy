@@ -3,6 +3,7 @@ package org.zeroturnaround.javarebel.groovy
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.WarPlugin;
 
 class RebelPlugin implements Plugin<Project> {
 	def void apply(Project project) {
@@ -13,23 +14,20 @@ class RebelPlugin implements Plugin<Project> {
 		// configure Rebel task
 		RebelGenerateTask generateRebelTask = project.tasks.add('generateRebel', RebelGenerateTask)
         
+		generateRebelTask.conventionMapping.rebelXmlDirectory = {
+			project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.sourceSets.main.output.classesDir
+		}
+
         // set default value
         generateRebelTask.conventionMapping.packaging = { "jar" }
     
-        // check if WarPlugin is loaded to find out the type of the project 
-        for (plugin in project.plugins) {
-          if (plugin.class.name == "org.gradle.api.plugins.WarPlugin") {
+        // if WarPlugin already applied, or if it is applied later than this plugin...
+        project.plugins.withType(WarPlugin) {
             generateRebelTask.conventionMapping.packaging = { "war" }
-          }
+            generateRebelTask.conventionMapping.warSourceDirectory = {
+                project.rebel.warSourceDirectory ? project.file(project.rebel.warSourceDirectory) : project.webAppDir
+            }
         }
-
-		generateRebelTask.conventionMapping.rebelXmlDirectory = {
-			project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.file("${project.buildDir}" + File.separator + "classes")
-		}
-
-		generateRebelTask.conventionMapping.warSourceDirectory = {
-			project.rebel.warSourceDirectory ? project.file(project.rebel.warSourceDirectory) : project.file("${project.buildFile.parentFile.absolutePath}" + File.separator + "src" + File.separator + "main" + File.separator + "webapp")
-		}
 
 		generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
 			project.rebel.addResourcesDirToRebelXml ? project.rebel.addResourcesDirToRebelXml : "false"

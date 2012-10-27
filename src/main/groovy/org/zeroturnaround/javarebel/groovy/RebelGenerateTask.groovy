@@ -273,7 +273,7 @@ class RebelGenerateTask extends DefaultTask {
 		if (project.rebel.classesDirectory) {
 			return project.rebel.classesDirectory
 		} else {
-			return project.file(project.buildDir.absolutePath + File.separator + "classes")
+			return project.sourceSets.main.output.classesDir
 		}
 	}
 
