@@ -74,8 +74,6 @@ uploadPublished {
 			pom = pomFile
 		}
 	}
-
-	doFirst { bundle.execute() }
 }
 
 signing { sign configurations.archives }
@@ -135,6 +133,8 @@ task bundle( type: Zip, dependsOn: signArchives) {
 				Date(), bundleFile))
 	}
 }
+
+uploadPublished.dependsOn bundle
 
 // Define list of artifacts
 
