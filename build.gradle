@@ -63,11 +63,11 @@ uploadPublished {
 		mavenDeployer {
 			configuration = configurations.deployerJars
 
-			repository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
+			repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
 				authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
 			}
 
-			snapshotRepository(url: 'dav:http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+			snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
 				authentication(userName: nexusSnapshotsUsername, password: nexusSnapshotsPassword)
 			}
 
