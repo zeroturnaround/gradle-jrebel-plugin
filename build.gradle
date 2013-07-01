@@ -48,6 +48,11 @@ def pomFile = pom {
 				name 'Igor Bljahhin'
 				email 'igor.bljahhin@zeroturnaround.com'
 			}
+            developer {
+                id 'sander24'
+                name 'Sander Sonajalg'
+                email 'sander.sonajalg@zeroturnaround.com'
+            }
 		}
 		inceptionYear '2011'
 		scm {
