@@ -1,7 +1,7 @@
 JRebel Gradle Plugin
 ====================
 
-JRebel Gradle plugin can be used the generate `rebel.xml`.
+JRebel Gradle plugin can be used to automatically generate the JRebel's `rebel.xml` configuration file during your Gradle build.
 
 1. Enable JRebel Gradle plugin
 ------------------------------
