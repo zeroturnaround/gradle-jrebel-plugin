@@ -5,23 +5,25 @@ apply plugin: 'signing'
 apply plugin: 'project-report'
 
 dependencies {
-	compile gradleApi()
-	groovy localGroovy()
+  compile gradleApi()
+  groovy localGroovy()
 }
 
 apply plugin: 'maven'
 
 configurations {
-	deployerJars
-	published.extendsFrom archives, signatures
+  deployerJars
+  published.extendsFrom archives, signatures
 }
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-	compile 'commons-lang:commons-lang:2.4'
-	testCompile 'junit:junit:4.8.2'
-	deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
+  compile 'commons-lang:commons-lang:2.4'
+  testCompile 'junit:junit:4.8.2'
+  deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
 }
 
 group = 'org.zeroturnaround'
@@ -31,112 +33,116 @@ targetCompatibility = "1.5"
 sourceCompatibility = "1.5"
 
 def pomFile = pom {
-	project {
-		name 'ZeroTurnaround JRebel Gradle plugin'
-		description 'ZeroTurnaround JRebel Gradle plugin'
-		url 'http://www.zeroturnaround.com/jrebel'
-		licenses {
-			license {
-				name 'The Apache Software License, Version 2.0'
-				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-				distribution 'repo'
-			}
-		}
-		developers {
-			developer {
-				id 'IB'
-				name 'Igor Bljahhin'
-				email 'igor.bljahhin@zeroturnaround.com'
-			}
-            developer {
-                id 'sander24'
-                name 'Sander Sonajalg'
-                email 'sander.sonajalg@zeroturnaround.com'
-            }
-		}
-		inceptionYear '2011'
-		scm {
-			url 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
-			connection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
-			developerConnection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
-		}
-	}
+  project {
+    name 'ZeroTurnaround JRebel Gradle plugin'
+    description 'ZeroTurnaround JRebel Gradle plugin'
+    url 'http://www.zeroturnaround.com/jrebel'
+    licenses {
+      license {
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        distribution 'repo'
+      }
+    }
+    developers {
+      developer {
+        id 'IB'
+        name 'Igor Bljahhin'
+        email 'igor.bljahhin@zeroturnaround.com'
+      }
+      developer {
+        id 'sander24'
+        name 'Sander Sonajalg'
+        email 'sander.sonajalg@zeroturnaround.com'
+      }
+    }
+    inceptionYear '2011'
+    scm {
+      url 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
+      connection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
+      developerConnection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
+    }
+  }
 }
 
 uploadPublished {
-	repositories {
-		mavenDeployer {
-			configuration = configurations.deployerJars
+  repositories {
+    mavenDeployer {
+      configuration = configurations.deployerJars
 
-			repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
-				authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
-			}
+      repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
+        authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
+      }
 
-			snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
-				authentication(userName: nexusSnapshotsUsername, password: nexusSnapshotsPassword)
-			}
+      snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+        authentication(userName: nexusSnapshotsUsername, password: nexusSnapshotsPassword)
+      }
 
-			pom = pomFile
-		}
-	}
+      pom = pomFile
+    }
+  }
 }
 
-signing { sign configurations.archives }
+signing {
+  sign configurations.archives
+}
 
-task release( dependsOn: uploadPublished ) { description = 'Releases the plugin, sign artifacts and upload them to Nexus. The bundle with artifacts for Sonatype is included into release.' }
+task release( dependsOn: uploadPublished ) {
+  description = 'Releases the plugin, sign artifacts and upload them to Nexus. The bundle with artifacts for Sonatype is included into release.'
+}
 
 // Prepare bundle for Sonatype
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
+  classifier = 'sources'
+  from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
+  classifier = 'javadoc'
+  from javadoc.destinationDir
 }
 
 class GeneratePomTask extends DefaultTask {
-	File destFile
+  File destFile
 }
 
 task generatePom(type: GeneratePomTask) {
-	destFile = file("${buildDir}/generatedPoms/${project.name}-${project.version}.pom")
+  destFile = file("${buildDir}/generatedPoms/${project.name}-${project.version}.pom")
 
-	inputs.file project.buildFile
-	outputs.file destFile
+  inputs.file project.buildFile
+  outputs.file destFile
 
-	doLast {
-		println "Generate POM into " + destFile
+  doLast {
+    println "Generate POM into " + destFile
 
-		pomFile.writeTo(destFile)
-	}
+    pomFile.writeTo(destFile)
+  }
 }
 
 task bundle( type: Zip, dependsOn: signArchives) {
-	description = 'Prepares the bundle with artifacts for Sonatype.'
-	classifier = 'bundle'
+  description = 'Prepares the bundle with artifacts for Sonatype.'
+  classifier = 'bundle'
 
-	from('build/libs/') {
-		include 'gradle-jrebel-plugin-*.jar'
-		include 'gradle-jrebel-plugin-*.jar.asc'
-	}
+  from('build/libs/') {
+    include 'gradle-jrebel-plugin-*.jar'
+    include 'gradle-jrebel-plugin-*.jar.asc'
+  }
 
-	from('build/generatedPoms/') {
-		include '*.pom'
-		include '*.pom.asc'
-	}
+  from('build/generatedPoms/') {
+    include '*.pom'
+    include '*.pom.asc'
+  }
 
-	doFirst {
-		bundleFile = file("${buildDir}/distributions/${project.name}-${project.version}-bundle.zip")
+  doFirst {
+    bundleFile = file("${buildDir}/distributions/${project.name}-${project.version}-bundle.zip")
 
-		println "Creating bundle ${bundleFile}"
+    println "Creating bundle ${bundleFile}"
 
-		configurations.add "publishBundle"
-		configurations.publishBundle.artifacts.add(new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new
-				Date(), bundleFile))
-	}
+    configurations.add "publishBundle"
+    configurations.publishBundle.artifacts.add(new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new
+        Date(), bundleFile))
+  }
 }
 
 uploadPublished.dependsOn bundle
@@ -144,12 +150,12 @@ uploadPublished.dependsOn bundle
 // Define list of artifacts
 
 artifacts {
-	archives (generatePom.destFile) {
-		name 'pom'
-		type 'pom'
-		builtBy generatePom
-	}
-	archives jar
-	archives sourcesJar
-	archives javadocJar
+  archives (generatePom.destFile) {
+    name 'pom'
+    type 'pom'
+    builtBy generatePom
+  }
+  archives jar
+  archives sourcesJar
+  archives javadocJar
 }
