@@ -32,6 +32,7 @@ version = '1.0.4-SNAPSHOT'
 targetCompatibility = "1.5"
 sourceCompatibility = "1.5"
 
+// Contents of pom.xml that will be created for publishing to the maven-style artifact repository
 def pomFile = pom {
   project {
     name 'ZeroTurnaround JRebel Gradle plugin'
