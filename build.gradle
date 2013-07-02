@@ -17,7 +17,7 @@ configurations {
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
@@ -27,7 +27,7 @@ dependencies {
 }
 
 group = 'org.zeroturnaround'
-version = '1.0.3-SNAPSHOT'
+version = '1.0.3'
 
 targetCompatibility = "1.5"
 sourceCompatibility = "1.5"
