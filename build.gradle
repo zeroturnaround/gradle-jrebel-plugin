@@ -3,34 +3,35 @@ import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
 apply plugin: 'groovy'
 apply plugin: 'signing'
 apply plugin: 'project-report'
-
-dependencies {
-  compile gradleApi()
-  groovy localGroovy()
-}
-
 apply plugin: 'maven'
+
+// Artifact settings
+group = 'org.zeroturnaround'
+version = '1.0.4-SNAPSHOT'
+
+// Compiler settings
+targetCompatibility = "1.5"
+sourceCompatibility = "1.5"
 
 configurations {
   deployerJars
   published.extendsFrom archives, signatures
 }
 
-repositories {
-  mavenCentral()
-}
+// === Dependency management
 
 dependencies {
+  compile gradleApi()
+  groovy localGroovy()
+
   compile 'commons-lang:commons-lang:2.4'
   testCompile 'junit:junit:4.8.2'
   deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
 }
 
-group = 'org.zeroturnaround'
-version = '1.0.4-SNAPSHOT'
-
-targetCompatibility = "1.5"
-sourceCompatibility = "1.5"
+repositories {
+  mavenCentral()
+}
 
 // Contents of pom.xml that will be created for publishing to the maven-style artifact repository
 def pomFile = pom {
