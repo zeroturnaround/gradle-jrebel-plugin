@@ -1,0 +1,8 @@
+JRebele Gradle Plugin changelog
+===============================
+
+1.0.3 (2013-07-02)
+------------------
+
+* Nothing changed actually. Just releasing the repo status quo with an appropriate version number
+  (all the previous releases have somewhy been in form "1.0.x-SNAPSHOT").
