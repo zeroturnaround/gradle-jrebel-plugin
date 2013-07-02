@@ -27,7 +27,7 @@ dependencies {
 }
 
 group = 'org.zeroturnaround'
-version = '1.0.3'
+version = '1.0.4-SNAPSHOT'
 
 targetCompatibility = "1.5"
 sourceCompatibility = "1.5"
