@@ -104,6 +104,11 @@ class RebelXmlBuilder {
     writeExcludeInclude(writer, r, 4);
   }
 
+  /**
+   * Actually do write the rebel.xml from the model in memory.
+   * 
+   * XXX - jesus christ, there MUST be a much nicer way in such a modern language like Groovy!!! 
+   */
   public void writeXml(Writer writer) throws IOException {
     writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     writer.write("<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">\n");
