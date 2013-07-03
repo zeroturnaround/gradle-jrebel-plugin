@@ -77,7 +77,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  def buildDefaultClasspath(RebelXmlBuilder builder, RebelClasspathResource defaultClasspath) throws BuildException {
+  private void buildDefaultClasspath(RebelXmlBuilder builder, RebelClasspathResource defaultClasspath) throws BuildException {
     if (isTrue(getAddResourcesDirToRebelXml())) {
       buildDefaultClasspathResources(builder);
     }
@@ -97,7 +97,7 @@ public class RebelGenerateTask extends DefaultTask {
     builder.addClasspathDir(r);
   }
 
-  def buildDefaultClasspathResources(RebelXmlBuilder builder) throws BuildException {
+  private void buildDefaultClasspathResources(RebelXmlBuilder builder) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
     r.directory = fixFilePath(getResourcesDirectory())
     if (!new File(r.directory).directory) {
@@ -238,6 +238,10 @@ public class RebelGenerateTask extends DefaultTask {
     return fixFilePath(new File(path));
   }
 
+  /**
+   * The actual invocation of our plugin task. Will construct the in-memory model (RebelXmlBuilder),
+   * generate the XML output based on it and write the XML into a file-system file (rebel.xml). 
+   */
   @TaskAction
   public void generate() {
     project.getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
@@ -272,39 +276,24 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     if (builder) {
-      project.logger.info "Processing ${project.group}:${project.name} with packaging " + getPackaging();
-
-      project.logger.info "Generating \"${rebelXmlFile}\"..."
+      project.getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+      project.getLogger().info("Generating \"${rebelXmlFile}\"...");
 
       // Do generate the rebel.xml
-      Writer w = new StringWriter();
-      builder.writeXml(w);
-
-      // Print generated rebel.xml out to console if user wants to see it
-      if (isTrue(getShowGenerated())) {
-        try {
-          println(w.toString());
-        }
-        catch (IOException _ignore) {
-        }
-      }
-
-      // Write out the rebel.xml file
       try {
+        String xmlFileContents = builder.toXmlString();
+
+        // Print generated rebel.xml out to console if user wants to see it
+        if (isTrue(getShowGenerated())) {
+          println(xmlFileContents);
+        }
+       
+        // Write out the rebel.xml file
         rebelXmlFile.parentFile.mkdirs();
-        rebelXmlFile.write(w.toString());
+        rebelXmlFile.write(xmlFileContents);
       }
       catch (IOException e) {
         throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
-      }
-      finally {
-        if (w != null) {
-          try {
-            w.close();
-          }
-          catch (IOException _ignore) {
-          }
-        }
       }
     }
   }

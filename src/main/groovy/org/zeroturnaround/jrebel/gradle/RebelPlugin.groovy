@@ -27,6 +27,9 @@ import org.gradle.api.plugins.WarPlugin;
  */
 public class RebelPlugin implements Plugin<Project> {
 
+  /**
+   * The name of the task that our plugin will define
+   */
   private final static String GENERATE_REBEL = "generateRebel";
 
   public void apply(Project project) {
@@ -37,14 +40,14 @@ public class RebelPlugin implements Plugin<Project> {
           "(via other plugins that apply it implicitly, like Groovy or War); please update your build");
     }
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
-    project.logger.info "Registering deferred Rebel plugin configuration...";
+    project.getLogger().info("Registering deferred Rebel plugin configuration...");
     project.plugins.withType(JavaPlugin) { configure(project) };
   }
 
   private configure(Project project) {
-    project.logger.info "Configuring Rebel plugin...";
+    project.getLogger().info("Configuring Rebel plugin...");
 
-    project.extensions.rebel = new RebelPluginExtension();
+    project.getExtensions().rebel = new RebelPluginExtension();
 
     // configure Rebel task
     RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL, RebelGenerateTask)
