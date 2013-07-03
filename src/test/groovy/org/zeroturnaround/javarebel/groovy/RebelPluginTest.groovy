@@ -30,8 +30,11 @@ import static org.junit.Assert.assertTrue
 
 public class RebelPluginTest {
 
+  /**
+   * Test that the plugin adds a dummy task to the project when no JavaPlugin is applied
+   */
   @Test(expected = IllegalStateException)
-  public void 'rebel plugin adds dummy task to project when no JavaPlugin applied'() {
+  public void testAddsDummyTaskWhenJavaPluginNotApplied() {
     Project project = ProjectBuilder.builder().build()
     project.project.plugins.apply(RebelPlugin)
 
@@ -39,13 +42,17 @@ public class RebelPluginTest {
     assertTrue(task instanceof DefaultTask)
     try {
       task.execute()
-    } catch (TaskExecutionException exc) {
+    }
+    catch (TaskExecutionException exc) {
       throw exc.cause
     }
   }
 
+  /**
+   * Test that the plugin adds RebelGenerateTask to project when JavaPlugin is already applied
+   */
   @Test
-  public void 'rebel plugin adds rebel task to project when JavaPlugin already applied'() {
+  public void testAddsRebelTaskWhenJavaPluginApplied() {
     Project project = ProjectBuilder.builder().build()
     project.project.plugins.apply(JavaPlugin)
     project.project.plugins.apply(RebelPlugin)
@@ -56,8 +63,11 @@ public class RebelPluginTest {
     assertTrue(project.tasks.classes in task.dependsOn)
   }
 
+  /**
+   * Test that the plugin adds rebel task to project after GroovyPlugin is applied
+   */
   @Test
-  public void 'rebel plugin adds rebel task to project after GroovyPlugin applied'() {
+  public void testAddsRebelTaskAfterGroovyPluginApplied() {
     Project project = ProjectBuilder.builder().build()
     project.project.plugins.apply(RebelPlugin)
     project.project.plugins.apply(GroovyPlugin)
@@ -68,8 +78,11 @@ public class RebelPluginTest {
     assertTrue(project.tasks.classes in task.dependsOn)
   }
 
+  /**
+   * Test that the plugin uses war packaging mode when WarPlugin is already applied
+   */
   @Test
-  public void 'rebel plugin gets war packaging when WarPlugin already applied'() {
+  public void testUsesWarPackagingWithWarpPlugin() {
     Project project = ProjectBuilder.builder().build()
     project.project.plugins.apply(WarPlugin)
     project.project.plugins.apply(RebelPlugin)
@@ -80,8 +93,11 @@ public class RebelPluginTest {
     assertTrue(project.tasks.classes in task.dependsOn)
   }
 
+  /**
+   * Test that the plugin uses war packaging mode after JettyPlugin gets applied
+   */
   @Test
-  public void 'rebel plugin gets war packaging after JettyPlugin applied'() {
+  public void testUsesWarPackagingWithJettyPlugin() {
     Project project = ProjectBuilder.builder().build()
     project.project.plugins.apply(RebelPlugin)
     project.project.plugins.apply(JettyPlugin)
