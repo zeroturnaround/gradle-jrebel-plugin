@@ -22,7 +22,7 @@ configurations {
 
 dependencies {
   compile gradleApi()
-  groovy localGroovy()
+  compile localGroovy()
 
   compile 'commons-lang:commons-lang:2.4'
   testCompile 'junit:junit:4.8.2'
@@ -142,8 +142,9 @@ task bundle( type: Zip, dependsOn: signArchives) {
     println "Creating bundle ${bundleFile}"
 
     configurations.add "publishBundle"
-    configurations.publishBundle.artifacts.add(new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new
-        Date(), bundleFile))
+    configurations.publishBundle.artifacts.add(
+        new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new Date(), bundleFile)
+    )
   }
 }
 
