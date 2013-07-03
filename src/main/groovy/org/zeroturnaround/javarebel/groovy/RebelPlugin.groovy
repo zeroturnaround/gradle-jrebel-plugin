@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
  
- package org.zeroturnaround.javarebel.groovy
+package org.zeroturnaround.javarebel.groovy
 
 
 import org.gradle.api.Plugin
@@ -75,8 +75,5 @@ class RebelPlugin implements Plugin<Project> {
         generateRebelTask.conventionMapping.alwaysGenerate = {
             project.rebel.alwaysGenerate ? project.rebel.alwaysGenerate : "false"
         }
-
-        // configure LiveRebel task
-        project.tasks.add('generateLiveRebel', LiveRebelGenerateTask)
     }
 }
