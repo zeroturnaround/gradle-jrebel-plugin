@@ -19,7 +19,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
-class RebelPluginExtension {
+public class RebelPluginExtension {
 
   String packaging;
 

@@ -25,47 +25,47 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
+public class RebelGenerateTask extends DefaultTask {
 
-class RebelGenerateTask extends DefaultTask {
-
-  def String addResourcesDirToRebelXml
+  String addResourcesDirToRebelXml;
+  
   /**
    * TODO for some reason it's impossible to pass boolean value from build script into task's variable using conventional mapping.
    * Asked on the forum why: http://forums.gradle.org/gradle/topics/problem_with_conventional_mapping
    */
-  def String alwaysGenerate
+  String alwaysGenerate;
   
-  def String packaging
+  String packaging;
   
-  def File rebelXmlDirectory
+  File rebelXmlDirectory;
   
-  def String showGenerated
+  String showGenerated;
   
-  def File warSourceDirectory
+  File warSourceDirectory;
   
-  def RebelWeb web;
+  RebelWeb web;
   
-  def File webappDirectory
+  File webappDirectory;
 
-  def buildClasspath(RebelXmlBuilder builder) {
-    def boolean addDefaultAsFirst = true
-    def RebelClasspathResource defaultClasspath = null
-    def RebelClasspath classpath = project.rebel.classpath
+  private void buildClasspath(RebelXmlBuilder builder) {
+    boolean addDefaultAsFirst = true;
+    RebelClasspathResource defaultClasspath = null;
+    RebelClasspath classpath = project.rebel.classpath;
 
     // check if there is a element with no dir/jar/dirset/jarset set. if there
     // is then don't put default classpath as
     // first but put it where this element was.
 
     if (classpath != null) {
-      RebelClasspathResource[] resources = classpath.getResources()
+      RebelClasspathResource[] resources = classpath.getResources();
 
       if (resources != null && resources.length > 0) {
         for (int i = 0; i < resources.length; i++) {
-          RebelClasspathResource r = resources[i]
+          RebelClasspathResource r = resources[i];
 
           if (!r.isTargetSet()) {
-            addDefaultAsFirst = false
-            defaultClasspath = r
+            addDefaultAsFirst = false;
+            defaultClasspath = r;
             break;
           }
         }
@@ -125,29 +125,38 @@ class RebelGenerateTask extends DefaultTask {
     builder.addWebresource(r);
   }
 
-  def RebelXmlBuilder buildJar() {
-    def builder = new RebelXmlBuilder()
+  /**
+  * Construct a builder for jar projects
+  */
+  private RebelXmlBuilder buildJar() {
+    RebelXmlBuilder builder = new RebelXmlBuilder()
     buildClasspath(builder)
 
     return builder
   }
 
-  def RebelXmlBuilder buildWar() {
+  /**
+   * Construct a builder for war projects
+   */
+  private RebelXmlBuilder buildWar() {
     // TODO convert this variable to the field
-    def RebelWar war = project.rebel.war
+    def RebelWar war = project.rebel.war;
 
-    def builder = new RebelXmlBuilder()
+    RebelXmlBuilder builder = new RebelXmlBuilder();
     buildWeb(builder)
     buildClasspath(builder)
 
     if (war != null) {
-      war.setPath(fixFilePath(war.getPath()))
-      builder.setWar(war)
+      war.setPath(fixFilePath(war.getPath()));
+      builder.setWar(war);
     }
 
-    return builder
+    return builder;
   }
 
+  /**
+   * Build the model for the <web> element in rebel.xml
+   */
   private void buildWeb(RebelXmlBuilder builder) {
     boolean addDefaultAsFirst = true;
     RebelWebResource defaultWeb = null;
@@ -188,78 +197,78 @@ class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  def String fixFilePath(File file) {
-    File baseDir = project.projectDir
+  private String fixFilePath(File file) {
+    File baseDir = project.projectDir;
 
     if (file.isAbsolute() && !isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
-      return StringUtils.replace(getCanonicalPath(file), '\\', '/')
+      return StringUtils.replace(getCanonicalPath(file), '\\', '/');
     }
 
     if (!file.isAbsolute()) {
-      file = new File(baseDir, file.getPath())
+      file = new File(baseDir, file.getPath());
     }
 
-    String relative = getRelativePath(new File(baseDir, getRelativePath()), file)
+    String relative = getRelativePath(new File(baseDir, getRelativePath()), file);
 
     if (!(new File(relative)).isAbsolute()) {
-      return StringUtils.replace(getRootPath(), '\\', '/') + "/" + relative
+      return StringUtils.replace(getRootPath(), '\\', '/') + "/" + relative;
     }
 
     // relative path was outside baseDir
 
     // if root path is absolute then try to get a path relative to root
     if ((new File(getRootPath())).isAbsolute()) {
-      String s = getRelativePath(new File(getRootPath()), file)
+      String s = getRelativePath(new File(getRootPath()), file);
 
       if (!(new File(s)).isAbsolute()) {
-        return StringUtils.replace(getRootPath(), '\\', '/') + "/" + s
+        return StringUtils.replace(getRootPath(), '\\', '/') + "/" + s;
       }
       else {
         // root path and the calculated path are absolute, so
         // just return calculated path
-        return s
+        return s;
       }
     }
 
     // return absolute path to file
-    return StringUtils.replace(file.getAbsolutePath(), '\\', '/')
+    return StringUtils.replace(file.getAbsolutePath(), '\\', '/');
   }
 
-  def String fixFilePath(String path) {
-    return fixFilePath(new File(path))
+  private String fixFilePath(String path) {
+    return fixFilePath(new File(path));
   }
 
   @TaskAction
   public void generate() {
-    project.logger.info "rebel.alwaysGenerate = " + getAlwaysGenerate()
-    project.logger.info "rebel.showGenerated = " + getShowGenerated()
-    project.logger.info "rebel.rebelXmlDirectory = " + getRebelXmlDirectory()
-    project.logger.info "rebel.warSourceDirectory = " + getWarSourceDirectory()
-    project.logger.info "rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml()
-    project.logger.info "rebel.packaging = " + getPackaging()
+    project.getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
+    project.getLogger().info("rebel.showGenerated = " + getShowGenerated());
+    project.getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
+    project.getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
+    project.getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
+    project.getLogger().info("rebel.packaging = " + getPackaging());
 
     // find rebel.xml location
-    def File rebelXmlFile = null
+    File rebelXmlFile = null;
 
     if (getRebelXmlDirectory()) {
       rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml")
     }
 
     // find build.gradle location
-    def File buildXmlFile = project.buildFile
+    File buildXmlFile = project.buildFile
 
     if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
     }
 
     // find the type of the project
-    def builder = null
+    RebelXmlBuilder builder = null;
 
     if (getPackaging() == "jar") {
-      builder = buildJar()
+      builder = buildJar();
     }
     else if (getPackaging() == "war") {
-      builder = buildWar()
+      builder = buildWar();
     }
 
     if (builder) {
@@ -336,7 +345,7 @@ class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  def String getRelativePath(File baseDir, File file) throws BuildException {
+  private String getRelativePath(File baseDir, File file) throws BuildException {
     // Avoid the common prefix problem (see case 17005)
     // if:
     //  baseDir = /myProject/web-module/.

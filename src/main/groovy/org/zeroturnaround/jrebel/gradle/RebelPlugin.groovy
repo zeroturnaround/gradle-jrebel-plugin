@@ -20,9 +20,14 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
 
-class RebelPlugin implements Plugin<Project> {
+/**
+ * The main entry-point for the JRebel Gralde plugin.
+ * 
+ * @author Igor Bljahhin
+ */
+public class RebelPlugin implements Plugin<Project> {
 
-  private final static String GENERATE_REBEL = 'generateRebel'
+  private final static String GENERATE_REBEL = "generateRebel";
 
   public void apply(Project project) {
     // by default, register a dummy task that reports missing JavaPlugin

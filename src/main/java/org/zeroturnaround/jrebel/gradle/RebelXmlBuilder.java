@@ -31,7 +31,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 /**
  * Class for constructing xml configuration.
  */
-class RebelXmlBuilder {
+public class RebelXmlBuilder {
 
   private List<RebelClasspathResource> classpathDir = new ArrayList<RebelClasspathResource>();
   
