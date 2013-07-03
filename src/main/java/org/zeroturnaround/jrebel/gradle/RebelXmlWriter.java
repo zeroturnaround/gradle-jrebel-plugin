@@ -11,10 +11,10 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
-import org.zeroturnaround.jrebel.gradle.model.RebelXmlParent;
+import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 
 /**
- * Generate XML based on the in-memory model (RebelXmlParent instance).
+ * Generate XML based on the in-memory model (RebelMainModel instance).
  *
  * XXX - jesus christ, there must be tens of better ways to generate xml! why....????? [sander]
  * 
@@ -25,7 +25,7 @@ public class RebelXmlWriter {
   /**
    * The main method generating the XML output.
    */
-  public String toXmlString(RebelXmlParent model) throws IOException {
+  public String toXmlString(RebelMainModel model) throws IOException {
     Writer writer = new StringWriter();
 
     try {

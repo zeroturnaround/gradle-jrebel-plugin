@@ -24,7 +24,7 @@ import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 /**
  * Main model class representing the data for the rebel.xml.
  */
-public class RebelXmlParent {
+public class RebelMainModel {
 
   private List<RebelClasspathResource> classpathDirs = new ArrayList<RebelClasspathResource>();
   
@@ -98,7 +98,6 @@ public class RebelXmlParent {
 
   /**
    * Construct the actual XML stream (string) from the model in memory.
-   *  
    */
   public String toXmlString() throws IOException {
     return new RebelXmlWriter().toXmlString(this);

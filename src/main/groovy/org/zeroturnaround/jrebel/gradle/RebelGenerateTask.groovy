@@ -24,7 +24,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
-import org.zeroturnaround.jrebel.gradle.model.RebelXmlParent;
+import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 
 public class RebelGenerateTask extends DefaultTask {
 
@@ -48,7 +48,7 @@ public class RebelGenerateTask extends DefaultTask {
   
   File webappDirectory;
 
-  private void buildClasspath(RebelXmlParent builder) {
+  private void buildClasspath(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
     RebelClasspath classpath = project.rebel.classpath;
@@ -78,7 +78,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  private void buildDefaultClasspath(RebelXmlParent builder, RebelClasspathResource defaultClasspath) throws BuildException {
+  private void buildDefaultClasspath(RebelMainModel builder, RebelClasspathResource defaultClasspath) throws BuildException {
     if (isTrue(getAddResourcesDirToRebelXml())) {
       buildDefaultClasspathResources(builder);
     }
@@ -98,7 +98,7 @@ public class RebelGenerateTask extends DefaultTask {
     builder.addClasspathDir(r);
   }
 
-  private void buildDefaultClasspathResources(RebelXmlParent builder) throws BuildException {
+  private void buildDefaultClasspathResources(RebelMainModel builder) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
     r.directory = fixFilePath(getResourcesDirectory())
     if (!new File(r.directory).directory) {
@@ -113,7 +113,7 @@ public class RebelGenerateTask extends DefaultTask {
     builder.addClasspathDir(r);
   }
 
-  private void buildDefaultWeb(RebelXmlParent builder, RebelWebResource defaultWeb) {
+  private void buildDefaultWeb(RebelMainModel builder, RebelWebResource defaultWeb) {
     RebelWebResource r = new RebelWebResource();
     r.setTarget("/");
     r.setDirectory(fixFilePath(getWarSourceDirectory()));
@@ -129,8 +129,8 @@ public class RebelGenerateTask extends DefaultTask {
   /**
   * Construct a builder for jar projects
   */
-  private RebelXmlParent buildJar() {
-    RebelXmlParent builder = new RebelXmlParent()
+  private RebelMainModel buildJar() {
+    RebelMainModel builder = new RebelMainModel()
     buildClasspath(builder)
 
     return builder
@@ -139,11 +139,11 @@ public class RebelGenerateTask extends DefaultTask {
   /**
    * Construct a builder for war projects
    */
-  private RebelXmlParent buildWar() {
+  private RebelMainModel buildWar() {
     // TODO convert this variable to the field
     def RebelWar war = project.rebel.war;
 
-    RebelXmlParent builder = new RebelXmlParent();
+    RebelMainModel builder = new RebelMainModel();
     buildWeb(builder)
     buildClasspath(builder)
 
@@ -158,7 +158,7 @@ public class RebelGenerateTask extends DefaultTask {
   /**
    * Build the model for the <web> element in rebel.xml
    */
-  private void buildWeb(RebelXmlParent builder) {
+  private void buildWeb(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
     RebelWebResource defaultWeb = null;
 
@@ -267,7 +267,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     // find the type of the project
-    RebelXmlParent builder = null;
+    RebelMainModel builder = null;
 
     if (getPackaging() == "jar") {
       builder = buildJar();
