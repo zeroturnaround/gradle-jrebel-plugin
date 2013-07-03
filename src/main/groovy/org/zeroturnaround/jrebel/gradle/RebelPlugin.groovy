@@ -13,39 +13,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.jrebel.gradle
+package org.zeroturnaround.jrebel.gradle;
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPlugin
-import org.gradle.api.plugins.WarPlugin
-
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.WarPlugin;
 
 class RebelPlugin implements Plugin<Project> {
 
   private final static String GENERATE_REBEL = 'generateRebel'
 
-  def void apply(Project project) {
+  public void apply(Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
     project.tasks.add(GENERATE_REBEL) << {
       throw new IllegalStateException(
           "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
-          "(via other plugins that apply it implicitly, like Groovy or War); please update your build")
+          "(via other plugins that apply it implicitly, like Groovy or War); please update your build");
     }
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
-    project.logger.info "Registering deferred Rebel plugin configuration..."
-    project.plugins.withType(JavaPlugin) { configure(project) }
+    project.logger.info "Registering deferred Rebel plugin configuration...";
+    project.plugins.withType(JavaPlugin) { configure(project) };
   }
 
   private configure(Project project) {
-    project.logger.info "Configuring Rebel plugin..."
+    project.logger.info "Configuring Rebel plugin...";
 
-    project.extensions.rebel = new RebelPluginExtension()
+    project.extensions.rebel = new RebelPluginExtension();
 
     // configure Rebel task
     RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL, RebelGenerateTask)
     // let everything be compiled and processed so that classes / resources directories are there
-    generateRebelTask.dependsOn(project.tasks.classes)
+    generateRebelTask.dependsOn(project.tasks.classes);
 
     generateRebelTask.conventionMapping.rebelXmlDirectory = {
       project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.sourceSets.main.output.classesDir

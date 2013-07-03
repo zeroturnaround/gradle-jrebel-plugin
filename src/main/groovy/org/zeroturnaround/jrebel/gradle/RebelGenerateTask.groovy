@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.jrebel.gradle
+package org.zeroturnaround.jrebel.gradle;
 
-import org.apache.commons.lang.StringUtils
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
-import org.gradle.tooling.BuildException
+import org.apache.commons.lang.StringUtils;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.tooling.BuildException;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
@@ -230,7 +230,7 @@ class RebelGenerateTask extends DefaultTask {
   }
 
   @TaskAction
-  def generate() {
+  public void generate() {
     project.logger.info "rebel.alwaysGenerate = " + getAlwaysGenerate()
     project.logger.info "rebel.showGenerated = " + getShowGenerated()
     project.logger.info "rebel.rebelXmlDirectory = " + getRebelXmlDirectory()
@@ -267,20 +267,23 @@ class RebelGenerateTask extends DefaultTask {
 
       project.logger.info "Generating \"${rebelXmlFile}\"..."
 
-      def Writer w = new StringWriter()
-      builder.writeXml(w)
+      // Do generate the rebel.xml
+      Writer w = new StringWriter();
+      builder.writeXml(w);
 
+      // Print generated rebel.xml out to console if user wants to see it
       if (isTrue(getShowGenerated())) {
         try {
-          println w.toString()
+          println(w.toString());
         }
         catch (IOException _ignore) {
         }
       }
 
+      // Write out the rebel.xml file
       try {
-        rebelXmlFile.parentFile.mkdirs()
-        rebelXmlFile.write w.toString()
+        rebelXmlFile.parentFile.mkdirs();
+        rebelXmlFile.write(w.toString());
       }
       catch (IOException e) {
         throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
@@ -288,7 +291,7 @@ class RebelGenerateTask extends DefaultTask {
       finally {
         if (w != null) {
           try {
-            w.close()
+            w.close();
           }
           catch (IOException _ignore) {
           }
@@ -297,8 +300,7 @@ class RebelGenerateTask extends DefaultTask {
     }
   }
 
-
-  def String getCanonicalPath(File file) throws BuildException {
+  private String getCanonicalPath(File file) throws BuildException {
     try {
       return file.canonicalPath;
     }
@@ -307,30 +309,30 @@ class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  def File getClassesDirectory() {
+  private File getClassesDirectory() {
     if (project.rebel.classesDirectory) {
-      return project.rebel.classesDirectory
+      return project.rebel.classesDirectory;
     }
     else {
-      return project.sourceSets.main.output.classesDir
+      return project.sourceSets.main.output.classesDir;
     }
   }
 
-  File getResourcesDirectory() {
+  private File getResourcesDirectory() {
     if (project.rebel.resourcesDirectory) {
-      return project.rebel.resourcesDirectory
+      return project.rebel.resourcesDirectory;
     }
     else {
-      return project.sourceSets.main.output.resourcesDir
+      return project.sourceSets.main.output.resourcesDir;
     }
   }
 
-  def String getRelativePath() {
+  private String getRelativePath() {
     if (project.rebel.relativePath) {
-      return project.rebel.relativePath.absolutePath
+      return project.rebel.relativePath.absolutePath;
     }
     else {
-      return '.'
+      return '.';
     }
   }
 
@@ -362,23 +364,24 @@ class RebelGenerateTask extends DefaultTask {
     return relative;
   }
 
-  def String getRootPath() {
+  private String getRootPath() {
     if (project.rebel.rootPath) {
-      return project.rebel.rootPath
+      return project.rebel.rootPath;
     }
     else {
-      return project.projectDir
+      return project.projectDir;
     }
   }
 
-  def boolean isRelativeToPath(File baseDir, File file) throws BuildException {
+  private boolean isRelativeToPath(File baseDir, File file) throws BuildException {
     String basedirpath = getCanonicalPath(baseDir);
     String absolutePath = getCanonicalPath(file);
 
     return absolutePath.startsWith(basedirpath);
   }
 
-  def boolean isTrue(String value) {
+  // XXX hack, can we get rid of that
+  private boolean isTrue(String value) {
     return "true".equals(value);
   }
 }
