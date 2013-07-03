@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy;
+package org.zeroturnaround.jrebel.gradle;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeXml;
 import static org.apache.commons.lang.StringUtils.repeat;
@@ -23,10 +23,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.zeroturnaround.javarebel.groovy.model.RebelClasspathResource;
-import org.zeroturnaround.javarebel.groovy.model.RebelResource;
-import org.zeroturnaround.javarebel.groovy.model.RebelWar;
-import org.zeroturnaround.javarebel.groovy.model.RebelWebResource;
+import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
+import org.zeroturnaround.jrebel.gradle.model.RebelResource;
+import org.zeroturnaround.jrebel.gradle.model.RebelWar;
+import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
 /**
  * Class for constructing xml configuration.

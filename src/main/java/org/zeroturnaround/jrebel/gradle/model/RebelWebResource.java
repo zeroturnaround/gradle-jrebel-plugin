@@ -13,33 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy.model;
+package org.zeroturnaround.jrebel.gradle.model;
 
 import java.util.List;
 
+
 /**
- * Classpath resource configuration.
+ * Web reource configuration.
  */
-public class RebelClasspathResource implements RebelResource {
+public class RebelWebResource implements RebelResource {
 
   private String directory;
-  
-  private String dirset;
   
   private List<String> excludes;
   
   private List<String> includes;
   
-  private String jar;
-  
-  private String jarset;
+  private String target;
 
   public String getDirectory() {
     return directory;
-  }
-
-  public String getDirset() {
-    return dirset;
   }
 
   public List<String> getExcludes() {
@@ -50,25 +43,12 @@ public class RebelClasspathResource implements RebelResource {
     return includes;
   }
 
-  public String getJar() {
-    return jar;
-  }
-
-  public String getJarset() {
-    return jarset;
-  }
-
-  public boolean isTargetSet() {
-    return directory != null || jar != null || jarset != null
-        || dirset != null;
+  public String getTarget() {
+    return target;
   }
 
   public void setDirectory(String directory) {
     this.directory = directory;
-  }
-
-  public void setDirset(String dirset) {
-    this.dirset = dirset;
   }
 
   public void setExcludes(List<String> excludes) {
@@ -79,12 +59,8 @@ public class RebelClasspathResource implements RebelResource {
     this.includes = includes;
   }
 
-  public void setJar(String jar) {
-    this.jar = jar;
-  }
-
-  public void setJarset(String jarset) {
-    this.jarset = jarset;
+  public void setTarget(String target) {
+    this.target = target;
   }
 
 }

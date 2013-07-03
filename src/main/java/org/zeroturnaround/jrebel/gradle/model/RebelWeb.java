@@ -13,42 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy
-
-import org.zeroturnaround.javarebel.groovy.model.RebelClasspath
-import org.zeroturnaround.javarebel.groovy.model.RebelWar
-import org.zeroturnaround.javarebel.groovy.model.RebelWeb
+package org.zeroturnaround.jrebel.gradle.model;
 
 
-class RebelPluginExtension {
+/**
+ * Web configuration.
+ */
+public class RebelWeb {
 
-  String packaging
+  private RebelWebResource[] resources;
 
-  File classesDirectory
+  public RebelWebResource[] getResources() {
+    return resources;
+  }
 
-  File resourcesDirectory
+  public void setResources(RebelWebResource[] resources) {
+    this.resources = resources;
+  }
 
-  String warSourceDirectory
-
-  String webappDirectory
-
-  RebelClasspath classpath
-
-  RebelClasspath resourcesClasspath
-
-  RebelWar war
-
-  RebelWeb web
-
-  String rootPath
-
-  File relativePath
-
-  String rebelXmlDirectory
-
-  String showGenerated
-
-  String addResourcesDirToRebelXml
-
-  String alwaysGenerate
 }

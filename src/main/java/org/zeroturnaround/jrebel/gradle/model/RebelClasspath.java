@@ -13,18 +13,32 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy.model;
+package org.zeroturnaround.jrebel.gradle.model;
 
-import java.util.List;
 
-public interface RebelResource {
+/**
+ * Classpath configuration.
+ */
+public class RebelClasspath {
 
-  List<String> getIncludes();
+  private String fallback;
 
-  void setIncludes(List<String> includes);
+  private RebelClasspathResource[] resources;
 
-  List<String> getExcludes();
+  public String getFallback() {
+    return fallback;
+  }
 
-  void setExcludes(List<String> excludes);
+  public RebelClasspathResource[] getResources() {
+    return resources;
+  }
+
+  public void setFallback(String fallback) {
+    this.fallback = fallback;
+  }
+
+  public void setResources(RebelClasspathResource[] resources) {
+    this.resources = resources;
+  }
 
 }

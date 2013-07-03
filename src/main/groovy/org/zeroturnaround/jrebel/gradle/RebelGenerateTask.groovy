@@ -13,17 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy
+package org.zeroturnaround.jrebel.gradle
 
 import org.apache.commons.lang.StringUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.tooling.BuildException
-import org.zeroturnaround.javarebel.groovy.model.RebelClasspath
-import org.zeroturnaround.javarebel.groovy.model.RebelClasspathResource
-import org.zeroturnaround.javarebel.groovy.model.RebelWar
-import org.zeroturnaround.javarebel.groovy.model.RebelWeb
-import org.zeroturnaround.javarebel.groovy.model.RebelWebResource
+import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
+import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
+import org.zeroturnaround.jrebel.gradle.model.RebelWar;
+import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
+import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
 
 class RebelGenerateTask extends DefaultTask {

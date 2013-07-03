@@ -13,21 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy.model;
+package org.zeroturnaround.jrebel.gradle.model;
 
-/**
- * Web configuration.
- */
-public class RebelWeb {
+import java.util.List;
 
-  private RebelWebResource[] resources;
+public interface RebelResource {
 
-  public RebelWebResource[] getResources() {
-    return resources;
-  }
+  List<String> getIncludes();
 
-  public void setResources(RebelWebResource[] resources) {
-    this.resources = resources;
-  }
+  void setIncludes(List<String> includes);
+
+  List<String> getExcludes();
+
+  void setExcludes(List<String> excludes);
 
 }

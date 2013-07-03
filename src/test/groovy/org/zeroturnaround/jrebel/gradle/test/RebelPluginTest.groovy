@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy
+package org.zeroturnaround.jrebel.gradle.test
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -24,6 +24,8 @@ import org.gradle.api.plugins.jetty.JettyPlugin
 import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Test
+import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
+import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 
 import static org.junit.Assert.assertTrue
 

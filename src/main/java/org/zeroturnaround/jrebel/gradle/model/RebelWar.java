@@ -13,31 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.javarebel.groovy.model;
+package org.zeroturnaround.jrebel.gradle.model;
 
 /**
- * Classpath configuration.
+ * War configuration.
  */
-public class RebelClasspath {
+public class RebelWar {
 
-  private String fallback;
+  private String path;
 
-  private RebelClasspathResource[] resources;
-
-  public String getFallback() {
-    return fallback;
+  public String getPath() {
+    return path;
   }
 
-  public RebelClasspathResource[] getResources() {
-    return resources;
-  }
-
-  public void setFallback(String fallback) {
-    this.fallback = fallback;
-  }
-
-  public void setResources(RebelClasspathResource[] resources) {
-    this.resources = resources;
+  public void setPath(String path) {
+    this.path = path;
   }
 
 }
