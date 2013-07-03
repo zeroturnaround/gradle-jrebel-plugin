@@ -1,21 +1,19 @@
 /**
- *    Copyright (C) 2012 ZeroTurnaround LLC <support@zeroturnaround.com>
+ *  Copyright (C) 2012 ZeroTurnaround <support@zeroturnaround.com>
  *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
- 
 package org.zeroturnaround.javarebel.groovy
-
 
 import org.zeroturnaround.javarebel.groovy.model.RebelClasspath
 import org.zeroturnaround.javarebel.groovy.model.RebelWar
@@ -24,33 +22,33 @@ import org.zeroturnaround.javarebel.groovy.model.RebelWeb
 
 class RebelPluginExtension {
 
-    String packaging
+  String packaging
 
-    File classesDirectory
+  File classesDirectory
 
-    File resourcesDirectory
+  File resourcesDirectory
 
-    String warSourceDirectory
+  String warSourceDirectory
 
-    String webappDirectory
+  String webappDirectory
 
-    RebelClasspath classpath
+  RebelClasspath classpath
 
-    RebelClasspath resourcesClasspath
+  RebelClasspath resourcesClasspath
 
-    RebelWar war
+  RebelWar war
 
-    RebelWeb web
+  RebelWeb web
 
-    String rootPath
+  String rootPath
 
-    File relativePath
+  File relativePath
 
-    String rebelXmlDirectory
+  String rebelXmlDirectory
 
-    String showGenerated
+  String showGenerated
 
-    String addResourcesDirToRebelXml
+  String addResourcesDirToRebelXml
 
-    String alwaysGenerate
+  String alwaysGenerate
 }
