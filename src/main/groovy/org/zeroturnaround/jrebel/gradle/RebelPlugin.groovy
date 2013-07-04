@@ -50,7 +50,7 @@ public class RebelPlugin implements Plugin<Project> {
     
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
-    project.getPlugins().withType(JavaPlugin) { configure(project) };
+    project.getPlugins().withType(JavaPlugin.class).all { configure(project) };
   }
 
   private void configure(Project project) {
@@ -59,7 +59,7 @@ public class RebelPlugin implements Plugin<Project> {
     project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
 
     // configure Rebel task
-    RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask);
+    RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
     
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName("classes"));

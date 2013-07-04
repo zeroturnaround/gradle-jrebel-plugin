@@ -15,6 +15,8 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
+import java.io.File;
+
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;

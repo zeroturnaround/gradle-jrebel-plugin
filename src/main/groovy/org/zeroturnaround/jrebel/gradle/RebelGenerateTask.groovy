@@ -183,7 +183,7 @@ public class RebelGenerateTask extends DefaultTask {
   private void buildClasspath(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
-    RebelClasspath classpath = getProject().rebel.classpath;
+    RebelClasspath classpath = getRebelExtension().getClasspath();
 
     // check if there is a element with no dir/jar/dirset/jarset set. if there
     // is then don't put default classpath as
@@ -237,7 +237,7 @@ public class RebelGenerateTask extends DefaultTask {
       return;
     }
 
-    RebelClasspath resourcesClasspath = getProject().rebel.getResourcesClasspath();
+    RebelClasspath resourcesClasspath = getRebelExtension().getResourcesClasspath();
     if (resourcesClasspath != null) {
       r.setIncludes(resourcesClasspath.getIncludes());
       r.setExcludes(resourcesClasspath.getExcludes());
@@ -331,10 +331,10 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private String fixFilePath(File file) {
-    File baseDir = project.getProjectDir();
+    File baseDir = getProject().getProjectDir();
 
     if (file.isAbsolute() && !isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
-      return StringUtils.replace(getCanonicalPath(file), '\\', '/');
+      return StringUtils.replace(getCanonicalPath(file), "\\", "/");
     }
 
     if (!file.isAbsolute()) {
@@ -344,7 +344,7 @@ public class RebelGenerateTask extends DefaultTask {
     String relative = getRelativePath(new File(baseDir, getRelativePath()), file);
 
     if (!(new File(relative)).isAbsolute()) {
-      return StringUtils.replace(getRootPath(), '\\', '/') + "/" + relative;
+      return StringUtils.replace(getRootPath(), "\\", "/") + "/" + relative;
     }
 
     // relative path was outside baseDir
@@ -354,7 +354,7 @@ public class RebelGenerateTask extends DefaultTask {
       String s = getRelativePath(new File(getRootPath()), file);
 
       if (!(new File(s)).isAbsolute()) {
-        return StringUtils.replace(getRootPath(), '\\', '/') + "/" + s;
+        return StringUtils.replace(getRootPath(), "\\", "/") + "/" + s;
       }
       else {
         // root path and the calculated path are absolute, so
@@ -364,7 +364,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     // return absolute path to file
-    return StringUtils.replace(file.getAbsolutePath(), '\\', '/');
+    return StringUtils.replace(file.getAbsolutePath(), "\\", "/");
   }
 
   private String fixFilePath(String path) {
@@ -376,7 +376,7 @@ public class RebelGenerateTask extends DefaultTask {
       return file.getCanonicalPath();
     }
     catch (IOException e) {
-      throw new BuildException("Failed to get canonical path of " + file.absolutePath, e);
+      throw new BuildException("Failed to get canonical path of " + file.getAbsolutePath(), e);
     }
   }
 
