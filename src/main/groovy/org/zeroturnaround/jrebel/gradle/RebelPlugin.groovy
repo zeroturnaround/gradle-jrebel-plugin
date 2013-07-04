@@ -52,7 +52,7 @@ public class RebelPlugin implements Plugin<Project> {
     project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
 
     // configure Rebel task
-    RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
+    RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName("classes"));
 
@@ -61,11 +61,12 @@ public class RebelPlugin implements Plugin<Project> {
     }
 
     // set default value
-    generateRebelTask.conventionMapping.packaging = { RebelGenerateTask.PACKAGING_TYPE_JAR }
+    generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
 
     // if WarPlugin already applied, or if it is applied later than this plugin...
     project.getPlugins().withType(WarPlugin) {
-      generateRebelTask.conventionMapping.packaging = { RebelGenerateTask.PACKAGING_TYPE_WAR }
+      generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
+
       generateRebelTask.conventionMapping.warSourceDirectory = {
         project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory ? project.file(project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory) : project.webAppDir;
       }
