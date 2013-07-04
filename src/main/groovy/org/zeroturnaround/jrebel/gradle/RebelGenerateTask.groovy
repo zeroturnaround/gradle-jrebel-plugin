@@ -37,10 +37,6 @@ public class RebelGenerateTask extends DefaultTask {
     
   private Boolean addResourcesDirToRebelXml;
   
-  /**
-   * TODO for some reason it's impossible to pass boolean value from build script into task's variable using conventional mapping.
-   * Asked on the forum why: http://forums.gradle.org/gradle/topics/problem_with_conventional_mapping
-   */
   private Boolean alwaysGenerate;
   
   private String packaging;
