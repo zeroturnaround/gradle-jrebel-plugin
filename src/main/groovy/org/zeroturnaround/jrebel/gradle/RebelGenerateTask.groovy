@@ -32,19 +32,19 @@ public class RebelGenerateTask extends DefaultTask {
     
   public final static String PACKAGING_TYPE_WAR = "war";
     
-  private String addResourcesDirToRebelXml;
+  private Boolean addResourcesDirToRebelXml;
   
   /**
    * TODO for some reason it's impossible to pass boolean value from build script into task's variable using conventional mapping.
    * Asked on the forum why: http://forums.gradle.org/gradle/topics/problem_with_conventional_mapping
    */
-  private String alwaysGenerate;
+  private Boolean alwaysGenerate;
   
   private String packaging;
   
   private File rebelXmlDirectory;
   
-  private String showGenerated;
+  private Boolean showGenerated;
   
   private File warSourceDirectory;
   
@@ -140,7 +140,7 @@ public class RebelGenerateTask extends DefaultTask {
     // find build.gradle location
     File buildXmlFile = project.buildFile;
   
-    if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
+    if (!getAlwaysGenerate() && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
     }
   
@@ -163,7 +163,7 @@ public class RebelGenerateTask extends DefaultTask {
         String xmlFileContents = builder.toXmlString();
   
         // Print generated rebel.xml out to console if user wants to see it
-        if (isTrue(getShowGenerated())) {
+        if (getShowGenerated()) {
           println(xmlFileContents);
         }
        
@@ -208,7 +208,7 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private void buildDefaultClasspath(RebelMainModel builder, RebelClasspathResource defaultClasspath) throws BuildException {
-    if (isTrue(getAddResourcesDirToRebelXml())) {
+    if (getAddResourcesDirToRebelXml()) {
       buildDefaultClasspathResources(builder);
     }
 
@@ -446,11 +446,6 @@ public class RebelGenerateTask extends DefaultTask {
     String absolutePath = getCanonicalPath(file);
 
     return absolutePath.startsWith(basedirpath);
-  }
-
-  // XXX hack, can we get rid of that
-  private boolean isTrue(String value) {
-    return "true".equals(value);
   }
 
 }

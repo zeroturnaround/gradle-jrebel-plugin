@@ -77,17 +77,17 @@ public class RebelPlugin implements Plugin<Project> {
 
     generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
       RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : "true";
+      rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : true;
     }
 
     generateRebelTask.conventionMapping.showGenerated = {
       RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : "false";
+      rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : false;
     }
 
     generateRebelTask.conventionMapping.alwaysGenerate = {
       RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : "false";
+      rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : false;
     }
   }
 }
