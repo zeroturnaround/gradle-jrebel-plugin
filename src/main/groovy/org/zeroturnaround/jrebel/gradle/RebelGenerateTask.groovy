@@ -74,7 +74,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     if (addDefaultAsFirst) {
-      buildDefaultClasspath(builder, defaultClasspath)
+      buildDefaultClasspath(builder, defaultClasspath);
     }
   }
 
@@ -100,12 +100,12 @@ public class RebelGenerateTask extends DefaultTask {
 
   private void buildDefaultClasspathResources(RebelMainModel builder) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
-    r.directory = fixFilePath(getResourcesDirectory())
-    if (!new File(r.directory).directory) {
-      return
+    r.directory = fixFilePath(getResourcesDirectory());
+    if (!new File(r.getDirectory()).isDirectory()) {
+      return;
     }
 
-    def resourcesClasspath = project.rebel.resourcesClasspath;
+    RebelClasspath resourcesClasspath = project.rebel.getResourcesClasspath();
     if (resourcesClasspath) {
       r.setIncludes(resourcesClasspath.getIncludes());
       r.setExcludes(resourcesClasspath.getExcludes());
@@ -130,10 +130,10 @@ public class RebelGenerateTask extends DefaultTask {
   * Construct a builder for jar projects
   */
   private RebelMainModel buildJar() {
-    RebelMainModel builder = new RebelMainModel()
-    buildClasspath(builder)
+    RebelMainModel builder = new RebelMainModel();
+    buildClasspath(builder);
 
-    return builder
+    return builder;
   }
 
   /**
@@ -141,11 +141,11 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private RebelMainModel buildWar() {
     // TODO convert this variable to the field
-    def RebelWar war = project.rebel.war;
+    RebelWar war = project.rebel.getWar();
 
     RebelMainModel builder = new RebelMainModel();
-    buildWeb(builder)
-    buildClasspath(builder)
+    buildWeb(builder);
+    buildClasspath(builder);
 
     if (war != null) {
       war.setPath(fixFilePath(war.getPath()));
@@ -260,7 +260,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     // find build.gradle location
-    File buildXmlFile = project.buildFile
+    File buildXmlFile = project.buildFile;
 
     if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
