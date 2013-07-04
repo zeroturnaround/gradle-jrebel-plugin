@@ -26,6 +26,7 @@ dependencies {
 
   compile 'commons-lang:commons-lang:2.4'
   testCompile 'junit:junit:4.8.2'
+  testCompile 'xmlunit:xmlunit:1.4'
   deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
 }
 

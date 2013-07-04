@@ -25,7 +25,7 @@ public class RebelXmlWriter {
   /**
    * The main method generating the XML output.
    */
-  public String toXmlString(RebelMainModel model) throws IOException {
+  public String toXmlString(RebelMainModel model) {
     Writer writer = new StringWriter();
 
     try {
@@ -94,6 +94,10 @@ public class RebelXmlWriter {
       writer.flush();
       
       return writer.toString();
+    }
+    // can't see it happening
+    catch (IOException _ignore) {
+      return null;
     }
     finally {
       // close the stream
