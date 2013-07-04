@@ -19,6 +19,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.Action;
 
 /**
  * The main entry-point for the JRebel Gralde plugin.
@@ -66,14 +67,16 @@ public class RebelPlugin implements Plugin<Project> {
     generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
 
     // if WarPlugin already applied, or if it is applied later than this plugin...
-    project.getPlugins().withType(WarPlugin) {
-      generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
-
-      generateRebelTask.conventionMapping.warSourceDirectory = {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-        rebelExtension.getWarSourceDirectory() ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
+    project.getPlugins().withType(WarPlugin).all(new Action<Plugin>() {
+      void execute(Plugin p) {
+        generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
+  
+        generateRebelTask.conventionMapping.warSourceDirectory = {
+          RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+          rebelExtension.getWarSourceDirectory() ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
+        }
       }
-    }
+    });
 
     generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
       RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
