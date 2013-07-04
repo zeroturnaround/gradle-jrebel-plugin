@@ -42,9 +42,9 @@ public class RebelXmlWriterTest extends XMLTestCase {
   public void testXmlWithClasspathDir() throws Exception {
     RebelMainModel model = new RebelMainModel();
     
-    RebelClasspathResource resource1 = new RebelClasspathResource();
-    resource1.setDirectory("build/classes");
-    model.addClasspathDir(resource1);
+    RebelClasspathResource resource = new RebelClasspathResource();
+    resource.setDirectory("build/classes");
+    model.addClasspathDir(resource);
     
     String generatedXml = writer.toXmlString(model);
     
@@ -52,12 +52,12 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
-      "    <classpath> " +
-      "        <dir name=\"build/classes\" />" +
-      "    </classpath>" +
+      "  <classpath> " +
+      "    <dir name=\"build/classes\" />" +
+      "  </classpath>" +
       "</application>";
     
-    System.out.println("testSimpleXmlGeneration -- generated xml: \n" + generatedXml);    
+    System.out.println("testXmlWithClasspathDir -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -75,13 +75,11 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String generatedXml = writer.toXmlString(model);
     
-    
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
       "  <classpath> " +
-      "    <jar name=\"/my/library.jar\">" +
-      "    </jar>" +
+      "    <jar name=\"/my/library.jar\" />" +
       "  </classpath>" +
       "</application>";
     
@@ -89,7 +87,59 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
+
+  /**
+   * Test writing the <dirset> tag
+   */
+  @Test
+  public void testXmlWithClasspathDirset() throws Exception {
+    RebelMainModel model = new RebelMainModel();
+    
+    RebelClasspathResource resource = new RebelClasspathResource();
+    resource.setDirset("/my/workspace/build/classes");
+    model.addClasspathDirset(resource);
+    
+    String generatedXml = writer.toXmlString(model);
+    
+    String expectedResult = 
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "  <classpath> " +
+      "    <dirset dir=\"/my/workspace/build/classes\" />" +
+      "  </classpath>" +
+      "</application>";
+    
+    System.out.println("testXmlWithClasspathDirset -- generated xml: \n" + generatedXml);    
+    
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
+  }
   
+  @Test
+  public void testXmlWithClasspathJarset() throws Exception {
+    RebelMainModel model = new RebelMainModel();
+    
+    RebelClasspathResource resource = new RebelClasspathResource();
+    resource.setJarset("/my/workspace/build/classes");
+    model.addClasspathJarset(resource);
+    
+    String generatedXml = writer.toXmlString(model);
+    
+    String expectedResult = 
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "  <classpath> " +
+      "    <jarset dir=\"/my/workspace/build/classes\" />" +
+      "  </classpath>" +
+      "</application>";
+    
+    System.out.println("testXmlWithClasspathJarset -- generated xml: \n" + generatedXml);    
+    
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
+  }
+  
+  /**
+   * Test writing the <jarset> tag
+   */
   @Test
   public void testXmlWithWebResource() throws Exception {
     RebelMainModel model = new RebelMainModel();
@@ -113,6 +163,39 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "</application>";
     
     System.out.println("testXmlWithWebResource -- generated xml: \n" + generatedXml);    
+    
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
+  }
+
+  /**
+   * Test writing the <exclude> and <include> tags.
+   */
+  @Test
+  public void testXmlWithClasspathIncludesExcludes() throws Exception {
+    RebelMainModel model = new RebelMainModel();
+    
+    RebelClasspathResource resource = new RebelClasspathResource();
+    resource.setDirectory("build/classes");
+    resource.addExclude("*.xml");
+    resource.addExclude("*.properties");
+    resource.addInclude("**/*.java");
+    model.addClasspathDir(resource);
+    
+    String generatedXml = writer.toXmlString(model);
+    
+    String expectedResult = 
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "  <classpath> " +
+      "    <dir name=\"build/classes\">" +
+      "      <exclude name=\"*.xml\"/>" +
+      "      <exclude name=\"*.properties\"/>" +
+      "      <include name=\"**/*.java\"/>" +
+      "    </dir>" +
+      "  </classpath>" +
+      "</application>";
+    
+    System.out.println("testXmlWithClasspathIncludesExcludes -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -141,5 +224,4 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);    
   }
-  
 }

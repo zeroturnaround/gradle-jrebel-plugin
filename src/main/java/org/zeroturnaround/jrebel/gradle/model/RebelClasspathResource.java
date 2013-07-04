@@ -15,6 +15,7 @@
  */
 package org.zeroturnaround.jrebel.gradle.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -75,11 +76,25 @@ public class RebelClasspathResource implements RebelResource {
   public void setExcludes(List<String> excludes) {
     this.excludes = excludes;
   }
+  
+  public void addExclude(String exclude) {
+    if (this.excludes == null) {
+      excludes = new ArrayList<String>();
+    }
+    excludes.add(exclude);
+  }
 
   public void setIncludes(List<String> includes) {
     this.includes = includes;
   }
 
+  public void addInclude(String include) {
+    if (this.includes == null) {
+      includes = new ArrayList<String>();
+    }
+    includes.add(include);
+  }
+  
   public void setJar(String jar) {
     this.jar = jar;
   }
