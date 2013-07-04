@@ -46,7 +46,6 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    //def task = project.getTasks().generateRebel;
     Task task = project.getTasks().getByName("generateRebel");
     assertTrue(task instanceof DefaultTask);
     try {
@@ -72,9 +71,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals("jar"));
     
-    // XXX restore
-    // this used to work when the test was in groovy. but what did it test and how to restore in java?
-    //assertTrue(project.getTasks().getClasses() in task.dependsOn);
+    // check that the dependsOn got set
+    Task classesTask = project.getTasks().getByName("classes"); 
+    assertTrue(task.getDependsOn().contains(classesTask));
   }
 
   /**
@@ -92,8 +91,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals("jar"));
     
-    // XXX restore
-    // assertTrue(project.tasks.classes in task.dependsOn);
+    // check that the dependsOn got set
+    Task classesTask = project.getTasks().getByName("classes"); 
+    assertTrue(task.getDependsOn().contains(classesTask));
   }
 
   /**
@@ -111,8 +111,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals("war"));
     
-    // XXX restore
-    //assertTrue(project.tasks.classes in task.dependsOn);
+    // check that the dependsOn got set
+    Task classesTask = project.getTasks().getByName("classes"); 
+    assertTrue(task.getDependsOn().contains(classesTask));
   }
 
   
@@ -131,7 +132,8 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals("war"));
     
-    // XXX restore
-    //assertTrue(project.tasks.classes in task.dependsOn);
+    // check that the dependsOn got set
+    Task classesTask = project.getTasks().getByName("classes"); 
+    assertTrue(task.getDependsOn().contains(classesTask));
   }
 }
