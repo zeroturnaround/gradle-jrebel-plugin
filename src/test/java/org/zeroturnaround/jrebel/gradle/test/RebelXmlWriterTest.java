@@ -53,12 +53,39 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
       "    <classpath> " +
-      "        <dir name=\"build/classes\">" +
-      "        </dir>" +
+      "        <dir name=\"build/classes\" />" +
       "    </classpath>" +
       "</application>";
     
     System.out.println("testSimpleXmlGeneration -- generated xml: \n" + generatedXml);    
+    
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
+  }
+  
+  /**
+   * Test writing the <jar> tag
+   */
+  @Test
+  public void testXmlWithClasspathJar() throws Exception {
+    RebelMainModel model = new RebelMainModel();
+    
+    RebelClasspathResource resource = new RebelClasspathResource();
+    resource.setJar("/my/library.jar");
+    model.addClasspathJar(resource);
+    
+    String generatedXml = writer.toXmlString(model);
+    
+    
+    String expectedResult = 
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "  <classpath> " +
+      "    <jar name=\"/my/library.jar\">" +
+      "    </jar>" +
+      "  </classpath>" +
+      "</application>";
+    
+    System.out.println("testXmlWithClasspathJar -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -77,13 +104,12 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
-      "    <classpath />" +
-      "    <web>" +
-      "        <link target=\"/\">" +
-      "            <dir name=\"build/webapp\">" +
-      "            </dir>" +
-      "        </link>" +
-      "    </web>" +
+      "  <classpath />" +
+      "  <web>" +
+      "    <link target=\"/\">" +
+      "      <dir name=\"build/webapp\" />" +
+      "    </link>" +
+      "  </web>" +
       "</application>";
     
     System.out.println("testXmlWithWebResource -- generated xml: \n" + generatedXml);    
@@ -107,8 +133,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
-      "    <classpath />" +
-      "    <war dir=\"/my/path\"/>" +
+      "  <classpath />" +
+      "  <war dir=\"/my/path\" />" +
       "</application>";
     
     System.out.println("testXmlWithWar -- generated xml: \n" + generatedXml);    

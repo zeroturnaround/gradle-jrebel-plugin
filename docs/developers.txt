@@ -4,7 +4,7 @@ Code conventions
 
 For both Java and Groovy code, general ZeroTurnaround code conventions apply.
 Key points:
- * Indentation: 2 spaces. No tabs never.
+ * Indentation: 2 spaces. No tabs never. (Applies for all: java sources, groovy sources and XML).
  * if-else and try-catch blocks look like this ("else" and "catch" go to separate line; don't omit curly braces
    even when one-line statements):
  

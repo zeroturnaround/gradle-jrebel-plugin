@@ -68,7 +68,7 @@ public class RebelXmlWriter {
    * Write the <classpath> element.
    */
   private void writeClasspath(RebelMainModel model, Writer writer) throws IOException {
-    writer.write("\t<classpath");
+    writer.write("  <classpath");
     
     if (model.getFallbackClasspath() != null) {
       writer.write(" fallback=\"" + model.getFallbackClasspath() + "\"");
@@ -77,36 +77,33 @@ public class RebelXmlWriter {
  
     // Classpath dirs
     for (RebelClasspathResource resource : model.getClasspathDirs()) {
-      writer.write("\t\t<dir name=\"" + escapeXml(resource.getDirectory())
-          + "\">\n");
+      writer.write("    <dir name=\"" + escapeXml(resource.getDirectory()) + "\">\n");
       writeExcludeInclude(writer, resource);
-      writer.write("\t\t</dir>\n");
+      writer.write("    </dir>\n");
     }
  
     // Classpath jars
     for (RebelClasspathResource resource : model.getClasspathJars()) {
-      writer.write("\t\t<jar name=\"" + escapeXml(resource.getJar()) + "\">\n");
+      writer.write("    <jar name=\"" + escapeXml(resource.getJar()) + "\">\n");
       writeExcludeInclude(writer, resource);
-      writer.write("\t\t</jar>\n");
+      writer.write("    </jar>\n");
     }
  
     // Classpath jarsets
     for (RebelClasspathResource resource : model.getClasspathJarsets()) {
-      writer.write("\t\t<jarset dir=\"" + escapeXml(resource.getJarset())
-          + "\">\n");
+      writer.write("    <jarset dir=\"" + escapeXml(resource.getJarset()) + "\">\n");
       writeExcludeInclude(writer, resource);
-      writer.write("\t\t</jarset>\n");
+      writer.write("    </jarset>\n");
     }
  
     // Classpath dirsets
     for (RebelClasspathResource resource : model.getClasspathDirsets()) {
-      writer.write("\t\t<dirset dir=\"" + escapeXml(resource.getDirset())
-          + "\">\n");
+      writer.write("    <dirset dir=\"" + escapeXml(resource.getDirset()) + "\">\n");
       writeExcludeInclude(writer, resource);
-      writer.write("\t\t</dirset>\n");
+      writer.write("    </dirset>\n");
     }
  
-    writer.write("\t</classpath>\n");
+    writer.write("  </classpath>\n");
     writer.write("\n");
   }
 
@@ -116,17 +113,15 @@ public class RebelXmlWriter {
   private void writeWeb(RebelMainModel model, Writer writer) throws IOException {
     // web resources
     if (model.getWebResources().size() > 0) {
-      writer.write("\t<web>\n");
+      writer.write("  <web>\n");
       for (RebelWebResource r : model.getWebResources()) {
-        writer.write("\t\t<link target=\"" + escapeXml(r.getTarget())
-            + "\">\n");
-        writer.write("\t\t\t<dir name=\"" + escapeXml(r.getDirectory())
-            + "\">\n");
+        writer.write("    <link target=\"" + escapeXml(r.getTarget()) + "\">\n");
+        writer.write("      <dir name=\"" + escapeXml(r.getDirectory()) + "\">\n");
         writeExcludeInclude(writer, r);
-        writer.write("\t\t\t</dir>\n");
-        writer.write("\t\t</link>\n");
+        writer.write("      </dir>\n");
+        writer.write("    </link>\n");
       }
-      writer.write("\t</web>\n");
+      writer.write("  </web>\n");
       writer.write("\n");
     }
   }
@@ -137,7 +132,7 @@ public class RebelXmlWriter {
   private void writeWar(RebelMainModel model, Writer writer) throws IOException {
     RebelWar war = model.getWar();
     if (war != null && war.getPath() != null) {
-      writer.write("\t<war dir=\"" + escapeXml(war.getPath()) + "\"/>\n");
+      writer.write("  <war dir=\"" + escapeXml(war.getPath()) + "\"/>\n");
       writer.write("\n");
     }
   }
@@ -158,7 +153,7 @@ public class RebelXmlWriter {
    * Write <exclude> and <include> elements. This code is shared between writing multiple resources.
    */
   private void writeExcludeIncludeImpl(Writer writer, RebelResource r, int indent) throws IOException {
-    String indention = repeat("\t", indent);
+    String indention = repeat("  ", indent);
 
     if (r.getExcludes() != null) {
       for (String exclude : r.getExcludes()) {
@@ -169,8 +164,7 @@ public class RebelXmlWriter {
 
     if (r.getIncludes() != null) {
       for (String include : r.getIncludes()) {
-        writer.write(indention + "<include name=\""
-            + escapeXml(include) + "\"/>\n");
+        writer.write(indention + "<include name=\"" + escapeXml(include) + "\"/>\n");
       }
     }
   }
