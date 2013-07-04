@@ -30,7 +30,9 @@ public class RebelPlugin implements Plugin<Project> {
   /**
    * The name of the task that our plugin will define
    */
-  public final static String GENERATE_REBEL_TASK_NAME = "generateRebel";
+  public static final String GENERATE_REBEL_TASK_NAME = "generateRebel";
+  
+  public static final String REBEL_EXTENSION_NAME = "rebel";
 
   public void apply(Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
@@ -41,44 +43,44 @@ public class RebelPlugin implements Plugin<Project> {
     }
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
-    project.plugins.withType(JavaPlugin) { configure(project) };
+    project.getPlugins().withType(JavaPlugin) { configure(project) };
   }
 
   private configure(Project project) {
     project.getLogger().info("Configuring Rebel plugin...");
 
-    project.getExtensions().rebel = new RebelPluginExtension();
+    project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
 
     // configure Rebel task
     RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
     // let everything be compiled and processed so that classes / resources directories are there
-    generateRebelTask.dependsOn(project.tasks.classes);
+    generateRebelTask.dependsOn(project.getTasks().getByName("classes"));
 
     generateRebelTask.conventionMapping.rebelXmlDirectory = {
-      project.rebel.rebelXmlDirectory ? project.file(project.rebel.rebelXmlDirectory) : project.sourceSets.main.output.classesDir
+      project.getExtenions().getByName(REBEL_EXTENSION_NAME).rebelXmlDirectory ? project.file(project.getExtenions().getByName(REBEL_EXTENSION_NAME).rebelXmlDirectory) : project.sourceSets.main.output.classesDir
     }
 
     // set default value
-    generateRebelTask.conventionMapping.packaging = { "jar" }
+    generateRebelTask.conventionMapping.packaging = { RebelGenerateTask.PACKAGING_TYPE_JAR }
 
     // if WarPlugin already applied, or if it is applied later than this plugin...
-    project.plugins.withType(WarPlugin) {
-      generateRebelTask.conventionMapping.packaging = { "war" }
+    project.getPlugins().withType(WarPlugin) {
+      generateRebelTask.conventionMapping.packaging = { RebelGenerateTask.PACKAGING_TYPE_WAR }
       generateRebelTask.conventionMapping.warSourceDirectory = {
-        project.rebel.warSourceDirectory ? project.file(project.rebel.warSourceDirectory) : project.webAppDir
+        project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory ? project.file(project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory) : project.webAppDir;
       }
     }
 
     generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
-      project.rebel.addResourcesDirToRebelXml ? project.rebel.addResourcesDirToRebelXml : "true"
+      project.getExtenions().getByName(REBEL_EXTENSION_NAME).addResourcesDirToRebelXml ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).addResourcesDirToRebelXml : "true";
     }
 
     generateRebelTask.conventionMapping.showGenerated = {
-      project.rebel.showGenerated ? project.rebel.showGenerated : "false"
+      project.getExtenions().getByName(REBEL_EXTENSION_NAME).showGenerated ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).showGenerated : "false";
     }
 
     generateRebelTask.conventionMapping.alwaysGenerate = {
-      project.rebel.alwaysGenerate ? project.rebel.alwaysGenerate : "false"
+      project.getExtenions().getByName(REBEL_EXTENSION_NAME).alwaysGenerate ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).alwaysGenerate : "false";
     }
   }
 }
