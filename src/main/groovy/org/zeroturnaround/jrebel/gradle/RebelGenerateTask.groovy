@@ -51,21 +51,20 @@ public class RebelGenerateTask extends DefaultTask {
   private RebelWeb web;
   
   private File webappDirectory;
-
   
-  public String getAddResourcesDirToRebelXml() {
+  public Boolean getAddResourcesDirToRebelXml() {
     return addResourcesDirToRebelXml;
   }
 
-  public void setAddResourcesDirToRebelXml(String addResourcesDirToRebelXml) {
+  public void setAddResourcesDirToRebelXml(Boolean addResourcesDirToRebelXml) {
     this.addResourcesDirToRebelXml = addResourcesDirToRebelXml;
   }
 
-  public String getAlwaysGenerate() {
+  public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }
 
-  public void setAlwaysGenerate(String alwaysGenerate) {
+  public void setAlwaysGenerate(Boolean alwaysGenerate) {
     this.alwaysGenerate = alwaysGenerate;
   }
 
@@ -85,11 +84,11 @@ public class RebelGenerateTask extends DefaultTask {
     this.rebelXmlDirectory = rebelXmlDirectory;
   }
 
-  public String getShowGenerated() {
+  public Boolean getShowGenerated() {
     return showGenerated;
   }
 
-  public void setShowGenerated(String showGenerated) {
+  public void setShowGenerated(Boolean showGenerated) {
     this.showGenerated = showGenerated;
   }
 

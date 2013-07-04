@@ -45,11 +45,11 @@ public class RebelPluginExtension {
 
   private String rebelXmlDirectory;
 
-  private String showGenerated;
+  private Boolean showGenerated;
 
-  private String addResourcesDirToRebelXml;
+  private Boolean addResourcesDirToRebelXml;
 
-  private String alwaysGenerate;
+  private Boolean alwaysGenerate;
 
   public String getPackaging() {
     return packaging;
@@ -147,27 +147,27 @@ public class RebelPluginExtension {
     this.rebelXmlDirectory = rebelXmlDirectory;
   }
 
-  public String getShowGenerated() {
+  public Boolean getShowGenerated() {
     return showGenerated;
   }
 
-  public void setShowGenerated(String showGenerated) {
+  public void setShowGenerated(Boolean showGenerated) {
     this.showGenerated = showGenerated;
   }
 
-  public String getAddResourcesDirToRebelXml() {
+  public Boolean getAddResourcesDirToRebelXml() {
     return addResourcesDirToRebelXml;
   }
 
-  public void setAddResourcesDirToRebelXml(String addResourcesDirToRebelXml) {
+  public void setAddResourcesDirToRebelXml(Boolean addResourcesDirToRebelXml) {
     this.addResourcesDirToRebelXml = addResourcesDirToRebelXml;
   }
 
-  public String getAlwaysGenerate() {
+  public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }
 
-  public void setAlwaysGenerate(String alwaysGenerate) {
+  public void setAlwaysGenerate(Boolean alwaysGenerate) {
     this.alwaysGenerate = alwaysGenerate;
   }
 }

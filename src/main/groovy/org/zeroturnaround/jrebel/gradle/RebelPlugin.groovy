@@ -21,6 +21,8 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.Action;
 
+import java.util.concurrent.Callable;
+
 /**
  * The main entry-point for the JRebel Gralde plugin.
  * 
@@ -53,15 +55,17 @@ public class RebelPlugin implements Plugin<Project> {
     project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
 
     // configure Rebel task
-    RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
+    RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask);
     
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName("classes"));
 
-    generateRebelTask.conventionMapping.rebelXmlDirectory = {
-      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getRebelXmlDirectory() ? rebelExtension.getRebelXmlDirectory() : project.sourceSets.main.output.classesDir
-    }
+    generateRebelTask.getConventionMapping().map("rebelXmlDirectory", new Callable<Object>() {
+      public Object call() throws Exception {
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+        return rebelExtension.getRebelXmlDirectory() ? new File(rebelExtension.getRebelXmlDirectory()) : new File(project.sourceSets.main.output.classesDir);
+      }
+    });
 
     // set default value
     generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
@@ -71,26 +75,34 @@ public class RebelPlugin implements Plugin<Project> {
       void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
   
-        generateRebelTask.conventionMapping.warSourceDirectory = {
-          RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-          rebelExtension.getWarSourceDirectory() ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
-        }
+        generateRebelTask.getConventionMapping().map("warSourceDirectory", new Callable<Object>() {
+          public Object call() throws Exception {
+            RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+            rebelExtension.getWarSourceDirectory() ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
+          }
+        });
       }
     });
 
-    generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
-      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : true;
-    }
+    generateRebelTask.getConventionMapping().map("addResourcesDirToRebelXml", new Callable<Object>() {
+      public Object call() throws Exception {
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+        rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : true;
+      }
+    });
 
-    generateRebelTask.conventionMapping.showGenerated = {
-      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : false;
-    }
+    generateRebelTask.getConventionMapping().map("showGenerated",  new Callable<Object>() {
+      public Object call() throws Exception {
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+        rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : false;
+      }
+    });
 
-    generateRebelTask.conventionMapping.alwaysGenerate = {
-      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
-      rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : false;
-    }
+    generateRebelTask.getConventionMapping().map("alwaysGenerate", new Callable<Object>() {
+      public Object call() throws Exception {
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+        rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : false;
+      }
+    });
   }
 }
