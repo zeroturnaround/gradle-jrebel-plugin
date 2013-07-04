@@ -32,25 +32,150 @@ public class RebelGenerateTask extends DefaultTask {
     
   public final static String PACKAGING_TYPE_WAR = "war";
     
-  String addResourcesDirToRebelXml;
+  private String addResourcesDirToRebelXml;
   
   /**
    * TODO for some reason it's impossible to pass boolean value from build script into task's variable using conventional mapping.
    * Asked on the forum why: http://forums.gradle.org/gradle/topics/problem_with_conventional_mapping
    */
-  String alwaysGenerate;
+  private String alwaysGenerate;
   
-  String packaging;
+  private String packaging;
   
-  File rebelXmlDirectory;
+  private File rebelXmlDirectory;
   
-  String showGenerated;
+  private String showGenerated;
   
-  File warSourceDirectory;
+  private File warSourceDirectory;
   
-  RebelWeb web;
+  private RebelWeb web;
   
-  File webappDirectory;
+  private File webappDirectory;
+
+  
+  public String getAddResourcesDirToRebelXml() {
+    return addResourcesDirToRebelXml;
+  }
+
+  public void setAddResourcesDirToRebelXml(String addResourcesDirToRebelXml) {
+    this.addResourcesDirToRebelXml = addResourcesDirToRebelXml;
+  }
+
+  public String getAlwaysGenerate() {
+    return alwaysGenerate;
+  }
+
+  public void setAlwaysGenerate(String alwaysGenerate) {
+    this.alwaysGenerate = alwaysGenerate;
+  }
+
+  public String getPackaging() {
+    return packaging;
+  }
+
+  public void setPackaging(String packaging) {
+    this.packaging = packaging;
+  }
+
+  public File getRebelXmlDirectory() {
+    return rebelXmlDirectory;
+  }
+
+  public void setRebelXmlDirectory(File rebelXmlDirectory) {
+    this.rebelXmlDirectory = rebelXmlDirectory;
+  }
+
+  public String getShowGenerated() {
+    return showGenerated;
+  }
+
+  public void setShowGenerated(String showGenerated) {
+    this.showGenerated = showGenerated;
+  }
+
+  public File getWarSourceDirectory() {
+    return warSourceDirectory;
+  }
+
+  public void setWarSourceDirectory(File warSourceDirectory) {
+    this.warSourceDirectory = warSourceDirectory;
+  }
+
+  public RebelWeb getWeb() {
+    return web;
+  }
+
+  public void setWeb(RebelWeb web) {
+    this.web = web;
+  }
+
+  public File getWebappDirectory() {
+    return webappDirectory;
+  }
+
+  public void setWebappDirectory(File webappDirectory) {
+    this.webappDirectory = webappDirectory;
+  }
+  
+  /**
+   * The actual invocation of our plugin task. Will construct the in-memory model (RebelXmlBuilder),
+   * generate the XML output based on it and write the XML into a file-system file (rebel.xml). 
+   */
+  @TaskAction
+  public void generate() {
+    project.getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
+    project.getLogger().info("rebel.showGenerated = " + getShowGenerated());
+    project.getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
+    project.getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
+    project.getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
+    project.getLogger().info("rebel.packaging = " + getPackaging());
+  
+    // find rebel.xml location
+    File rebelXmlFile = null;
+  
+    if (getRebelXmlDirectory()) {
+      rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml")
+    }
+  
+    // find build.gradle location
+    File buildXmlFile = project.buildFile;
+  
+    if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
+      return;
+    }
+  
+    // find the type of the project
+    RebelMainModel builder = null;
+  
+    if (getPackaging().equals(PACKAGING_TYPE_JAR)) {
+      builder = buildJar();
+    }
+    else if (getPackaging().equals(PACKAGING_TYPE_WAR)) {
+      builder = buildWar();
+    }
+  
+    if (builder) {
+      project.getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+      project.getLogger().info("Generating \"${rebelXmlFile}\"...");
+  
+      // Do generate the rebel.xml
+      try {
+        String xmlFileContents = builder.toXmlString();
+  
+        // Print generated rebel.xml out to console if user wants to see it
+        if (isTrue(getShowGenerated())) {
+          println(xmlFileContents);
+        }
+       
+        // Write out the rebel.xml file
+        rebelXmlFile.parentFile.mkdirs();
+        rebelXmlFile.write(xmlFileContents);
+      }
+      catch (IOException e) {
+        throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
+      }
+    }
+  }
 
   private void buildClasspath(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
@@ -243,66 +368,6 @@ public class RebelGenerateTask extends DefaultTask {
     return fixFilePath(new File(path));
   }
 
-  /**
-   * The actual invocation of our plugin task. Will construct the in-memory model (RebelXmlBuilder),
-   * generate the XML output based on it and write the XML into a file-system file (rebel.xml). 
-   */
-  @TaskAction
-  public void generate() {
-    project.getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
-    project.getLogger().info("rebel.showGenerated = " + getShowGenerated());
-    project.getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
-    project.getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
-    project.getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
-    project.getLogger().info("rebel.packaging = " + getPackaging());
-
-    // find rebel.xml location
-    File rebelXmlFile = null;
-
-    if (getRebelXmlDirectory()) {
-      rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml")
-    }
-
-    // find build.gradle location
-    File buildXmlFile = project.buildFile;
-
-    if (!isTrue(getAlwaysGenerate()) && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
-      return;
-    }
-
-    // find the type of the project
-    RebelMainModel builder = null;
-
-    if (getPackaging().equals(PACKAGING_TYPE_JAR)) {
-      builder = buildJar();
-    }
-    else if (getPackaging().equals(PACKAGING_TYPE_WAR)) {
-      builder = buildWar();
-    }
-
-    if (builder) {
-      project.getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
-      project.getLogger().info("Generating \"${rebelXmlFile}\"...");
-
-      // Do generate the rebel.xml
-      try {
-        String xmlFileContents = builder.toXmlString();
-
-        // Print generated rebel.xml out to console if user wants to see it
-        if (isTrue(getShowGenerated())) {
-          println(xmlFileContents);
-        }
-       
-        // Write out the rebel.xml file
-        rebelXmlFile.parentFile.mkdirs();
-        rebelXmlFile.write(xmlFileContents);
-      }
-      catch (IOException e) {
-        throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
-      }
-    }
-  }
-
   private String getCanonicalPath(File file) throws BuildException {
     try {
       return file.canonicalPath;
@@ -387,4 +452,5 @@ public class RebelGenerateTask extends DefaultTask {
   private boolean isTrue(String value) {
     return "true".equals(value);
   }
+
 }
