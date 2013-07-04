@@ -30,11 +30,11 @@ public class RebelPlugin implements Plugin<Project> {
   /**
    * The name of the task that our plugin will define
    */
-  private final static String GENERATE_REBEL = "generateRebel";
+  public final static String GENERATE_REBEL_TASK_NAME = "generateRebel";
 
   public void apply(Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
-    project.tasks.add(GENERATE_REBEL) << {
+    project.tasks.add(GENERATE_REBEL_TASK_NAME) << {
       throw new IllegalStateException(
           "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
           "(via other plugins that apply it implicitly, like Groovy or War); please update your build");
@@ -50,7 +50,7 @@ public class RebelPlugin implements Plugin<Project> {
     project.getExtensions().rebel = new RebelPluginExtension();
 
     // configure Rebel task
-    RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL, RebelGenerateTask)
+    RebelGenerateTask generateRebelTask = project.tasks.replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.tasks.classes);
 

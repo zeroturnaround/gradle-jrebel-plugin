@@ -46,7 +46,7 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    Task task = project.getTasks().getByName("generateRebel");
+    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof DefaultTask);
     try {
       ((DefaultTask) task).execute();
@@ -65,11 +65,11 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(JavaPlugin.class);
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    Task task = project.getTasks().getByName("generateRebel");
+    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
     
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
-    assertTrue(rebelTask.getPackaging().equals("jar"));
+    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
     
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName("classes"); 
@@ -85,11 +85,11 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(RebelPlugin.class);
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
-    Task task = project.getTasks().getByName("generateRebel");
+    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
     
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
-    assertTrue(rebelTask.getPackaging().equals("jar"));
+    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
     
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName("classes"); 
@@ -105,11 +105,11 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(WarPlugin.class);
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    Task task = project.getTasks().getByName("generateRebel");
+    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
     
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
-    assertTrue(rebelTask.getPackaging().equals("war"));
+    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
     
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName("classes"); 
@@ -126,11 +126,11 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(RebelPlugin.class);
     project.getProject().getPlugins().apply(JettyPlugin.class);
 
-    Task task = project.getTasks().getByName("generateRebel");
+    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
     
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
-    assertTrue(rebelTask.getPackaging().equals("war"));
+    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
     
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName("classes"); 

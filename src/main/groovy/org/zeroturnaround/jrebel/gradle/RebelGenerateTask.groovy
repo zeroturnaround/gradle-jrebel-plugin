@@ -28,6 +28,10 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 
 public class RebelGenerateTask extends DefaultTask {
 
+  public final static String PACKAGING_TYPE_JAR = "jar";
+    
+  public final static String PACKAGING_TYPE_WAR = "war";
+    
   String addResourcesDirToRebelXml;
   
   /**
@@ -269,10 +273,10 @@ public class RebelGenerateTask extends DefaultTask {
     // find the type of the project
     RebelMainModel builder = null;
 
-    if (getPackaging() == "jar") {
+    if (getPackaging().equals(PACKAGING_TYPE_JAR)) {
       builder = buildJar();
     }
-    else if (getPackaging() == "war") {
+    else if (getPackaging().equals(PACKAGING_TYPE_WAR)) {
       builder = buildWar();
     }
 
