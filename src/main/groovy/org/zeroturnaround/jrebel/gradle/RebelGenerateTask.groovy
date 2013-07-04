@@ -15,6 +15,9 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
@@ -122,24 +125,25 @@ public class RebelGenerateTask extends DefaultTask {
    */
   @TaskAction
   public void generate() {
-    project.getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
-    project.getLogger().info("rebel.showGenerated = " + getShowGenerated());
-    project.getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
-    project.getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
-    project.getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
-    project.getLogger().info("rebel.packaging = " + getPackaging());
+    // TODO create a local variable "log"
+    getProject().getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
+    getProject().getLogger().info("rebel.showGenerated = " + getShowGenerated());
+    getProject().getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
+    getProject().getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
+    getProject().getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
+    getProject().getLogger().info("rebel.packaging = " + getPackaging());
   
     // find rebel.xml location
     File rebelXmlFile = null;
   
-    if (getRebelXmlDirectory()) {
-      rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml")
+    if (getRebelXmlDirectory() != null) {
+      rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml");
     }
   
     // find build.gradle location
-    File buildXmlFile = project.getBuildFile();
+    File buildXmlFile = getProject().getBuildFile();
   
-    if (!getAlwaysGenerate() && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
+    if (!getAlwaysGenerate() && (rebelXmlFile != null) && rebelXmlFile.exists() && (buildXmlFile != null) && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
     }
   
@@ -153,9 +157,9 @@ public class RebelGenerateTask extends DefaultTask {
       builder = buildWar();
     }
   
-    if (builder) {
-      project.getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
-      project.getLogger().info("Generating \"${rebelXmlFile}\"...");
+    if (builder != null) {
+      getProject().getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+      getProject().getLogger().info("Generating \"${rebelXmlFile}\"...");
   
       // Do generate the rebel.xml
       try {
@@ -163,7 +167,7 @@ public class RebelGenerateTask extends DefaultTask {
   
         // Print generated rebel.xml out to console if user wants to see it
         if (getShowGenerated()) {
-          println(xmlFileContents);
+          System.out.println(xmlFileContents);
         }
        
         // Write out the rebel.xml file
@@ -179,7 +183,7 @@ public class RebelGenerateTask extends DefaultTask {
   private void buildClasspath(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
-    RebelClasspath classpath = project.rebel.classpath;
+    RebelClasspath classpath = getProject().rebel.classpath;
 
     // check if there is a element with no dir/jar/dirset/jarset set. if there
     // is then don't put default classpath as
@@ -214,8 +218,8 @@ public class RebelGenerateTask extends DefaultTask {
     // project output directory
     RebelClasspathResource r = new RebelClasspathResource();
     r.setDirectory(fixFilePath(getClassesDirectory()));
-    if (!new File(r.directory).directory) {
-      return
+    if (!new File(r.getDirectory()).isDirectory()) {
+      return;
     }
 
     if (defaultClasspath != null) {
@@ -228,13 +232,13 @@ public class RebelGenerateTask extends DefaultTask {
 
   private void buildDefaultClasspathResources(RebelMainModel builder) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
-    r.directory = fixFilePath(getResourcesDirectory());
+    r.setDirectory(fixFilePath(getResourcesDirectory()));
     if (!new File(r.getDirectory()).isDirectory()) {
       return;
     }
 
-    RebelClasspath resourcesClasspath = project.rebel.getResourcesClasspath();
-    if (resourcesClasspath) {
+    RebelClasspath resourcesClasspath = getProject().rebel.getResourcesClasspath();
+    if (resourcesClasspath != null) {
       r.setIncludes(resourcesClasspath.getIncludes());
       r.setExcludes(resourcesClasspath.getExcludes());
     }
@@ -381,25 +385,25 @@ public class RebelGenerateTask extends DefaultTask {
       return getRebelExtension().getClassesDirectory();
     }
     else {
-      return project.getSourceSets().main.output.classesDir;
+      return getProject().sourceSets.main.output.classesDir;
     }
   }
 
   private File getResourcesDirectory() {
-    if (getRebelExtension().getResourcesDirectory()) {
+    if (getRebelExtension().getResourcesDirectory() != null) {
       return getRebelExtension().getResourcesDirectory();
     }
     else {
-      return project.getSourceSets().main.output.resourcesDir;
+      return getProject().sourceSets.main.output.resourcesDir;
     }
   }
 
   private String getRelativePath() {
-    if (getRebelExtension().relativePath) {
+    if (getRebelExtension().getRelativePath() != null) {
       return getRebelExtension().getRelativePath().getAbsolutePath();
     }
     else {
-      return '.';
+      return ".";
     }
   }
 
@@ -426,17 +430,17 @@ public class RebelGenerateTask extends DefaultTask {
       relative = absolutePath;
     }
 
-    relative = StringUtils.replace(relative, '\\', '/');
+    relative = StringUtils.replace(relative, "\\", "/");
 
     return relative;
   }
 
   private String getRootPath() {
-    if (getRebelExtension().getRootPath()) {
+    if (getRebelExtension().getRootPath() != null) {
       return getRebelExtension().getRootPath();
     }
     else {
-      return project.projectDir;
+      return getProject().getProjectDir().getAbsolutePath();
     }
   }
 
@@ -448,7 +452,7 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private RebelPluginExtension getRebelExtension() {
-    return (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
   }
   
 }
