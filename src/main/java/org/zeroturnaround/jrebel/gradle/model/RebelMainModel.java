@@ -76,7 +76,7 @@ public class RebelMainModel {
     return webResources;
   }
   
-  public void addWebresource(RebelWebResource webResource) {
+  public void addWebResource(RebelWebResource webResource) {
     webResources.add(webResource);
   }
 

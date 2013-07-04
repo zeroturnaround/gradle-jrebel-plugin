@@ -123,7 +123,7 @@ public class RebelGenerateTask extends DefaultTask {
       r.setExcludes(defaultWeb.getExcludes());
     }
 
-    builder.addWebresource(r);
+    builder.addWebResource(r);
   }
 
   /**
@@ -192,7 +192,7 @@ public class RebelGenerateTask extends DefaultTask {
             continue;
           }
           r.setDirectory(fixFilePath(r.getDirectory()));
-          builder.addWebresource(r);
+          builder.addWebResource(r);
         }
       }
     }
