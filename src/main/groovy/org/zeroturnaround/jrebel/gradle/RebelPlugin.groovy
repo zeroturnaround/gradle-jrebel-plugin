@@ -17,6 +17,7 @@ package org.zeroturnaround.jrebel.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.Action;
@@ -24,7 +25,7 @@ import org.gradle.api.Action;
 import java.util.concurrent.Callable;
 
 /**
- * The main entry-point for the JRebel Gralde plugin.
+ * The main entry-point for the JRebel Gradle plugin.
  * 
  * @author Igor Bljahhin
  */
@@ -39,17 +40,20 @@ public class RebelPlugin implements Plugin<Project> {
 
   public void apply(Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
-    project.tasks.add(GENERATE_REBEL_TASK_NAME) << {
-      throw new IllegalStateException(
-          "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
-          "(via other plugins that apply it implicitly, like Groovy or War); please update your build");
-    }
+    project.getTasks().add(GENERATE_REBEL_TASK_NAME).doLast(new Action<Task>() {
+      public void execute(Task task) {
+        throw new IllegalStateException(
+            "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
+            "(via other plugins that apply it implicitly, like Groovy or War); please update your build");        
+      }
+    });
+    
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
     project.getPlugins().withType(JavaPlugin) { configure(project) };
   }
 
-  private configure(Project project) {
+  private void configure(Project project) {
     project.getLogger().info("Configuring Rebel plugin...");
 
     project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
@@ -72,7 +76,7 @@ public class RebelPlugin implements Plugin<Project> {
 
     // if WarPlugin already applied, or if it is applied later than this plugin...
     project.getPlugins().withType(WarPlugin).all(new Action<Plugin>() {
-      void execute(Plugin p) {
+      public void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
   
         generateRebelTask.getConventionMapping().map("warSourceDirectory", new Callable<Object>() {
