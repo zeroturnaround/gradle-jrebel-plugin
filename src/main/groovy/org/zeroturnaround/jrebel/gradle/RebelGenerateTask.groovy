@@ -137,7 +137,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
   
     // find build.gradle location
-    File buildXmlFile = project.buildFile;
+    File buildXmlFile = project.getBuildFile();
   
     if (!getAlwaysGenerate() && rebelXmlFile && rebelXmlFile.exists() && buildXmlFile && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
@@ -167,7 +167,7 @@ public class RebelGenerateTask extends DefaultTask {
         }
        
         // Write out the rebel.xml file
-        rebelXmlFile.parentFile.mkdirs();
+        rebelXmlFile.getParentFile().mkdirs();
         rebelXmlFile.write(xmlFileContents);
       }
       catch (IOException e) {
@@ -269,7 +269,7 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private RebelMainModel buildWar() {
     // TODO convert this variable to the field
-    RebelWar war = project.rebel.getWar();
+    RebelWar war = getRebelExtension().getWar();
 
     RebelMainModel builder = new RebelMainModel();
     buildWeb(builder);
@@ -327,7 +327,7 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private String fixFilePath(File file) {
-    File baseDir = project.projectDir;
+    File baseDir = project.getProjectDir();
 
     if (file.isAbsolute() && !isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
       return StringUtils.replace(getCanonicalPath(file), '\\', '/');
@@ -369,7 +369,7 @@ public class RebelGenerateTask extends DefaultTask {
 
   private String getCanonicalPath(File file) throws BuildException {
     try {
-      return file.canonicalPath;
+      return file.getCanonicalPath();
     }
     catch (IOException e) {
       throw new BuildException("Failed to get canonical path of " + file.absolutePath, e);
@@ -377,26 +377,26 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private File getClassesDirectory() {
-    if (project.rebel.classesDirectory) {
-      return project.rebel.classesDirectory;
+    if (getRebelExtension().getClassesDirectory() != null) {
+      return getRebelExtension().getClassesDirectory();
     }
     else {
-      return project.sourceSets.main.output.classesDir;
+      return project.getSourceSets().main.output.classesDir;
     }
   }
 
   private File getResourcesDirectory() {
-    if (project.rebel.resourcesDirectory) {
-      return project.rebel.resourcesDirectory;
+    if (getRebelExtension().getResourcesDirectory()) {
+      return getRebelExtension().getResourcesDirectory();
     }
     else {
-      return project.sourceSets.main.output.resourcesDir;
+      return project.getSourceSets().main.output.resourcesDir;
     }
   }
 
   private String getRelativePath() {
-    if (project.rebel.relativePath) {
-      return project.rebel.relativePath.absolutePath;
+    if (getRebelExtension().relativePath) {
+      return getRebelExtension().getRelativePath().getAbsolutePath();
     }
     else {
       return '.';
@@ -432,8 +432,8 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private String getRootPath() {
-    if (project.rebel.rootPath) {
-      return project.rebel.rootPath;
+    if (getRebelExtension().getRootPath()) {
+      return getRebelExtension().getRootPath();
     }
     else {
       return project.projectDir;
@@ -447,4 +447,8 @@ public class RebelGenerateTask extends DefaultTask {
     return absolutePath.startsWith(basedirpath);
   }
 
+  private RebelPluginExtension getRebelExtension() {
+    return (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+  }
+  
 }
