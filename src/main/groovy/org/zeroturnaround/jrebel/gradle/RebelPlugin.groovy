@@ -53,11 +53,13 @@ public class RebelPlugin implements Plugin<Project> {
 
     // configure Rebel task
     RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask)
+    
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName("classes"));
 
     generateRebelTask.conventionMapping.rebelXmlDirectory = {
-      project.getExtenions().getByName(REBEL_EXTENSION_NAME).rebelXmlDirectory ? project.file(project.getExtenions().getByName(REBEL_EXTENSION_NAME).rebelXmlDirectory) : project.sourceSets.main.output.classesDir
+      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+      rebelExtension.getRebelXmlDirectory() ? rebelExtension.getRebelXmlDirectory() : project.sourceSets.main.output.classesDir
     }
 
     // set default value
@@ -68,20 +70,24 @@ public class RebelPlugin implements Plugin<Project> {
       generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
 
       generateRebelTask.conventionMapping.warSourceDirectory = {
-        project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory ? project.file(project.getExtenions().getByName(REBEL_EXTENSION_NAME).warSourceDirectory) : project.webAppDir;
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+        rebelExtension.getWarSourceDirectory() ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
       }
     }
 
     generateRebelTask.conventionMapping.addResourcesDirToRebelXml = {
-      project.getExtenions().getByName(REBEL_EXTENSION_NAME).addResourcesDirToRebelXml ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).addResourcesDirToRebelXml : "true";
+      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+      rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : "true";
     }
 
     generateRebelTask.conventionMapping.showGenerated = {
-      project.getExtenions().getByName(REBEL_EXTENSION_NAME).showGenerated ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).showGenerated : "false";
+      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+      rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : "false";
     }
 
     generateRebelTask.conventionMapping.alwaysGenerate = {
-      project.getExtenions().getByName(REBEL_EXTENSION_NAME).alwaysGenerate ? project.getExtenions().getByName(REBEL_EXTENSION_NAME).alwaysGenerate : "false";
+      RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtenions().getByName(REBEL_EXTENSION_NAME);
+      rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : "false";
     }
   }
 }
