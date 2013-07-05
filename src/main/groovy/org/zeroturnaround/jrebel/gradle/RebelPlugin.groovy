@@ -56,7 +56,7 @@ public class RebelPlugin implements Plugin<Project> {
   private void configure(Project project) {
     project.getLogger().info("Configuring Rebel plugin...");
 
-    project.getExtensions().add(REBEL_EXTENSION_NAME, new RebelPluginExtension());
+    project.getExtensions().create(REBEL_EXTENSION_NAME, RebelPluginExtension.class);
 
     // configure Rebel task
     RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
