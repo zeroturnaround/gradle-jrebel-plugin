@@ -44,6 +44,7 @@ public class RebelPlugin implements Plugin<Project> {
 
   public void apply(final Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
+    // TODO also get rid of this deprecated "add" method. Also, Luke says using this task replacement is bad idea anyway.
     project.getTasks().add(GENERATE_REBEL_TASK_NAME).doLast(new Action<Task>() {
       public void execute(Task task) {
         throw new IllegalStateException(
@@ -61,6 +62,11 @@ public class RebelPlugin implements Plugin<Project> {
     });
   }
 
+  /**
+   * The conventionMappings callbacks will be executed lazily by Gradle's internal magic. If RebelGenerateTask
+   * is later needing one of those properties, those callbacks configured here will be later executed to find
+   * the actual value of those properties.
+   */
   private void configure(final Project project) {
     project.getLogger().info("Configuring Rebel plugin...");
 
@@ -73,7 +79,7 @@ public class RebelPlugin implements Plugin<Project> {
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME));
 
-    conventionAwareRebelTask.getConventionMapping().map("rebelXmlDirectory", new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getRebelXmlDirectory() != null) {
@@ -94,7 +100,7 @@ public class RebelPlugin implements Plugin<Project> {
       public void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
   
-        conventionAwareRebelTask.getConventionMapping().map("warSourceDirectory", new Callable<Object>() {
+        conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception {
             RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
             if (rebelExtension.getWarSourceDirectory() != null) {
@@ -109,7 +115,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
-    conventionAwareRebelTask.getConventionMapping().map("addResourcesDirToRebelXml", new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ADD_RESOURCES_DIR_TO_REBEL_XML, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getAddResourcesDirToRebelXml() != null) {
@@ -121,7 +127,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
-    conventionAwareRebelTask.getConventionMapping().map("showGenerated",  new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_SHOW_GENERATED,  new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getShowGenerated()) {
@@ -133,7 +139,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
-    conventionAwareRebelTask.getConventionMapping().map("alwaysGenerate", new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ALWAYS_GENERATE, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getAlwaysGenerate() != null) {

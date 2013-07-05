@@ -37,8 +37,10 @@ public class RebelPluginExtension {
 
   private RebelClasspath resourcesClasspath;
 
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWar war;
-
+  
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWeb web;
 
   private String rootPath;
@@ -109,18 +111,22 @@ public class RebelPluginExtension {
     this.resourcesClasspath = resourcesClasspath;
   }
 
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelWar getWar() {
     return war;
   }
 
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setWar(RebelWar war) {
     this.war = war;
   }
 
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelWeb getWeb() {
     return web;
   }
 
+  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setWeb(RebelWeb web) {
     this.web = web;
   }

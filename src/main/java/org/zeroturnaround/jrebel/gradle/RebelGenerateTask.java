@@ -44,20 +44,31 @@ public class RebelGenerateTask extends DefaultTask {
   private Logger log = getProject().getLogger(); 
     
   /**
-   * NB! Do **NOT** rename any of these propeties!! They are also used by the Gradle's Conventions magic, you'll
-   * break something for sure. See the way they are mapped in RebelPlugin.
+   * NB! These property names are also used by the Gradle's Conventions magic, do **NOT** rename them!!
+   * If you still have to, also update the corresponding string constant or things will break for sure!
+   * See their usage in RebelPlugin.
    */
   
+  public static final String NAME_ADD_RESOURCES_DIR_TO_REBEL_XML = "addResourcesDirToRebelXml";
+  
   private Boolean addResourcesDirToRebelXml;
+
+  public static final String NAME_ALWAYS_GENERATE = "alwaysGenerate";
   
   private Boolean alwaysGenerate;
   
   private String packaging;
+
+  public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory";
   
   private File rebelXmlDirectory;
   
+  public static final String NAME_SHOW_GENERATED = "showGenerated";
+
   private Boolean showGenerated;
   
+  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
+
   private File warSourceDirectory;
   
   private RebelWeb web;
