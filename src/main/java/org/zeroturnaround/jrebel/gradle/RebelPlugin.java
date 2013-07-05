@@ -124,7 +124,12 @@ public class RebelPlugin implements Plugin<Project> {
     conventionAwareRebelTask.getConventionMapping().map("showGenerated",  new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-        return rebelExtension.getShowGenerated() ? rebelExtension.getShowGenerated() : false;
+        if (rebelExtension.getShowGenerated()) {
+          return rebelExtension.getShowGenerated();
+        }
+        else {
+          return false;
+        }
       }
     });
 

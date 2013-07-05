@@ -15,20 +15,13 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Map;
-import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
@@ -40,6 +33,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
+import org.zeroturnaround.jrebel.gradle.util.FileUtil;
 
 public class RebelGenerateTask extends DefaultTask {
     
@@ -49,6 +43,11 @@ public class RebelGenerateTask extends DefaultTask {
   
   private Logger log = getProject().getLogger(); 
     
+  /**
+   * NB! Do **NOT** rename any of these propeties!! They are also used by the Gradle's Conventions magic, you'll
+   * break something for sure. See the way they are mapped in RebelPlugin.
+   */
+  
   private Boolean addResourcesDirToRebelXml;
   
   private Boolean alwaysGenerate;
@@ -181,7 +180,7 @@ public class RebelGenerateTask extends DefaultTask {
        
         // Write out the rebel.xml file
         rebelXmlFile.getParentFile().mkdirs();
-        writeToFile(rebelXmlFile, xmlFileContents);
+        FileUtil.writeToFile(rebelXmlFile, xmlFileContents);
       }
       catch (IOException e) {
         throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
@@ -468,22 +467,6 @@ public class RebelGenerateTask extends DefaultTask {
 
   private RebelPluginExtension getRebelExtension() {
     return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-  }
-  
-  /**
-   * file writer helper
-   */
-  private void writeToFile(File file, String contents) throws IOException {
-    Writer w = null;
-    try {
-      FileOutputStream is = new FileOutputStream(file);
-      OutputStreamWriter osw = new OutputStreamWriter(is);    
-      w = new BufferedWriter(osw);
-      w.write(contents);
-    }
-    finally {
-      w.close();
-    }
   }
   
 }
