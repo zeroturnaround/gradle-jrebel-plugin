@@ -21,10 +21,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Map;
+import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.api.logging.Logger;
@@ -390,8 +395,13 @@ public class RebelGenerateTask extends DefaultTask {
       return getRebelExtension().getClassesDirectory();
     }
     else {
-      return getProject().sourceSets.main.output.classesDir;
+      return getSourceSets().getByName("main").getOutput().getClassesDir();
     }
+  }
+  
+  private SourceSetContainer getSourceSets() {
+    JavaPluginConvention javaConvention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
+    return javaConvention.getSourceSets();
   }
 
   private File getResourcesDirectory() {
@@ -399,7 +409,7 @@ public class RebelGenerateTask extends DefaultTask {
       return getRebelExtension().getResourcesDirectory();
     }
     else {
-      return getProject().sourceSets.main.output.resourcesDir;
+      return getSourceSets().getByName("main").getOutput().getResourcesDir();
     }
   }
 

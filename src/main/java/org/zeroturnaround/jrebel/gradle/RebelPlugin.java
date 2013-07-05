@@ -19,7 +19,9 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 
@@ -29,7 +31,7 @@ import java.util.concurrent.Callable;
 /**
  * The main entry-point for the JRebel Gradle plugin.
  * 
- * @author Igor Bljahhin
+ * @author Sander Sonajalg, Igor Bljahhin
  */
 public class RebelPlugin implements Plugin<Project> {
 
@@ -40,7 +42,7 @@ public class RebelPlugin implements Plugin<Project> {
   
   public static final String REBEL_EXTENSION_NAME = "rebel";
 
-  public void apply(Project project) {
+  public void apply(final Project project) {
     // by default, register a dummy task that reports missing JavaPlugin
     project.getTasks().add(GENERATE_REBEL_TASK_NAME).doLast(new Action<Task>() {
       public void execute(Task task) {
@@ -52,7 +54,11 @@ public class RebelPlugin implements Plugin<Project> {
     
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
-    project.getPlugins().withType(JavaPlugin.class).all { configure(project) };
+    project.getPlugins().withType(JavaPlugin.class).all(new Action<Plugin>() {
+      public void execute(Plugin p) {
+        configure(project);
+      }
+    });
   }
 
   private void configure(final Project project) {
@@ -70,7 +76,13 @@ public class RebelPlugin implements Plugin<Project> {
     conventionAwareRebelTask.getConventionMapping().map("rebelXmlDirectory", new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-        return rebelExtension.getRebelXmlDirectory() != null ? new File(rebelExtension.getRebelXmlDirectory()) : new File(project.sourceSets.main.output.classesDir);
+        if (rebelExtension.getRebelXmlDirectory() != null) {
+          return new File(rebelExtension.getRebelXmlDirectory());
+        }
+        else {
+          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+        }
       }
     });
 
@@ -85,7 +97,13 @@ public class RebelPlugin implements Plugin<Project> {
         conventionAwareRebelTask.getConventionMapping().map("warSourceDirectory", new Callable<Object>() {
           public Object call() throws Exception {
             RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-            return rebelExtension.getWarSourceDirectory() != null ? project.file(rebelExtension.getWarSourceDirectory()) : project.webAppDir;
+            if (rebelExtension.getWarSourceDirectory() != null) {
+              return project.file(rebelExtension.getWarSourceDirectory());
+            }
+            else {
+              WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
+              return warConvention.getWebAppDir();
+            }
           }
         });
       }
@@ -94,7 +112,12 @@ public class RebelPlugin implements Plugin<Project> {
     conventionAwareRebelTask.getConventionMapping().map("addResourcesDirToRebelXml", new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-        return rebelExtension.getAddResourcesDirToRebelXml() ? rebelExtension.getAddResourcesDirToRebelXml() : true;
+        if (rebelExtension.getAddResourcesDirToRebelXml() != null) {
+          return rebelExtension.getAddResourcesDirToRebelXml();
+        }
+        else {
+          return true;
+        }
       }
     });
 
@@ -108,7 +131,12 @@ public class RebelPlugin implements Plugin<Project> {
     conventionAwareRebelTask.getConventionMapping().map("alwaysGenerate", new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-        return rebelExtension.getAlwaysGenerate() ? rebelExtension.getAlwaysGenerate() : false;
+        if (rebelExtension.getAlwaysGenerate() != null) {
+          return rebelExtension.getAlwaysGenerate();
+        }
+        else {
+          return false;
+        }
       }
     });
   }
