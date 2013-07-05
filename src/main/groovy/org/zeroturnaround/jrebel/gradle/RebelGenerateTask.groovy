@@ -19,9 +19,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
+import org.gradle.api.logging.Logger;
+
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
@@ -30,10 +33,12 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 
 public class RebelGenerateTask extends DefaultTask {
-
+    
   public final static String PACKAGING_TYPE_JAR = "jar";
     
   public final static String PACKAGING_TYPE_WAR = "war";
+  
+  private Logger log = getProject().getLogger(); 
     
   private Boolean addResourcesDirToRebelXml;
   
@@ -121,13 +126,12 @@ public class RebelGenerateTask extends DefaultTask {
    */
   @TaskAction
   public void generate() {
-    // TODO create a local variable "log"
-    getProject().getLogger().info("rebel.alwaysGenerate = " + getAlwaysGenerate());
-    getProject().getLogger().info("rebel.showGenerated = " + getShowGenerated());
-    getProject().getLogger().info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
-    getProject().getLogger().info("rebel.warSourceDirectory = " + getWarSourceDirectory());
-    getProject().getLogger().info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
-    getProject().getLogger().info("rebel.packaging = " + getPackaging());
+    log.info("rebel.alwaysGenerate = " + getAlwaysGenerate());
+    log.info("rebel.showGenerated = " + getShowGenerated());
+    log.info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
+    log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
+    log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
+    log.info("rebel.packaging = " + getPackaging());
   
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -154,8 +158,8 @@ public class RebelGenerateTask extends DefaultTask {
     }
   
     if (builder != null) {
-      getProject().getLogger().info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
-      getProject().getLogger().info("Generating \"${rebelXmlFile}\"...");
+      log.info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+      log.info("Generating \"${rebelXmlFile}\"...");
   
       // Do generate the rebel.xml
       try {
