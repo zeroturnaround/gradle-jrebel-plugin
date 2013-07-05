@@ -33,14 +33,16 @@ public class RebelPluginExtension {
 
   private String webappDirectory;
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath classpath;
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath resourcesClasspath;
 
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWar war;
   
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWeb web;
 
   private String rootPath;
@@ -95,38 +97,42 @@ public class RebelPluginExtension {
     this.webappDirectory = webappDirectory;
   }
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelClasspath getClasspath() {
     return classpath;
   }
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setClasspath(RebelClasspath classpath) {
     this.classpath = classpath;
   }
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelClasspath getResourcesClasspath() {
     return resourcesClasspath;
   }
 
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setResourcesClasspath(RebelClasspath resourcesClasspath) {
     this.resourcesClasspath = resourcesClasspath;
   }
 
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelWar getWar() {
     return war;
   }
 
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setWar(RebelWar war) {
     this.war = war;
   }
 
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelWeb getWeb() {
     return web;
   }
 
-  // TODO change to a primitive type. no-one knows how to nor wants to use our custom types in their build.gradle
+  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public void setWeb(RebelWeb web) {
     this.web = web;
   }

@@ -202,7 +202,7 @@ public class RebelGenerateTask extends DefaultTask {
   private void buildClasspath(RebelMainModel builder) {
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
-    RebelClasspath classpath = getRebelExtension().getClasspath();
+    RebelClasspath classpath = getConfiguredClasspath();
 
     // check if there is a element with no dir/jar/dirset/jarset set. if there
     // is then don't put default classpath as
@@ -256,7 +256,7 @@ public class RebelGenerateTask extends DefaultTask {
       return;
     }
 
-    RebelClasspath resourcesClasspath = getRebelExtension().getResourcesClasspath();
+    RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
     if (resourcesClasspath != null) {
       // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
 //      r.setIncludes(resourcesClasspath.getIncludes());
@@ -292,8 +292,7 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct a builder for war projects
    */
   private RebelMainModel buildWar() {
-    // TODO convert this variable to the field
-    RebelWar war = getRebelExtension().getWar();
+    RebelWar war = getConfiguredWar();
 
     RebelMainModel builder = new RebelMainModel();
     buildWeb(builder);
@@ -401,8 +400,8 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private File getClassesDirectory() {
-    if (getRebelExtension().getClassesDirectory() != null) {
-      return getRebelExtension().getClassesDirectory();
+    if (getConfiguredClassesDirectory() != null) {
+      return getConfiguredClassesDirectory();
     }
     else {
       return getSourceSets().getByName("main").getOutput().getClassesDir();
@@ -415,8 +414,8 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private File getResourcesDirectory() {
-    if (getRebelExtension().getResourcesDirectory() != null) {
-      return getRebelExtension().getResourcesDirectory();
+    if (getConfiguredResourcesDirectory() != null) {
+      return getConfiguredResourcesDirectory();
     }
     else {
       return getSourceSets().getByName("main").getOutput().getResourcesDir();
@@ -424,8 +423,8 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private String getRelativePath() {
-    if (getRebelExtension().getRelativePath() != null) {
-      return getRebelExtension().getRelativePath().getAbsolutePath();
+    if (getConfiguredRelativePath() != null) {
+      return getConfiguredRelativePath().getAbsolutePath();
     }
     else {
       return ".";
@@ -461,8 +460,8 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private String getRootPath() {
-    if (getRebelExtension().getRootPath() != null) {
-      return getRebelExtension().getRootPath();
+    if (getConfiguredRootPath() != null) {
+      return getConfiguredRootPath();
     }
     else {
       return getProject().getProjectDir().getAbsolutePath();
@@ -476,6 +475,43 @@ public class RebelGenerateTask extends DefaultTask {
     return absolutePath.startsWith(basedirpath);
   }
 
+  // =========== STUFF BELOW HERE REFERS TO THE RebelExtension OBJECT DIRECTLY AND SHOULD BE GOTTEN RID OF !!!
+  // - replace with usage of ConventionMappings.
+  // - the model has to be worked on. RebelPluginExtension probably cannot operate with our custom types
+  //      as end-user doesn't know or want to know how to configure them
+  
+  private String getConfiguredRootPath() {
+    return getRebelExtension().getRootPath();
+  }
+  
+  private File getConfiguredRelativePath() {
+    return getRebelExtension().getRelativePath();
+  }
+  
+  private File getConfiguredResourcesDirectory() {
+    return getRebelExtension().getResourcesDirectory();
+  }
+
+  private File getConfiguredClassesDirectory() {
+    return getRebelExtension().getClassesDirectory();
+  }
+ 
+  private RebelWar getConfiguredWar() {
+    return getRebelExtension().getWar();
+  }
+  
+  private RebelClasspath getConfiguredResourcesClasspath() {
+    return getRebelExtension().getResourcesClasspath();
+  }
+
+  private RebelClasspath getConfiguredClasspath() {
+    return getRebelExtension().getClasspath();
+  }
+  
+  /**
+   * Get rid of it, achieve the same by using conventions
+   */
+  @Deprecated
   private RebelPluginExtension getRebelExtension() {
     return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
   }
