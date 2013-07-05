@@ -72,7 +72,7 @@ public class RebelPluginTest {
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
     
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName("classes"); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
 
@@ -92,7 +92,7 @@ public class RebelPluginTest {
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
     
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName("classes"); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
 
@@ -112,7 +112,7 @@ public class RebelPluginTest {
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
     
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName("classes"); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
 
@@ -133,7 +133,7 @@ public class RebelPluginTest {
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
     
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName("classes"); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
 }
