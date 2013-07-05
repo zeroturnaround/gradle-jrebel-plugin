@@ -15,8 +15,12 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -172,7 +176,7 @@ public class RebelGenerateTask extends DefaultTask {
        
         // Write out the rebel.xml file
         rebelXmlFile.getParentFile().mkdirs();
-        rebelXmlFile.write(xmlFileContents);
+        writeToFile(rebelXmlFile, xmlFileContents);
       }
       catch (IOException e) {
         throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
@@ -239,8 +243,9 @@ public class RebelGenerateTask extends DefaultTask {
 
     RebelClasspath resourcesClasspath = getRebelExtension().getResourcesClasspath();
     if (resourcesClasspath != null) {
-      r.setIncludes(resourcesClasspath.getIncludes());
-      r.setExcludes(resourcesClasspath.getExcludes());
+      // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
+//      r.setIncludes(resourcesClasspath.getIncludes());
+//      r.setExcludes(resourcesClasspath.getExcludes());
     }
     builder.addClasspathDir(r);
   }
@@ -453,6 +458,22 @@ public class RebelGenerateTask extends DefaultTask {
 
   private RebelPluginExtension getRebelExtension() {
     return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+  }
+  
+  /**
+   * file writer helper
+   */
+  private void writeToFile(File file, String contents) throws IOException {
+    Writer w = null;
+    try {
+      FileOutputStream is = new FileOutputStream(file);
+      OutputStreamWriter osw = new OutputStreamWriter(is);    
+      w = new BufferedWriter(osw);
+      w.write(contents);
+    }
+    finally {
+      w.close();
+    }
   }
   
 }
