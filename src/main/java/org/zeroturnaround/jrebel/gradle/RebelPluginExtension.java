@@ -18,7 +18,6 @@ package org.zeroturnaround.jrebel.gradle;
 import java.io.File;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
-import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
 public class RebelPluginExtension {
@@ -39,8 +38,7 @@ public class RebelPluginExtension {
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath resourcesClasspath;
 
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  private RebelWar war;
+  private String warPath;
   
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWeb web;
@@ -117,14 +115,12 @@ public class RebelPluginExtension {
     this.resourcesClasspath = resourcesClasspath;
   }
 
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public RebelWar getWar() {
-    return war;
+  public String getWarPath() {
+    return warPath;
   }
 
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public void setWar(RebelWar war) {
-    this.war = war;
+  public void setWarPath(String _warPath) {
+    this.warPath = _warPath;
   }
 
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle

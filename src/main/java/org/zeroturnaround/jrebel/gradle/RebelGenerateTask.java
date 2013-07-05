@@ -497,7 +497,13 @@ public class RebelGenerateTask extends DefaultTask {
   }
  
   private RebelWar getConfiguredWar() {
-    return getRebelExtension().getWar();
+    String warPath = getRebelExtension().getWarPath();
+    if (warPath != null) {
+      RebelWar war = new RebelWar();
+      war.setPath(warPath);
+      return war;
+    }
+    return null;
   }
   
   private RebelClasspath getConfiguredResourcesClasspath() {
