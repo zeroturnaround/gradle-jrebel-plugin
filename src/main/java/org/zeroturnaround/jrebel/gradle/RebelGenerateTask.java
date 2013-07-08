@@ -176,9 +176,8 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
-    // XXX TODO
-    log.info("rebel.warPath= " + getRebelExtension().getWarPath());
-  
+    log.info("rebel.warPath= " + getConfiguredWarPath());
+    
     // find rebel.xml location
     File rebelXmlFile = null;
   
@@ -322,7 +321,7 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct a builder for war projects
    */
   private RebelMainModel buildModelForWar() {
-    RebelWar war = getConfiguredWar();
+    RebelWar war = getWar();
 
     RebelMainModel builder = new RebelMainModel();
     buildWeb(builder);
@@ -504,6 +503,19 @@ public class RebelGenerateTask extends DefaultTask {
 
     return absolutePath.startsWith(basedirpath);
   }
+  
+  /**
+   * Construct the RebelWar object, if any
+   */
+  private RebelWar getWar() {
+    String warPath = getConfiguredWarPath();
+    if (warPath != null) {
+      RebelWar war = new RebelWar();
+      war.setPath(warPath);
+      return war;
+    }
+    return null;
+  }
 
   // =========== STUFF BELOW HERE REFERS TO THE RebelExtension OBJECT DIRECTLY AND SHOULD BE GOTTEN RID OF !!!
   // - replace with usage of ConventionMappings.
@@ -525,15 +537,9 @@ public class RebelGenerateTask extends DefaultTask {
   private File getConfiguredClassesDirectory() {
     return getRebelExtension().getClassesDirectory();
   }
- 
-  private RebelWar getConfiguredWar() {
-    String warPath = getRebelExtension().getWarPath();
-    if (warPath != null) {
-      RebelWar war = new RebelWar();
-      war.setPath(warPath);
-      return war;
-    }
-    return null;
+  
+  private String getConfiguredWarPath() {
+    return getRebelExtension().getWarPath();
   }
   
   private RebelClasspath getConfiguredResourcesClasspath() {
