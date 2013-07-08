@@ -21,6 +21,11 @@ package org.zeroturnaround.jrebel.gradle.model;
 public class RebelWar {
 
   private String path;
+  
+  /**
+   * The path value before we did the "fixPath()". Internal.
+   */
+  private String originalPath;
 
   public String getPath() {
     return path;
@@ -28,6 +33,20 @@ public class RebelWar {
 
   public void setPath(String path) {
     this.path = path;
+  }
+
+  /**
+   * (internal, for unit tests)
+   */
+  public String getOriginalPath() {
+    return originalPath;
+  }
+
+  /**
+   * (internal, for unit tests)
+   */
+  public void setOriginalPath(String originalPath) {
+    this.originalPath = originalPath;
   }
 
 }

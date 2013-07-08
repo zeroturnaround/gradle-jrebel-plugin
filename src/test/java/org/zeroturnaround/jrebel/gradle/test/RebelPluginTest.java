@@ -20,7 +20,6 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.jetty.JettyPlugin;
 import org.gradle.api.tasks.TaskExecutionException;
@@ -33,10 +32,11 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * General tests for plugins integration with Gradle lifecycles, etc.
+ * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
  * 
  * @author Igor Bljahhin, Sander Sonajalg
  */
@@ -120,7 +120,6 @@ public class RebelPluginTest {
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
-
   
   /**
    * Test that the plugin uses war packaging mode after JettyPlugin gets applied
@@ -142,9 +141,54 @@ public class RebelPluginTest {
     assertTrue(task.getDependsOn().contains(classesTask));
   }
   
-  // TODO test variable propagation from RebelPluginExtension to RebelGenerateTask and the model.
-  
-  //    1) Test war
+  /**
+   * Test that the configuration options from RebelPluginExtension propagate nicely
+   * through to RebelGenerateTaks.
+   */
+  @Test
+  public void testConfigurationOptionPropagation() throws Exception {
+    Project project = ProjectBuilder.builder().build();
+    project.getPlugins().apply(WarPlugin.class);
+    project.getPlugins().apply(RebelPlugin.class);
+    
+    // Configure the rebel plugin
+    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    
+    String myWarPath = "/my/war/path";
+    rebelExtension.setWarPath(myWarPath);
+    
+    String myWarSourceDirectory = "/my/war/source/dir";
+    rebelExtension.setWarSourceDirectory(myWarSourceDirectory);
+    
+    Boolean myAddResourcesDirToRebelXml = getRandomBoolean();
+    rebelExtension.setAddResourcesDirToRebelXml(myAddResourcesDirToRebelXml);
+
+    Boolean myShowGenerated = getRandomBoolean();
+    rebelExtension.setShowGenerated(myShowGenerated);
+    
+    Boolean myAlwaysGenerate = getRandomBoolean();
+    rebelExtension.setAlwaysGenerate(myAlwaysGenerate);
+    
+    // Execute the rebel task, validate the generated model
+    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    
+    assertNotNull(task);
+    
+    // 'warSourceDirectory'
+    assertEquals(myWarSourceDirectory, task.getWarSourceDirectory().getAbsolutePath());
+    
+    // 'addResourcesDirToRebelXml'
+    assertEquals(myAddResourcesDirToRebelXml, task.getAddResourcesDirToRebelXml());
+
+    // 'showGenerate'
+    assertEquals(myShowGenerated, task.getShowGenerated());
+    
+    // 'alwasGenerate'
+    assertEquals(myAlwaysGenerate, task.getAlwaysGenerate());
+    
+    // 'warPath'
+    assertEquals(myWarPath, task.getWarPath());
+  }
   
   /**
    * Test handling of the "warPath" configuration option. Should create a RebelWar element in the model.
@@ -159,7 +203,6 @@ public class RebelPluginTest {
     RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
     String myWarPath = "/my/war/path";
     rebelExtension.setWarPath(myWarPath);
-    rebelExtension.setRebelXmlDirectory("/home/juku/whatever");
     
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -169,19 +212,17 @@ public class RebelPluginTest {
     
     // execute the task
     task.generate();
+    project.getLogger().info("RebelGenerateTask : " + task.toStringConfigurationOptions());
     
     // validate the eventual model
     RebelMainModel model = task.getRebelModel();
     RebelWar war = model.getWar();
     
-    // TODO remove : temporary
-    //System.out.println("Generated rebel.xml : \n" + model.toXmlString());
-    
-    assertEquals(myWarPath, war.getPath());
-    
+    assertNotNull(war);
+    assertEquals(myWarPath, war.getOriginalPath());
   }
   
-  //   2), 3), ...  )    [all the other properties]
+  // TODO tests for other properties -- what should the model look like after setting those config options 
   
   // TODO a test for java plugin project with customized source location -
   
@@ -193,4 +234,9 @@ public class RebelPluginTest {
   
   // TODO finally, write a combined end-to-end smoke test for simple scenario --
   //      a project goes in, rebel.xml goes out, XMLunit checks that its contents is adequate
+  
+  
+  private static boolean getRandomBoolean() {
+    return Math.random() < 0.5;
+  }
 }

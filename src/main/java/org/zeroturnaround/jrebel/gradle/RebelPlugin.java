@@ -24,6 +24,7 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
+import org.gradle.api.logging.Logger;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -41,8 +42,12 @@ public class RebelPlugin implements Plugin<Project> {
   public static final String GENERATE_REBEL_TASK_NAME = "generateRebel";
   
   public static final String REBEL_EXTENSION_NAME = "rebel";
+  
+  private Logger log; 
 
   public void apply(final Project project) {
+    log = project.getLogger();
+    
     // by default, register a dummy task that reports missing JavaPlugin
     // TODO also get rid of this deprecated "add" method. Also, Luke says using this task replacement is bad idea anyway.
     project.getTasks().add(GENERATE_REBEL_TASK_NAME).doLast(new Action<Task>() {
@@ -68,7 +73,7 @@ public class RebelPlugin implements Plugin<Project> {
    * the actual value of those properties.
    */
   private void configure(final Project project) {
-    project.getLogger().info("Configuring Rebel plugin...");
+    log.info("Configuring Rebel plugin...");
 
     project.getExtensions().create(REBEL_EXTENSION_NAME, RebelPluginExtension.class);
 
@@ -92,14 +97,15 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
-    // set default value
+    // handle the 'packaging' configuration option
     generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
 
     // if WarPlugin already applied, or if it is applied later than this plugin...
     project.getPlugins().withType(WarPlugin.class).all(new Action<Plugin>() {
       public void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
-  
+
+        // handle the 'warSourceDirectory' configuration option
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception {
             RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
@@ -115,6 +121,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
+    // handle the 'addResourcesDirToRebelXml' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ADD_RESOURCES_DIR_TO_REBEL_XML, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
@@ -127,6 +134,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
+    // handle the 'showGenerated' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_SHOW_GENERATED,  new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
@@ -139,6 +147,7 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
+    // handle the 'alwaysGenerate' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ALWAYS_GENERATE, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
@@ -150,5 +159,18 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
+    
+    // handle the 'warPath' configuration option 
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_PATH, new Callable<Object>() {
+      public Object call() throws Exception {
+        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+
+        if (rebelExtension.getWarPath() != null) {
+          return rebelExtension.getWarPath();
+        }
+        return null;
+      }
+    });
+    
   }
 }

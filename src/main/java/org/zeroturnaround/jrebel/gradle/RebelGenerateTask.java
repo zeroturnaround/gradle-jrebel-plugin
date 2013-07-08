@@ -61,24 +61,30 @@ public class RebelGenerateTask extends DefaultTask {
   private Boolean alwaysGenerate;
   
   private String packaging;
+  
+  private File rebelXmlDirectory;
 
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory";
   
-  private File rebelXmlDirectory;
-  
-  public static final String NAME_SHOW_GENERATED = "showGenerated";
-
   private Boolean showGenerated;
   
-  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
-
+  public static final String NAME_SHOW_GENERATED = "showGenerated";
+  
   private File warSourceDirectory;
+
+  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
   
   private RebelWeb web;
   
   private File webappDirectory;
   
-  
+  /**
+   * the 'warPath' property from the plugin's configuration
+   */
+  private String warPath;
+
+  public static final String NAME_WAR_PATH = "warPath";
+   
   // === interal properties of the task
   
   private RebelMainModel rebelModel;
@@ -149,6 +155,14 @@ public class RebelGenerateTask extends DefaultTask {
     this.webappDirectory = webappDirectory;
   }
   
+  public String getWarPath() {
+    return warPath;
+  }
+ 
+  public void setWarPath(String warPath) {
+    this.warPath = warPath;
+  }
+  
   /**
    * Getter for the functional tests to examine the model
    */
@@ -176,7 +190,8 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
-    log.info("rebel.warPath= " + getConfiguredWarPath());
+    log.info("rebel.warPath= " + getWarPath());
+    log.info("rebel.warPath_original= " + getRebelExtension().getWarPath());
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -329,6 +344,7 @@ public class RebelGenerateTask extends DefaultTask {
 
     if (war != null) {
       war.setPath(fixFilePath(war.getPath()));
+      war.setOriginalPath(war.getPath());
       builder.setWar(war);
     }
 
@@ -508,13 +524,21 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct the RebelWar object, if any
    */
   private RebelWar getWar() {
-    String warPath = getConfiguredWarPath();
-    if (warPath != null) {
+    String path = getWarPath();
+    if (path != null) {
       RebelWar war = new RebelWar();
-      war.setPath(warPath);
+      war.setPath(path);
       return war;
     }
     return null;
+  }
+  
+  /**
+   * Stringify all configuration options
+   */
+  // TODO temporary implementation
+  public String toStringConfigurationOptions() {
+    return "RebelGenerateTask[ configuredWarPath = " + warPath + " ]";
   }
 
   // =========== STUFF BELOW HERE REFERS TO THE RebelExtension OBJECT DIRECTLY AND SHOULD BE GOTTEN RID OF !!!
@@ -538,10 +562,6 @@ public class RebelGenerateTask extends DefaultTask {
     return getRebelExtension().getClassesDirectory();
   }
   
-  private String getConfiguredWarPath() {
-    return getRebelExtension().getWarPath();
-  }
-  
   private RebelClasspath getConfiguredResourcesClasspath() {
     return getRebelExtension().getResourcesClasspath();
   }
@@ -557,5 +577,6 @@ public class RebelGenerateTask extends DefaultTask {
   private RebelPluginExtension getRebelExtension() {
     return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
   }
+
   
 }

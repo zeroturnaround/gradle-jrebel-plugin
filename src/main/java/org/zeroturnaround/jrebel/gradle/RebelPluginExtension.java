@@ -119,8 +119,8 @@ public class RebelPluginExtension {
     return warPath;
   }
 
-  public void setWarPath(String _warPath) {
-    this.warPath = _warPath;
+  public void setWarPath(String warPath) {
+    this.warPath = warPath;
   }
 
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
@@ -180,4 +180,5 @@ public class RebelPluginExtension {
   public void setAlwaysGenerate(Boolean alwaysGenerate) {
     this.alwaysGenerate = alwaysGenerate;
   }
+
 }
