@@ -34,6 +34,13 @@ repositories {
   mavenCentral()
 }
 
+// =========================== TESTING ===========================
+
+// Run tests before installing the artifact
+install.dependsOn(test)
+
+// =========================== PUBLISHING ===========================
+
 // Contents of pom.xml that will be created for publishing to the maven-style artifact repository
 def pomFile = pom {
   project {
