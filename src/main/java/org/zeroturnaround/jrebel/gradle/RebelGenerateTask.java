@@ -43,7 +43,10 @@ public class RebelGenerateTask extends DefaultTask {
   
   private Logger log = getProject().getLogger(); 
     
-  /**
+  /*
+   * User-defined configuration options that are propagated here from the RebelPluginExtension via RebelPlugin#configure
+   * and Gradle's conventionMapping mechanism
+   * 
    * NB! These property names are also used by the Gradle's Conventions magic, do **NOT** rename them!!
    * If you still have to, also update the corresponding string constant or things will break for sure!
    * See their usage in RebelPlugin.
@@ -74,6 +77,13 @@ public class RebelGenerateTask extends DefaultTask {
   private RebelWeb web;
   
   private File webappDirectory;
+  
+  
+  // === interal properties of the task
+  
+  private RebelMainModel rebelModel;
+  
+  private boolean skipWritingRebelXml;
   
   public Boolean getAddResourcesDirToRebelXml() {
     return addResourcesDirToRebelXml;
@@ -140,17 +150,34 @@ public class RebelGenerateTask extends DefaultTask {
   }
   
   /**
+   * Getter for the functional tests to examine the model
+   */
+  public RebelMainModel getRebelModel() {
+    return rebelModel;
+  }
+
+  /**
+   * Only for automated tests! Tests should not try to write the actual file.
+   */
+  public void skipWritingRebelXml() {
+    this.skipWritingRebelXml = true; 
+  }
+  
+  /**
    * The actual invocation of our plugin task. Will construct the in-memory model (RebelXmlBuilder),
    * generate the XML output based on it and write the XML into a file-system file (rebel.xml). 
    */
   @TaskAction
   public void generate() {
+    // TODO replace this by a proper rebelTask.toString method!
     log.info("rebel.alwaysGenerate = " + getAlwaysGenerate());
     log.info("rebel.showGenerated = " + getShowGenerated());
     log.info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
     log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
+    // XXX TODO
+    log.info("rebel.warPath= " + getRebelExtension().getWarPath());
   
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -167,35 +194,38 @@ public class RebelGenerateTask extends DefaultTask {
     }
   
     // find the type of the project
-    RebelMainModel builder = null;
-  
     if (getPackaging().equals(PACKAGING_TYPE_JAR)) {
-      builder = buildJar();
+      rebelModel = buildModelForJar();
     }
     else if (getPackaging().equals(PACKAGING_TYPE_WAR)) {
-      builder = buildWar();
+      rebelModel = buildModelForWar();
     }
   
-    if (builder != null) {
-      log.info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
-      log.info("Generating \"${rebelXmlFile}\"...");
-  
-      // Do generate the rebel.xml
-      try {
-        String xmlFileContents = builder.toXmlString();
-  
-        // Print generated rebel.xml out to console if user wants to see it
-        if (getShowGenerated()) {
-          System.out.println(xmlFileContents);
-        }
-       
-        // Write out the rebel.xml file
-        rebelXmlFile.getParentFile().mkdirs();
-        FileUtil.writeToFile(rebelXmlFile, xmlFileContents);
+    if (rebelModel != null && !skipWritingRebelXml) {
+      generateRebelXml(rebelXmlFile);
+    }
+  }
+
+  private void generateRebelXml(File rebelXmlFile) {
+    // TODO seems that those placeholders are not replaced (at least not when running tests)
+    log.info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+    log.info("Generating \"${rebelXmlFile}\"...");
+ 
+    // Do generate the rebel.xml
+    try {
+      String xmlFileContents = getRebelModel().toXmlString();
+ 
+      // Print generated rebel.xml out to console if user wants to see it
+      if (getShowGenerated()) {
+        System.out.println(xmlFileContents);
       }
-      catch (IOException e) {
-        throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
-      }
+     
+      // Write out the rebel.xml file
+      rebelXmlFile.getParentFile().mkdirs();
+      FileUtil.writeToFile(rebelXmlFile, xmlFileContents);
+    }
+    catch (IOException e) {
+      throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
     }
   }
 
@@ -279,9 +309,9 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   /**
-  * Construct a builder for jar projects
-  */
-  private RebelMainModel buildJar() {
+   * Construct a builder for jar projects
+   */
+  private RebelMainModel buildModelForJar() {
     RebelMainModel builder = new RebelMainModel();
     buildClasspath(builder);
 
@@ -291,7 +321,7 @@ public class RebelGenerateTask extends DefaultTask {
   /**
    * Construct a builder for war projects
    */
-  private RebelMainModel buildWar() {
+  private RebelMainModel buildModelForWar() {
     RebelWar war = getConfiguredWar();
 
     RebelMainModel builder = new RebelMainModel();

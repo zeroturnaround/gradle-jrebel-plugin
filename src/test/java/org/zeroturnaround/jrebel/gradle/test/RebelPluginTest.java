@@ -20,6 +20,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.jetty.JettyPlugin;
 import org.gradle.api.tasks.TaskExecutionException;
@@ -27,7 +28,11 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
+import org.zeroturnaround.jrebel.gradle.RebelPluginExtension;
+import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
+import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -136,4 +141,56 @@ public class RebelPluginTest {
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
   }
+  
+  // TODO test variable propagation from RebelPluginExtension to RebelGenerateTask and the model.
+  
+  //    1) Test war
+  
+  /**
+   * Test handling of the "warPath" configuration option. Should create a RebelWar element in the model.
+   */
+  @Test
+  public void testWarPath() throws Exception {
+    Project project = ProjectBuilder.builder().build();
+    project.getPlugins().apply(WarPlugin.class);
+    project.getPlugins().apply(RebelPlugin.class);
+    
+    // Cconfigure the rebel plugin
+    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    String myWarPath = "/my/war/path";
+    rebelExtension.setWarPath(myWarPath);
+    rebelExtension.setRebelXmlDirectory("/home/juku/whatever");
+    
+    // Execute the rebel task, validate the generated model
+    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+
+    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
+    task.skipWritingRebelXml();
+    
+    // execute the task
+    task.generate();
+    
+    // validate the eventual model
+    RebelMainModel model = task.getRebelModel();
+    RebelWar war = model.getWar();
+    
+    // TODO remove : temporary
+    //System.out.println("Generated rebel.xml : \n" + model.toXmlString());
+    
+    assertEquals(myWarPath, war.getPath());
+    
+  }
+  
+  //   2), 3), ...  )    [all the other properties]
+  
+  // TODO a test for java plugin project with customized source location -
+  
+  // TODO a test for java plugin project with MULTIPLE source locations with customized source location
+  
+  // TODO a test for war plugin project with customized source location -
+  
+  // TODO a test for war plugin project with MULTIPLE source locations with customized source location
+  
+  // TODO finally, write a combined end-to-end smoke test for simple scenario --
+  //      a project goes in, rebel.xml goes out, XMLunit checks that its contents is adequate
 }
