@@ -191,7 +191,6 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
     log.info("rebel.warPath= " + getWarPath());
-    log.info("rebel.warPath_original= " + getRebelExtension().getWarPath());
     
     // find rebel.xml location
     File rebelXmlFile = null;
