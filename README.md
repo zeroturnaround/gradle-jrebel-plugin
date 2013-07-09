@@ -97,3 +97,12 @@ rebel {
 ```
 
 
+3. IDE configuration
+--------------------
+
+Please note that the Grade Eclipse plugin does not seem to generate project files that would configure Eclipse to auto-compile your classes into
+the same folder where Gradle is compiling them. JRebel class reloading relies on your IDE to automatically re-compile your classes, so that
+JRebel can pick them up. The compilation output directory of your IDE and the monitored classes directory have to match in order
+for the class reloading to work. Therefore, make sure that your IDE is compiling classes into the same directory where your Gradle project model
+and the rebel.xml file are expecting them (*build/classes/main* by default, as opposed to *bin* which is the default for Eclipse).
+
