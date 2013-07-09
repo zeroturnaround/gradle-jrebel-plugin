@@ -2,15 +2,16 @@ JRebel Gradle Plugin
 ====================
 
 The ``rebel.xml`` descriptor file is the main resource you need to add to your project in order to start reloading classes and resources with JRebel.
+Have a look at [this page](http://manuals.zeroturnaround.com/jrebel/standalone/config.html) for a reference on the *rebel.xml* file format.
 
-JRebel Gradle plugin can be used to automatically generate the JRebel's ``rebel.xml`` configuration file during your Gradle build.
+JRebel Gradle plugin can be used to automatically generate a suitable *rebel.xml* configuration file during your Gradle build.
 
 
 
 1. Enable JRebel Gradle plugin
 ------------------------------
 
-Add the following to ```build.gradle``` script. (This adds a dependency for Gradle itself. Don't mix it up with your project's project-level dependencies - it has to be put into the ``buildscript {..}`` block.
+Add the following to *build.gradle* script. (This adds a dependency for Gradle itself. Don't mix it up with your project's project-level dependencies - it has to be put into the ``buildscript {..}`` block.
 
 ``` groovy
 apply plugin: 'rebel'
@@ -29,7 +30,7 @@ buildscript {
 }
 ```
 
-This will provide your Gradle build with a new task called ``generateRebel``. You probably also want to make the ``generateRebel`` task part of your main
+This will provide your Gradle build with a new task called *generateRebel*. You probably also want to make the *generateRebel* task part of your main
 build flow, instead of executing it manually after every clean. A good place to plug it in is right before the task that generates the build archive
 (the .jar or the .war). So if your project uses the Java plugin: 
 
