@@ -17,6 +17,7 @@ package org.zeroturnaround.jrebel.gradle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -394,12 +395,16 @@ public class RebelGenerateTask extends DefaultTask {
     boolean addDefaultAsFirst = true;
     RebelWebResource defaultWeb = null;
   
+    // Hmm.. this first part looks like a hack to go through all the elements just to find 
+    // out if one of them is the default element. Nothing is actually added anywhere. [sander]
+    // TODO rewrite
+    
     if (web != null) {
-      RebelWebResource[] resources = web.getResources();
+      List<RebelWebResource> resources = web.getResources();
   
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelWebResource r = resources[i];
+      if (resources != null && resources.size() > 0) {
+        for (int i = 0; i < resources.size(); i++) {
+          RebelWebResource r = resources.get(i);
   
           if (r.getDirectory() == null && r.getTarget() == null) {
             defaultWeb = r;
@@ -410,19 +415,23 @@ public class RebelGenerateTask extends DefaultTask {
       }
     }
   
+    // Add the default, if we are gonna add it at all 
     if (addDefaultAsFirst) {
       buildDefaultWeb(model, defaultWeb);
     }
   
     if (web != null) {
-      RebelWebResource[] resources = web.getResources();
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelWebResource r = resources[i];
+      List<RebelWebResource> resources = web.getResources();
+      if (resources != null && resources.size() > 0) {
+        for (int i = 0; i < resources.size(); i++) {
+          RebelWebResource r = resources.get(i);
+          
+          // Skip the default (hmm..)
           if (r.getDirectory() == null && r.getTarget() == null) {
             buildDefaultWeb(model, r);
             continue;
           }
+          // Otherwise, add the resource.
           r.setDirectory(fixFilePath(r.getDirectory()));
           model.addWebResource(r);
         }
