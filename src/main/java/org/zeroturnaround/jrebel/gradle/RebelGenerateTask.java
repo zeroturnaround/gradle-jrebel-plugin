@@ -290,6 +290,157 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
+  /**
+   * Construct a builder for jar projects
+   */
+  private RebelMainModel buildModelForJar() {
+    RebelMainModel model = new RebelMainModel();
+    buildClasspath(model);
+    return model;
+  }
+
+  /**
+   * Construct a builder for war projects
+   */
+  private RebelMainModel buildModelForWar() {
+    RebelMainModel model = new RebelMainModel();
+  
+    buildWeb(model);
+    buildClasspath(model);
+  
+    RebelWar war = getWar();
+    // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
+    if (war != null && war.getPath() != null) {
+      war.setOriginalPath(war.getPath());
+      war.setPath(fixFilePath(war.getPath()));
+      model.setWar(war);
+    }
+  
+    return model;
+  }
+
+  private void buildClasspath(RebelMainModel model) {
+    boolean addDefaultAsFirst = true;
+    RebelClasspathResource defaultClasspath = null;
+    RebelClasspath classpath = getConfiguredClasspath();
+  
+    // check if there is a element with no dir/jar/dirset/jarset set. if there
+    // is then don't put default classpath as
+    // first but put it where this element was.
+  
+    if (classpath != null) {
+      RebelClasspathResource[] resources = classpath.getResources();
+  
+      if (resources != null && resources.length > 0) {
+        for (int i = 0; i < resources.length; i++) {
+          RebelClasspathResource r = resources[i];
+  
+          if (!r.isTargetSet()) {
+            addDefaultAsFirst = false;
+            defaultClasspath = r;
+            break;
+          }
+        }
+      }
+    }
+  
+    if (addDefaultAsFirst) {
+      buildDefaultClasspath(model, defaultClasspath);
+    }
+  }
+
+  private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
+    if (getAddResourcesDirToRebelXml()) {
+      buildDefaultClasspathResources(model);
+    }
+  
+    // project output directory
+    RebelClasspathResource r = new RebelClasspathResource();
+    r.setDirectory(fixFilePath(getClassesDirectory()));
+    if (!new File(r.getDirectory()).isDirectory()) {
+      return;
+    }
+  
+    if (defaultClasspath != null) {
+      r.setIncludes(defaultClasspath.getIncludes());
+      r.setExcludes(defaultClasspath.getExcludes());
+    }
+  
+    model.addClasspathDir(r);
+  }
+
+  private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
+      RebelClasspathResource r = new RebelClasspathResource();
+      r.setDirectory(fixFilePath(getResourcesDirectory()));
+      if (!new File(r.getDirectory()).isDirectory()) {
+        return;
+      }
+  
+      RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
+      if (resourcesClasspath != null) {
+        // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
+  //      r.setIncludes(resourcesClasspath.getIncludes());
+  //      r.setExcludes(resourcesClasspath.getExcludes());
+      }
+      model.addClasspathDir(r);
+    }
+
+  /**
+   * Build the model for the <web> element in rebel.xml
+   */
+  private void buildWeb(RebelMainModel model) {
+    boolean addDefaultAsFirst = true;
+    RebelWebResource defaultWeb = null;
+  
+    if (web != null) {
+      RebelWebResource[] resources = web.getResources();
+  
+      if (resources != null && resources.length > 0) {
+        for (int i = 0; i < resources.length; i++) {
+          RebelWebResource r = resources[i];
+  
+          if (r.getDirectory() == null && r.getTarget() == null) {
+            defaultWeb = r;
+            addDefaultAsFirst = false;
+            break;
+          }
+        }
+      }
+    }
+  
+    if (addDefaultAsFirst) {
+      buildDefaultWeb(model, defaultWeb);
+    }
+  
+    if (web != null) {
+      RebelWebResource[] resources = web.getResources();
+      if (resources != null && resources.length > 0) {
+        for (int i = 0; i < resources.length; i++) {
+          RebelWebResource r = resources[i];
+          if (r.getDirectory() == null && r.getTarget() == null) {
+            buildDefaultWeb(model, r);
+            continue;
+          }
+          r.setDirectory(fixFilePath(r.getDirectory()));
+          model.addWebResource(r);
+        }
+      }
+    }
+  }
+
+  private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
+    RebelWebResource r = new RebelWebResource();
+    r.setTarget("/");
+    r.setDirectory(fixFilePath(getWarSourceDirectory()));
+  
+    if (defaultWeb != null) {
+      r.setIncludes(defaultWeb.getIncludes());
+      r.setExcludes(defaultWeb.getExcludes());
+    }
+  
+    model.addWebResource(r);
+  }
+
   private void generateRebelXml(File rebelXmlFile) {
     // TODO seems that those placeholders are not replaced (at least not when running tests)
     log.info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
@@ -310,157 +461,6 @@ public class RebelGenerateTask extends DefaultTask {
     }
     catch (IOException e) {
       throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
-    }
-  }
-
-  private void buildClasspath(RebelMainModel model) {
-    boolean addDefaultAsFirst = true;
-    RebelClasspathResource defaultClasspath = null;
-    RebelClasspath classpath = getConfiguredClasspath();
-
-    // check if there is a element with no dir/jar/dirset/jarset set. if there
-    // is then don't put default classpath as
-    // first but put it where this element was.
-
-    if (classpath != null) {
-      RebelClasspathResource[] resources = classpath.getResources();
-
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelClasspathResource r = resources[i];
-
-          if (!r.isTargetSet()) {
-            addDefaultAsFirst = false;
-            defaultClasspath = r;
-            break;
-          }
-        }
-      }
-    }
-
-    if (addDefaultAsFirst) {
-      buildDefaultClasspath(model, defaultClasspath);
-    }
-  }
-
-  private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
-    if (getAddResourcesDirToRebelXml()) {
-      buildDefaultClasspathResources(model);
-    }
-
-    // project output directory
-    RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getClassesDirectory()));
-    if (!new File(r.getDirectory()).isDirectory()) {
-      return;
-    }
-
-    if (defaultClasspath != null) {
-      r.setIncludes(defaultClasspath.getIncludes());
-      r.setExcludes(defaultClasspath.getExcludes());
-    }
-
-    model.addClasspathDir(r);
-  }
-
-  private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
-    RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getResourcesDirectory()));
-    if (!new File(r.getDirectory()).isDirectory()) {
-      return;
-    }
-
-    RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
-    if (resourcesClasspath != null) {
-      // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
-//      r.setIncludes(resourcesClasspath.getIncludes());
-//      r.setExcludes(resourcesClasspath.getExcludes());
-    }
-    model.addClasspathDir(r);
-  }
-
-  private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
-    RebelWebResource r = new RebelWebResource();
-    r.setTarget("/");
-    r.setDirectory(fixFilePath(getWarSourceDirectory()));
-
-    if (defaultWeb != null) {
-      r.setIncludes(defaultWeb.getIncludes());
-      r.setExcludes(defaultWeb.getExcludes());
-    }
-
-    model.addWebResource(r);
-  }
-
-  /**
-   * Construct a builder for jar projects
-   */
-  private RebelMainModel buildModelForJar() {
-    RebelMainModel model = new RebelMainModel();
-    buildClasspath(model);
-    return model;
-  }
-
-  /**
-   * Construct a builder for war projects
-   */
-  private RebelMainModel buildModelForWar() {
-    RebelMainModel model = new RebelMainModel();
-
-    buildWeb(model);
-    buildClasspath(model);
-
-    RebelWar war = getWar();
-    // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
-    if (war != null && war.getPath() != null) {
-      war.setOriginalPath(war.getPath());
-      war.setPath(fixFilePath(war.getPath()));
-      model.setWar(war);
-    }
-
-    return model;
-  }
-
-  /**
-   * Build the model for the <web> element in rebel.xml
-   */
-  private void buildWeb(RebelMainModel model) {
-    boolean addDefaultAsFirst = true;
-    RebelWebResource defaultWeb = null;
-
-    if (web != null) {
-      RebelWebResource[] resources = web.getResources();
-
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelWebResource r = resources[i];
-
-          if (r.getDirectory() == null && r.getTarget() == null) {
-            defaultWeb = r;
-            addDefaultAsFirst = false;
-            break;
-          }
-        }
-      }
-    }
-
-    if (addDefaultAsFirst) {
-      buildDefaultWeb(model, defaultWeb);
-    }
-
-    if (web != null) {
-      RebelWebResource[] resources = web.getResources();
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelWebResource r = resources[i];
-          if (r.getDirectory() == null && r.getTarget() == null) {
-            buildDefaultWeb(model, r);
-            continue;
-          }
-          r.setDirectory(fixFilePath(r.getDirectory()));
-          model.addWebResource(r);
-        }
-      }
     }
   }
 
