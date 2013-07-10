@@ -91,6 +91,80 @@ public class RebelGenerateTask extends DefaultTask {
   
   private boolean skipWritingRebelXml;
   
+  // =========== START OF WEIRD STUFF ===============================================
+
+  // XXX most of this is just leftovers from refactoring and will eventually be removed
+  
+  // Stuff starting from here is the old copy-pasted model from the Maven plugin. These configuration objects are available
+  // to the end-user via RebelPluginExtension only theoretically (they are never documented and only available secretly..
+  // probably never used in practice!
+  // 
+  // - see how the appropriate DSL-aware model should replace that model
+  // - propagate from RebelPluginExtension to here through the ConventionMappings if there's need for it
+  
+  
+  private String configuredRootPath;
+  
+  private File configuredRelativePath;
+  
+  private File configuredResourcesDirectory;
+  
+  private File configuredClassesDirectory;
+  
+  private RebelClasspath configuredResourcesClasspath;
+  
+  private RebelClasspath configuredClasspath;
+  
+  public String getConfiguredRootPath() {
+    return configuredRootPath;
+  }
+
+  public void setConfiguredRootPath(String path) {
+    this.configuredRootPath = path;
+  }
+  
+  public File getConfiguredRelativePath() {
+    return configuredRelativePath;
+  }
+  
+  public void setConfiguredRelativePath(File path) {
+    this.configuredRelativePath = path;
+  }
+  
+  public File getConfiguredResourcesDirectory() {
+    return configuredResourcesDirectory;
+  }
+
+  public void setConfiguredResourcesDirectory(File dir) {
+    this.configuredResourcesDirectory = dir;
+  }
+
+  public File getConfiguredClassesDirectory() {
+    return configuredClassesDirectory;
+  }
+  
+  public void setConfiguredClassesDirectory(File dir) {
+    this.configuredClassesDirectory = dir;
+  }
+  
+  public RebelClasspath getConfiguredResourcesClasspath() {
+    return configuredResourcesClasspath;
+  }
+  
+  public void setConfiguredResourcesClasspath(RebelClasspath rebelPath) {
+    this.configuredResourcesClasspath = rebelPath;
+  }
+
+  public RebelClasspath getConfiguredClasspath() {
+    return configuredClasspath;
+  }
+  
+  public void setConfiguredClasspath(RebelClasspath path) {
+    this.configuredClasspath = path;
+  }
+  
+  // ============================= END OF WEIRD STUFF =========================================
+  
   public Boolean getAddResourcesDirToRebelXml() {
     return addResourcesDirToRebelXml;
   }
@@ -539,43 +613,5 @@ public class RebelGenerateTask extends DefaultTask {
   public String toStringConfigurationOptions() {
     return "RebelGenerateTask[ configuredWarPath = " + warPath + " ]";
   }
-
-  // =========== STUFF BELOW HERE REFERS TO THE RebelExtension OBJECT DIRECTLY AND SHOULD BE GOTTEN RID OF !!!
-  // - replace with usage of ConventionMappings.
-  // - the model has to be worked on. RebelPluginExtension probably cannot operate with our custom types
-  //      as end-user doesn't know or want to know how to configure them
-  
-  private String getConfiguredRootPath() {
-    return getRebelExtension().getRootPath();
-  }
-  
-  private File getConfiguredRelativePath() {
-    return getRebelExtension().getRelativePath();
-  }
-  
-  private File getConfiguredResourcesDirectory() {
-    return getRebelExtension().getResourcesDirectory();
-  }
-
-  private File getConfiguredClassesDirectory() {
-    return getRebelExtension().getClassesDirectory();
-  }
-  
-  private RebelClasspath getConfiguredResourcesClasspath() {
-    return getRebelExtension().getResourcesClasspath();
-  }
-
-  private RebelClasspath getConfiguredClasspath() {
-    return getRebelExtension().getClasspath();
-  }
-  
-  /**
-   * Get rid of it, achieve the same by using conventions
-   */
-  @Deprecated
-  private RebelPluginExtension getRebelExtension() {
-    return (RebelPluginExtension) getProject().getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-  }
-
   
 }

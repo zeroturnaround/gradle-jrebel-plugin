@@ -25,6 +25,7 @@ import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
+import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -84,6 +85,8 @@ public class RebelPlugin implements Plugin<Project> {
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME));
 
+    final RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+    
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
         RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
@@ -171,6 +174,17 @@ public class RebelPlugin implements Plugin<Project> {
         return null;
       }
     });
+    
+    // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
+    //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
+    //     until I know what's gonna replace them and have a better solution ready
+    
+    generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
+    generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
+    generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
+    generateRebelTask.setConfiguredClassesDirectory(rebelExtension.getClassesDirectory());
+    generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
+    generateRebelTask.setConfiguredClasspath(rebelExtension.getClasspath());
     
   }
 }

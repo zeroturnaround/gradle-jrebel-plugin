@@ -15,10 +15,15 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
+import groovy.lang.Closure;
+
 import java.io.File;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
+import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
+
+import org.gradle.util.ConfigureUtil;
 
 public class RebelPluginExtension {
 
@@ -181,4 +186,20 @@ public class RebelPluginExtension {
     this.alwaysGenerate = alwaysGenerate;
   }
 
+
+  /**
+   * Evaluate the 'war {..}' block
+   * 
+   * TODO not plugged or propagated to backend. this is dead code at the moment, but will be replacing the "warPath"
+   *      property shortly! 
+   * XXX
+   */
+  public void war(Closure closure) {
+    RebelWar war = new RebelWar();
+    
+    ConfigureUtil.configure(closure, war);
+    
+    System.out.println("the value after evaluating the closure : " + war.getPath());
+    
+  }
 }
