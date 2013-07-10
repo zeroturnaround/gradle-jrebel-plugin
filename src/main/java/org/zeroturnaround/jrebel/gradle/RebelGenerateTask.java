@@ -28,7 +28,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.api.logging.Logger;
 
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;

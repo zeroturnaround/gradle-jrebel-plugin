@@ -25,9 +25,9 @@ import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslMain;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
@@ -179,6 +179,9 @@ public class RebelPlugin implements Plugin<Project> {
       @Override
       public void execute(Project project) {
 
+        // TODO remove
+        System.out.println(" =========== IN THE AFTER_EVALUATE");
+        
         // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
         //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
         //     until I know what's gonna replace them and have a better solution ready

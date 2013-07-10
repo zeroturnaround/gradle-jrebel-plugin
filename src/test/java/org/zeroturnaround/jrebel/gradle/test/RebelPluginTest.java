@@ -15,6 +15,9 @@
  */
 package org.zeroturnaround.jrebel.gradle.test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -27,11 +30,14 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslMain;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWebResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
+import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
+import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -229,43 +235,61 @@ public class RebelPluginTest {
     assertEquals(myWarPath, war.getOriginalPath());
   }
   
-//  /**
-//   * Test handling of the "web" configuration block.
-//   * 
-//   * TODO not finished
-//   */
-//  @Test
-//  public void testWeb() throws Exception {
-//    Project project = ProjectBuilder.builder().build();
-//    project.getPlugins().apply(WarPlugin.class);
-//    project.getPlugins().apply(RebelPlugin.class);
-//    
-//    // Cconfigure the rebel plugin
-//    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-//    
-//    String myWarPath = "/my/war/path";
-//    
-//    RebelDslWeb dslWar = new RebelDslWeb();
-//    dslWar.setPath(myWarPath);
-//    rebelExtension.setWar(dslWar);
-//    
-//    // Execute the rebel task, validate the generated model
-//    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-//
-//    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
-//    task.skipWritingRebelXml();
-//    
-//    // execute the task
-//    task.generate();
-//    project.getLogger().info("RebelGenerateTask : " + task.toStringConfigurationOptions());
-//    
-//    // validate the eventual model
-//    RebelMainModel model = task.getRebelModel();
-//    RebelWar war = model.getWar();
-//    
-//    assertNotNull(war);
-//    assertEquals(myWarPath, war.getOriginalPath());
-//  }
+  /**
+   * Test handling of the "web" configuration block.
+   * 
+   * TODO not finished
+   */
+  @Test
+  public void testWeb() throws Exception {
+    Project project = ProjectBuilder.builder().build();
+    project.getPlugins().apply(WarPlugin.class);
+    project.getPlugins().apply(RebelPlugin.class);
+    
+    // Configure the rebel plugin
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    
+    RebelDslWeb web = new RebelDslWeb();
+    
+    RebelDslWebResource webResource1 = new RebelDslWebResource();
+    webResource1.setTarget("/");
+    webResource1.setDirectory("src/main/webapp");
+    webResource1.setIncludes(Arrays.<String>asList("*.xml"));
+    webResource1.setExcludes(Arrays.<String>asList("*.java", "*.groovy", "*.scala"));
+    web.addWebResources(webResource1);
+
+    RebelDslWebResource webResource2 = new RebelDslWebResource();
+    webResource2.setTarget("/WEB-INF/");
+    webResource2.setDirectory("src/main/my-web-inf");
+    web.addWebResources(webResource2);
+    
+    System.out.println("WEB IS : " + web);
+    
+    rebelExtension.setWeb(web);
+    
+    // TODO !!! it does not work because the "afterEvaluated()" seems not to be called like this (quite logical actually) 
+    
+    // Execute the rebel task, validate the generated model
+    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+
+    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
+    task.skipWritingRebelXml();
+    
+    // execute the task
+    task.generate();
+    
+    // validate the eventual model
+    RebelMainModel model = task.getRebelModel();
+    assertNotNull(model);
+    
+    List<RebelWebResource> webResources = model.getWebResources();
+    
+    // TODO very rough test that doesn't actually validate almost anything... just make sure the code runs through
+    // TODO make it test the real requirements more thoroughly
+    assertTrue(webResources.size() > 0);
+    
+    System.out.println("testWeb() XML :  \n" + model.toXmlString());
+  }
   
   // TODO tests for other properties -- what should the model look like after setting those config options 
   
