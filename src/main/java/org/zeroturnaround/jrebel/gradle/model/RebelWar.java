@@ -49,4 +49,8 @@ public class RebelWar {
     this.originalPath = originalPath;
   }
 
+  public String toString() {
+    return "RebelWar { path = " + path + " }"; 
+  }
+  
 }

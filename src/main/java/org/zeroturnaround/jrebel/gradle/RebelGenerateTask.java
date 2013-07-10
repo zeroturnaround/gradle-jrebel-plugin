@@ -78,12 +78,9 @@ public class RebelGenerateTask extends DefaultTask {
   
   private File webappDirectory;
   
-  /**
-   * the 'warPath' property from the plugin's configuration
-   */
-  private String warPath;
+  private RebelWar war;
 
-  public static final String NAME_WAR_PATH = "warPath";
+  public static final String NAME_WAR = "war";
    
   // === interal properties of the task
   
@@ -229,12 +226,12 @@ public class RebelGenerateTask extends DefaultTask {
     this.webappDirectory = webappDirectory;
   }
   
-  public String getWarPath() {
-    return warPath;
+  public RebelWar getWar() {
+    return war;
   }
  
-  public void setWarPath(String warPath) {
-    this.warPath = warPath;
+  public void setWar(RebelWar _war) {
+    this.war = _war;
   }
   
   /**
@@ -264,7 +261,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
-    log.info("rebel.warPath= " + getWarPath());
+    log.info("rebel.war = " + getWar());
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -415,9 +412,10 @@ public class RebelGenerateTask extends DefaultTask {
     buildWeb(builder);
     buildClasspath(builder);
 
+    // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
     if (war != null) {
-      war.setPath(fixFilePath(war.getPath()));
       war.setOriginalPath(war.getPath());
+      war.setPath(fixFilePath(war.getPath()));
       builder.setWar(war);
     }
 
@@ -592,26 +590,13 @@ public class RebelGenerateTask extends DefaultTask {
 
     return absolutePath.startsWith(basedirpath);
   }
-  
-  /**
-   * Construct the RebelWar object, if any
-   */
-  private RebelWar getWar() {
-    String path = getWarPath();
-    if (path != null) {
-      RebelWar war = new RebelWar();
-      war.setPath(path);
-      return war;
-    }
-    return null;
-  }
-  
+
   /**
    * Stringify all configuration options
    */
   // TODO temporary implementation
   public String toStringConfigurationOptions() {
-    return "RebelGenerateTask[ configuredWarPath = " + warPath + " ]";
+    return "RebelGenerateTask[ configuredWarPath = " + war + " ]";
   }
   
 }

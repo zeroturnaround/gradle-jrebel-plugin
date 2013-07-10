@@ -15,8 +15,10 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl.model;
 
+import org.zeroturnaround.jrebel.gradle.model.RebelWar;
+
 /**
- * War configuration.
+ * Gradle DSL level model for war configuration (corresponds to RebelWar in backend model).
  */
 public class RebelDslWar {
 
@@ -28,6 +30,15 @@ public class RebelDslWar {
 
   public void setPath(String path) {
     this.path = path;
+  }
+  
+  /**
+   * Convert from DSL-level model objects to the backend model objects.
+   */
+  public RebelWar toRebelWar() {
+    RebelWar war = new RebelWar();
+    war.setPath(this.path);
+    return war;
   }
 
 }

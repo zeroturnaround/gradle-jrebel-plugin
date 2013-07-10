@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
  * 
- * @author Igor Bljahhin, Sander Sonajalg
+ * @author Sander Sonajalg, Igor Bljahhin
  */
 public class RebelPluginTest {
 
@@ -190,7 +190,7 @@ public class RebelPluginTest {
     assertEquals(myAlwaysGenerate, task.getAlwaysGenerate());
     
     // 'warPath'
-    assertEquals(myWarPath, task.getWarPath());
+    assertEquals(myWarPath, task.getWar().getPath());
   }
   
   /**

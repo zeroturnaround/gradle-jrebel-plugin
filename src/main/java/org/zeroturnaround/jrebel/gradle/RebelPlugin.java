@@ -160,11 +160,11 @@ public class RebelPlugin implements Plugin<Project> {
     });
     
     // handle the 'warPath' configuration option 
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_PATH, new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR, new Callable<Object>() {
       public Object call() throws Exception {
         RebelDslWar war = rebelExtension.getWar();
-        if (war != null && war.getPath() != null) {
-          return war.getPath();
+        if (war != null) {
+          return war.toRebelWar();
         }
         return null;
       }
