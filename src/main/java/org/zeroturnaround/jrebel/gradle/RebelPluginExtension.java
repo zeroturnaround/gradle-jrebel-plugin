@@ -64,7 +64,6 @@ public class RebelPluginExtension {
   private RebelDslWar war;
   
   public RebelPluginExtension() {
-    this.war = new RebelDslWar();
   }
   
   public String getPackaging() {
@@ -209,6 +208,7 @@ public class RebelPluginExtension {
    * XXX
    */
   public void war(Closure closure) {
+    war = new RebelDslWar();
     ConfigureUtil.configure(closure, war);
   }
 

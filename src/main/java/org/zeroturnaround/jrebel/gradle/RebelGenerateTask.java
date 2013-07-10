@@ -396,10 +396,10 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct a builder for jar projects
    */
   private RebelMainModel buildModelForJar() {
-    RebelMainModel builder = new RebelMainModel();
-    buildClasspath(builder);
+    RebelMainModel mainModel = new RebelMainModel();
+    buildClasspath(mainModel);
 
-    return builder;
+    return mainModel;
   }
 
   /**
@@ -408,18 +408,18 @@ public class RebelGenerateTask extends DefaultTask {
   private RebelMainModel buildModelForWar() {
     RebelWar war = getWar();
 
-    RebelMainModel builder = new RebelMainModel();
-    buildWeb(builder);
-    buildClasspath(builder);
+    RebelMainModel mainModel = new RebelMainModel();
+    buildWeb(mainModel);
+    buildClasspath(mainModel);
 
     // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
-    if (war != null) {
+    if (war != null && war.getPath() != null) {
       war.setOriginalPath(war.getPath());
       war.setPath(fixFilePath(war.getPath()));
-      builder.setWar(war);
+      mainModel.setWar(war);
     }
 
-    return builder;
+    return mainModel;
   }
 
   /**
