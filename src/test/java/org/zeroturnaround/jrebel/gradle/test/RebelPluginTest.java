@@ -20,7 +20,11 @@ import java.util.List;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
+import org.gradle.api.ProjectEvaluationListener;
+import org.gradle.api.ProjectState;
 import org.gradle.api.Task;
+import org.gradle.api.internal.project.AbstractProject;
+import org.gradle.api.internal.project.ProjectStateInternal;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
@@ -266,8 +270,12 @@ public class RebelPluginTest {
     System.out.println("WEB IS : " + web);
     
     rebelExtension.setWeb(web);
-    
-    // TODO !!! it does not work because the "afterEvaluated()" seems not to be called like this (quite logical actually) 
+
+    // Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called
+    ProjectStateInternal projectState = new ProjectStateInternal();
+    projectState.executed();
+    ProjectEvaluationListener evaluationListener = ((AbstractProject) project).getProjectEvaluationBroadcaster();
+    evaluationListener.afterEvaluate(project, projectState);
     
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
