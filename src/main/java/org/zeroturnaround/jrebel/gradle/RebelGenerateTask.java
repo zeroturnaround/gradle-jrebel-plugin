@@ -313,7 +313,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  private void buildClasspath(RebelMainModel builder) {
+  private void buildClasspath(RebelMainModel model) {
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
     RebelClasspath classpath = getConfiguredClasspath();
@@ -339,13 +339,13 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     if (addDefaultAsFirst) {
-      buildDefaultClasspath(builder, defaultClasspath);
+      buildDefaultClasspath(model, defaultClasspath);
     }
   }
 
-  private void buildDefaultClasspath(RebelMainModel builder, RebelClasspathResource defaultClasspath) throws BuildException {
+  private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
     if (getAddResourcesDirToRebelXml()) {
-      buildDefaultClasspathResources(builder);
+      buildDefaultClasspathResources(model);
     }
 
     // project output directory
@@ -360,10 +360,10 @@ public class RebelGenerateTask extends DefaultTask {
       r.setExcludes(defaultClasspath.getExcludes());
     }
 
-    builder.addClasspathDir(r);
+    model.addClasspathDir(r);
   }
 
-  private void buildDefaultClasspathResources(RebelMainModel builder) throws BuildException {
+  private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
     r.setDirectory(fixFilePath(getResourcesDirectory()));
     if (!new File(r.getDirectory()).isDirectory()) {
@@ -376,10 +376,10 @@ public class RebelGenerateTask extends DefaultTask {
 //      r.setIncludes(resourcesClasspath.getIncludes());
 //      r.setExcludes(resourcesClasspath.getExcludes());
     }
-    builder.addClasspathDir(r);
+    model.addClasspathDir(r);
   }
 
-  private void buildDefaultWeb(RebelMainModel builder, RebelWebResource defaultWeb) {
+  private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
     RebelWebResource r = new RebelWebResource();
     r.setTarget("/");
     r.setDirectory(fixFilePath(getWarSourceDirectory()));
@@ -389,43 +389,42 @@ public class RebelGenerateTask extends DefaultTask {
       r.setExcludes(defaultWeb.getExcludes());
     }
 
-    builder.addWebResource(r);
+    model.addWebResource(r);
   }
 
   /**
    * Construct a builder for jar projects
    */
   private RebelMainModel buildModelForJar() {
-    RebelMainModel mainModel = new RebelMainModel();
-    buildClasspath(mainModel);
-
-    return mainModel;
+    RebelMainModel model = new RebelMainModel();
+    buildClasspath(model);
+    return model;
   }
 
   /**
    * Construct a builder for war projects
    */
   private RebelMainModel buildModelForWar() {
+    RebelMainModel model = new RebelMainModel();
+
+    buildWeb(model);
+    buildClasspath(model);
+
     RebelWar war = getWar();
-
-    RebelMainModel mainModel = new RebelMainModel();
-    buildWeb(mainModel);
-    buildClasspath(mainModel);
-
     // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
     if (war != null && war.getPath() != null) {
       war.setOriginalPath(war.getPath());
       war.setPath(fixFilePath(war.getPath()));
-      mainModel.setWar(war);
+      model.setWar(war);
     }
 
-    return mainModel;
+    return model;
   }
 
   /**
    * Build the model for the <web> element in rebel.xml
    */
-  private void buildWeb(RebelMainModel builder) {
+  private void buildWeb(RebelMainModel model) {
     boolean addDefaultAsFirst = true;
     RebelWebResource defaultWeb = null;
 
@@ -446,7 +445,7 @@ public class RebelGenerateTask extends DefaultTask {
     }
 
     if (addDefaultAsFirst) {
-      buildDefaultWeb(builder, defaultWeb);
+      buildDefaultWeb(model, defaultWeb);
     }
 
     if (web != null) {
@@ -455,11 +454,11 @@ public class RebelGenerateTask extends DefaultTask {
         for (int i = 0; i < resources.length; i++) {
           RebelWebResource r = resources[i];
           if (r.getDirectory() == null && r.getTarget() == null) {
-            buildDefaultWeb(builder, r);
+            buildDefaultWeb(model, r);
             continue;
           }
           r.setDirectory(fixFilePath(r.getDirectory()));
-          builder.addWebResource(r);
+          model.addWebResource(r);
         }
       }
     }
@@ -468,16 +467,16 @@ public class RebelGenerateTask extends DefaultTask {
   private String fixFilePath(File file) {
     File baseDir = getProject().getProjectDir();
 
-    if (file.isAbsolute() && !isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
-      return StringUtils.replace(getCanonicalPath(file), "\\", "/");
+    if (file.isAbsolute() && !FileUtil.isRelativeToPath(new File(baseDir, getRelativePath()), file)) {
+      return StringUtils.replace(FileUtil.getCanonicalPath(file), "\\", "/");
     }
 
     if (!file.isAbsolute()) {
       file = new File(baseDir, file.getPath());
     }
 
-    String relative = getRelativePath(new File(baseDir, getRelativePath()), file);
-
+    String relative = FileUtil.getRelativePath(new File(baseDir, getRelativePath()), file);
+    
     if (!(new File(relative)).isAbsolute()) {
       return StringUtils.replace(getRootPath(), "\\", "/") + "/" + relative;
     }
@@ -486,7 +485,7 @@ public class RebelGenerateTask extends DefaultTask {
 
     // if root path is absolute then try to get a path relative to root
     if ((new File(getRootPath())).isAbsolute()) {
-      String s = getRelativePath(new File(getRootPath()), file);
+      String s = FileUtil.getRelativePath(new File(getRootPath()), file);
 
       if (!(new File(s)).isAbsolute()) {
         return StringUtils.replace(getRootPath(), "\\", "/") + "/" + s;
@@ -506,15 +505,6 @@ public class RebelGenerateTask extends DefaultTask {
     return fixFilePath(new File(path));
   }
 
-  private String getCanonicalPath(File file) throws BuildException {
-    try {
-      return file.getCanonicalPath();
-    }
-    catch (IOException e) {
-      throw new BuildException("Failed to get canonical path of " + file.getAbsolutePath(), e);
-    }
-  }
-
   private File getClassesDirectory() {
     if (getConfiguredClassesDirectory() != null) {
       return getConfiguredClassesDirectory();
@@ -524,6 +514,9 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
   
+  /**
+   * Tiny helper to get Gradle JavaPlugin's SourceSetContainer (knows about project paths)
+   */
   private SourceSetContainer getSourceSets() {
     JavaPluginConvention javaConvention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
     return javaConvention.getSourceSets();
@@ -547,34 +540,6 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  private String getRelativePath(File baseDir, File file) throws BuildException {
-    // Avoid the common prefix problem (see case 17005)
-    // if:
-    //  baseDir = /myProject/web-module/.
-    //  file  = /myProject/web-module-shared/something/something/something
-    // then basedirpath cannot be a prefix of the absolutePath, or the relative path will be calculated incorrectly!
-    // This problem is avoided by adding a trailing slash to basedirpath.
-    String basedirpath = getCanonicalPath(baseDir) + File.separator;
-
-    String absolutePath = getCanonicalPath(file);
-
-    String relative;
-
-    if (absolutePath.equals(basedirpath)) {
-      relative = ".";
-    }
-    else if (absolutePath.startsWith(basedirpath)) {
-      relative = absolutePath.substring(basedirpath.length());
-    }
-    else {
-      relative = absolutePath;
-    }
-
-    relative = StringUtils.replace(relative, "\\", "/");
-
-    return relative;
-  }
-
   private String getRootPath() {
     if (getConfiguredRootPath() != null) {
       return getConfiguredRootPath();
@@ -583,14 +548,7 @@ public class RebelGenerateTask extends DefaultTask {
       return getProject().getProjectDir().getAbsolutePath();
     }
   }
-
-  private boolean isRelativeToPath(File baseDir, File file) throws BuildException {
-    String basedirpath = getCanonicalPath(baseDir);
-    String absolutePath = getCanonicalPath(file);
-
-    return absolutePath.startsWith(basedirpath);
-  }
-
+  
   /**
    * Stringify all configuration options
    */

@@ -242,6 +242,8 @@ public class RebelPluginTest {
   // TODO finally, write a combined end-to-end smoke test for simple scenario --
   //      a project goes in, rebel.xml goes out, XMLunit checks that its contents is adequate
   
+
+  // TODO a test for the fixPath... somehow
   
   private static boolean getRandomBoolean() {
     return Math.random() < 0.5;
