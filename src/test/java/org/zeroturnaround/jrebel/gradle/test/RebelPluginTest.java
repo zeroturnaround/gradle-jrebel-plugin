@@ -29,6 +29,7 @@ import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 import org.zeroturnaround.jrebel.gradle.RebelPluginExtension;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
@@ -194,10 +195,10 @@ public class RebelPluginTest {
   }
   
   /**
-   * Test handling of the "warPath" configuration option. Should create a RebelWar element in the model.
+   * Test handling of the "war" configuration block. Should create a RebelWar element in the model.
    */
   @Test
-  public void testWarPath() throws Exception {
+  public void testWar() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
@@ -228,6 +229,44 @@ public class RebelPluginTest {
     assertNotNull(war);
     assertEquals(myWarPath, war.getOriginalPath());
   }
+  
+//  /**
+//   * Test handling of the "web" configuration block.
+//   * 
+//   * TODO not finished
+//   */
+//  @Test
+//  public void testWeb() throws Exception {
+//    Project project = ProjectBuilder.builder().build();
+//    project.getPlugins().apply(WarPlugin.class);
+//    project.getPlugins().apply(RebelPlugin.class);
+//    
+//    // Cconfigure the rebel plugin
+//    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+//    
+//    String myWarPath = "/my/war/path";
+//    
+//    RebelDslWeb dslWar = new RebelDslWeb();
+//    dslWar.setPath(myWarPath);
+//    rebelExtension.setWar(dslWar);
+//    
+//    // Execute the rebel task, validate the generated model
+//    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+//
+//    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
+//    task.skipWritingRebelXml();
+//    
+//    // execute the task
+//    task.generate();
+//    project.getLogger().info("RebelGenerateTask : " + task.toStringConfigurationOptions());
+//    
+//    // validate the eventual model
+//    RebelMainModel model = task.getRebelModel();
+//    RebelWar war = model.getWar();
+//    
+//    assertNotNull(war);
+//    assertEquals(myWarPath, war.getOriginalPath());
+//  }
   
   // TODO tests for other properties -- what should the model look like after setting those config options 
   

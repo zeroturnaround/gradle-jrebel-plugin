@@ -27,6 +27,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.api.logging.Logger;
 
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
@@ -262,6 +263,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
     log.info("rebel.war = " + getWar());
+    log.info("rebel.web = " + web);
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -428,6 +430,9 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
+  /**
+   * The default for the <web> element in rebel.xml
+   */
   private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
     RebelWebResource r = new RebelWebResource();
     r.setTarget("/");

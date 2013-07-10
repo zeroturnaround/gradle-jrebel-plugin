@@ -26,6 +26,7 @@ import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
@@ -159,7 +160,8 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
     
-    // handle the 'warPath' configuration option 
+    // handle the 'warPath' configuration option
+    // TODO this should probably be put into "project.afterEvaluate" block
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR, new Callable<Object>() {
       public Object call() throws Exception {
         RebelDslWar war = rebelExtension.getWar();
@@ -169,17 +171,44 @@ public class RebelPlugin implements Plugin<Project> {
         return null;
       }
     });
-    
-    // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
-    //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
-    //     until I know what's gonna replace them and have a better solution ready
-    
-    generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
-    generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
-    generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
-    generateRebelTask.setConfiguredClassesDirectory(rebelExtension.getClassesDirectory());
-    generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
-    generateRebelTask.setConfiguredClasspath(rebelExtension.getClasspath());
+
+    // TODO remove
+    log.info("webdsl : " + rebelExtension.getDslWeb());
+
+    // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
+    project.afterEvaluate(new Action<Project>() {
+
+      @Override
+      public void execute(Project project) {
+
+        // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
+        //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
+        //     until I know what's gonna replace them and have a better solution ready
+        
+        // Hmmm... I think this stuff actuall doesn't work here at all.. the "rebel {..}" DSL  is not evaluated yet
+        
+        generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
+        generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
+        generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
+        generateRebelTask.setConfiguredClassesDirectory(rebelExtension.getClassesDirectory());
+        generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
+        generateRebelTask.setConfiguredClasspath(rebelExtension.getClasspath());
+
+        
+        // TODO restore
+//        RebelDslWar war = rebelExtension.getWar();
+//        if (war != null) {
+//          generateRebelTask.setWar(war.toRebelWar());
+//        }
+        
+        RebelDslWeb web = rebelExtension.getDslWeb();
+        if (web != null) {
+          generateRebelTask.setWeb(rebelExtension.getDslWeb().toRebelWeb());
+        }
+        
+      }
+      
+    });
     
   }
 }

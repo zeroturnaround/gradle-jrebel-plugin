@@ -13,17 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.jrebel.gradle.model;
+package org.zeroturnaround.jrebel.gradle.dsl.model;
 
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
+
 
 /**
  * Web reource configuration.
  */
-public class RebelWebResource implements RebelResource {
+public class RebelDslWebResource {
 
   private String directory;
   
@@ -72,6 +74,18 @@ public class RebelWebResource implements RebelResource {
     builder.append("includes", includes);
     builder.append("target", target);
     return builder.toString();
+  }
+
+  /**
+   * Convert to backend model
+   */
+  public RebelWebResource toRebelWebResource() {
+    RebelWebResource resource = new RebelWebResource();
+    resource.setDirectory(directory);
+    resource.setExcludes(excludes);
+    resource.setIncludes(includes);
+    resource.setTarget(target);
+    return resource;
   }
 
 }

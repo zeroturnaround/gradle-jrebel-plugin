@@ -20,6 +20,7 @@ import groovy.lang.Closure;
 import java.io.File;
 
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
@@ -43,12 +44,13 @@ public class RebelPluginExtension {
 
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath resourcesClasspath;
-
-  private String warPath;
   
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelWeb web;
 
+  // TODO rename
+  private RebelDslWeb dslWeb;
+  
   private String rootPath;
 
   private File relativePath;
@@ -126,14 +128,6 @@ public class RebelPluginExtension {
     this.resourcesClasspath = resourcesClasspath;
   }
 
-  public String getWarPath() {
-    return warPath;
-  }
-
-  public void setWarPath(String warPath) {
-    this.warPath = warPath;
-  }
-
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelWeb getWeb() {
     return web;
@@ -144,6 +138,16 @@ public class RebelPluginExtension {
     this.web = web;
   }
 
+  // TODO 
+  public RebelDslWeb getDslWeb() {
+    return dslWeb;
+  }
+  
+  // TODO 
+  public void setDslWeb(RebelDslWeb _web) {
+    this.dslWeb = _web;
+  }
+  
   public String getRootPath() {
     return rootPath;
   }
@@ -201,11 +205,19 @@ public class RebelPluginExtension {
   }
   
   /**
+   * Evaluate the 'web {..}' block
+   */
+  public void web(Closure closure) {
+    System.out.println(" ===================== UYUUUUUUUUUUUUUUUUUUUUUUUU");
+    
+    dslWeb = new RebelDslWeb();
+    ConfigureUtil.configure(closure, dslWeb);
+    
+    System.out.println(" ===================== webdsl : " + dslWeb);
+  }
+  
+  /**
    * Evaluate the 'war {..}' block
-   * 
-   * TODO not plugged or propagated to backend. this is dead code at the moment, but will be replacing the "warPath"
-   *      property shortly! 
-   * XXX
    */
   public void war(Closure closure) {
     war = new RebelDslWar();

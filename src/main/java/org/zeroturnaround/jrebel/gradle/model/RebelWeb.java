@@ -15,6 +15,10 @@
  */
 package org.zeroturnaround.jrebel.gradle.model;
 
+import java.util.Arrays;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 
 /**
  * Web configuration.
@@ -30,5 +34,33 @@ public class RebelWeb {
   public void setResources(RebelWebResource[] resources) {
     this.resources = resources;
   }
+  
+  // TODO wow.. why not a List here???
+  public void addResource(RebelWebResource resource) {
+    resources = append(resources, resource);
+  }
 
+  /**
+   * hack-around to the fact that arrays have constant length.. 
+   * TODO - change RebelWeb to use ArrayList-s
+   */
+  static RebelWebResource[] append(RebelWebResource[] arr, RebelWebResource element) {
+    if (arr == null) {
+      return new RebelWebResource[] { element };
+    }
+    else {
+      int n = arr.length;
+      arr = Arrays.copyOf(arr, n + 1);
+      arr[n] = element;
+      return arr;
+    }
+  }
+
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this);
+    builder.append("resources", resources);
+    return builder.toString();
+  }
+  
 }
+
