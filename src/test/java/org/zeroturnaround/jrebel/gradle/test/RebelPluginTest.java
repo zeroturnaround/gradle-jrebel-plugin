@@ -183,6 +183,8 @@ public class RebelPluginTest {
     Boolean myAlwaysGenerate = getRandomBoolean();
     rebelExtension.setAlwaysGenerate(myAlwaysGenerate);
     
+    callAfterEvaluated(project);
+    
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     
@@ -221,6 +223,8 @@ public class RebelPluginTest {
     RebelDslWar dslWar = new RebelDslWar();
     dslWar.setPath(myWarPath);
     rebelExtension.setWar(dslWar);
+    
+    callAfterEvaluated(project);
     
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -271,11 +275,7 @@ public class RebelPluginTest {
     
     rebelExtension.setWeb(web);
 
-    // Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called
-    ProjectStateInternal projectState = new ProjectStateInternal();
-    projectState.executed();
-    ProjectEvaluationListener evaluationListener = ((AbstractProject) project).getProjectEvaluationBroadcaster();
-    evaluationListener.afterEvaluate(project, projectState);
+    callAfterEvaluated(project);
     
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -317,5 +317,15 @@ public class RebelPluginTest {
   
   private static boolean getRandomBoolean() {
     return Math.random() < 0.5;
+  }
+  
+  /**
+   * Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called
+   */
+  private static void callAfterEvaluated(Project project) {
+    ProjectStateInternal projectState = new ProjectStateInternal();
+    projectState.executed();
+    ProjectEvaluationListener evaluationListener = ((AbstractProject) project).getProjectEvaluationBroadcaster();
+    evaluationListener.afterEvaluate(project, projectState);    
   }
 }

@@ -160,27 +160,12 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
-    
-    // handle the 'warPath' configuration option
-    // TODO this should probably be put into "project.afterEvaluate" block
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR, new Callable<Object>() {
-      public Object call() throws Exception {
-        RebelDslWar war = rebelExtension.getWar();
-        if (war != null) {
-          return war.toRebelWar();
-        }
-        return null;
-      }
-    });
 
     // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
     project.afterEvaluate(new Action<Project>() {
 
       @Override
       public void execute(Project project) {
-
-        // TODO remove
-        System.out.println(" =========== IN THE AFTER_EVALUATE");
         
         // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
         //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
@@ -196,17 +181,15 @@ public class RebelPlugin implements Plugin<Project> {
         
         // --- end of old dirty code. stuff below here is good again.
         
-        // TODO restore
-//        RebelDslWar war = rebelExtension.getWar();
-//        if (war != null) {
-//          generateRebelTask.setWar(war.toRebelWar());
-//        }
+        RebelDslWar war = rebelExtension.getWar();
+        if (war != null) {
+          generateRebelTask.setWar(war.toRebelWar());
+        }
         
         RebelDslWeb web = rebelExtension.getWeb();
         if (web != null) {
           generateRebelTask.setWeb(rebelExtension.getWeb().toRebelWeb());
         }
-        
       }
       
     });
