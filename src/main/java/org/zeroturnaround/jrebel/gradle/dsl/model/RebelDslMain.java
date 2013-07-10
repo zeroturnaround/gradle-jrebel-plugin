@@ -35,8 +35,10 @@ public class RebelDslMain {
 
   private String packaging;
 
+  // TODO obsolete?
   private File classesDirectory;
 
+  // TODO obsolete?
   private File resourcesDirectory;
 
   private String warSourceDirectory;
@@ -49,14 +51,9 @@ public class RebelDslMain {
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath resourcesClasspath;
   
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  private RebelWeb web;
-
-  // TODO rename
-  private RebelDslWeb dslWeb;
-  
   private String rootPath;
 
+  // TODO obsolete?
   private File relativePath;
 
   private String rebelXmlDirectory;
@@ -66,6 +63,9 @@ public class RebelDslMain {
   private Boolean addResourcesDirToRebelXml;
 
   private Boolean alwaysGenerate;
+
+  // TODO rename
+  private RebelDslWeb web;
 
   private RebelDslWar war;
   
@@ -132,24 +132,12 @@ public class RebelDslMain {
     this.resourcesClasspath = resourcesClasspath;
   }
 
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public RebelWeb getWeb() {
+  public RebelDslWeb getWeb() {
     return web;
   }
-
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public void setWeb(RebelWeb web) {
-    this.web = web;
-  }
-
-  // TODO 
-  public RebelDslWeb getDslWeb() {
-    return dslWeb;
-  }
   
-  // TODO 
-  public void setDslWeb(RebelDslWeb _web) {
-    this.dslWeb = _web;
+  public void setWeb(RebelDslWeb _web) {
+    this.web = _web;
   }
   
   public String getRootPath() {
@@ -212,8 +200,8 @@ public class RebelDslMain {
    * Evaluate the 'web {..}' block
    */
   public void web(Closure closure) {
-    dslWeb = new RebelDslWeb();
-    ConfigureUtil.configure(closure, dslWeb);
+    web = new RebelDslWeb();
+    ConfigureUtil.configure(closure, web);
   }
   
   /**

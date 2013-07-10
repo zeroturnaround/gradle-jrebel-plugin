@@ -199,9 +199,9 @@ public class RebelPlugin implements Plugin<Project> {
 //          generateRebelTask.setWar(war.toRebelWar());
 //        }
         
-        RebelDslWeb web = rebelExtension.getDslWeb();
+        RebelDslWeb web = rebelExtension.getWeb();
         if (web != null) {
-          generateRebelTask.setWeb(rebelExtension.getDslWeb().toRebelWeb());
+          generateRebelTask.setWeb(rebelExtension.getWeb().toRebelWeb());
         }
         
       }
