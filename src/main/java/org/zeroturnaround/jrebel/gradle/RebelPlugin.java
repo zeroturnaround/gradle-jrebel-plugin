@@ -89,7 +89,6 @@ public class RebelPlugin implements Plugin<Project> {
     
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getRebelXmlDirectory() != null) {
           return new File(rebelExtension.getRebelXmlDirectory());
         }
@@ -111,7 +110,6 @@ public class RebelPlugin implements Plugin<Project> {
         // handle the 'warSourceDirectory' configuration option
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception {
-            RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
             if (rebelExtension.getWarSourceDirectory() != null) {
               return project.file(rebelExtension.getWarSourceDirectory());
             }
@@ -127,7 +125,6 @@ public class RebelPlugin implements Plugin<Project> {
     // handle the 'addResourcesDirToRebelXml' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ADD_RESOURCES_DIR_TO_REBEL_XML, new Callable<Object>() {
       public Object call() throws Exception {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getAddResourcesDirToRebelXml() != null) {
           return rebelExtension.getAddResourcesDirToRebelXml();
         }
@@ -140,7 +137,6 @@ public class RebelPlugin implements Plugin<Project> {
     // handle the 'showGenerated' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_SHOW_GENERATED,  new Callable<Object>() {
       public Object call() throws Exception {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getShowGenerated() != null) {
           return rebelExtension.getShowGenerated();
         }
@@ -153,7 +149,6 @@ public class RebelPlugin implements Plugin<Project> {
     // handle the 'alwaysGenerate' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ALWAYS_GENERATE, new Callable<Object>() {
       public Object call() throws Exception {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
         if (rebelExtension.getAlwaysGenerate() != null) {
           return rebelExtension.getAlwaysGenerate();
         }
@@ -166,8 +161,6 @@ public class RebelPlugin implements Plugin<Project> {
     // handle the 'warPath' configuration option 
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_PATH, new Callable<Object>() {
       public Object call() throws Exception {
-        RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-
         if (rebelExtension.getWarPath() != null) {
           return rebelExtension.getWarPath();
         }
