@@ -13,21 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.zeroturnaround.jrebel.gradle;
+package org.zeroturnaround.jrebel.gradle.dsl.model;
 
 import groovy.lang.Closure;
 
 import java.io.File;
 
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
-import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.gradle.util.ConfigureUtil;
 
-public class RebelPluginExtension {
+/**
+ * The parent class of the Rebel plugin's DSL extension. 
+ * 
+ * @author Sander Sõnajalg
+ */
+public class RebelDslMain {
 
   private String packaging;
 
@@ -65,7 +69,7 @@ public class RebelPluginExtension {
 
   private RebelDslWar war;
   
-  public RebelPluginExtension() {
+  public RebelDslMain() {
   }
   
   public String getPackaging() {
@@ -208,12 +212,8 @@ public class RebelPluginExtension {
    * Evaluate the 'web {..}' block
    */
   public void web(Closure closure) {
-    System.out.println(" ===================== UYUUUUUUUUUUUUUUUUUUUUUUUU");
-    
     dslWeb = new RebelDslWeb();
     ConfigureUtil.configure(closure, dslWeb);
-    
-    System.out.println(" ===================== webdsl : " + dslWeb);
   }
   
   /**
@@ -225,7 +225,23 @@ public class RebelPluginExtension {
   }
 
   public String toString() {
-    return "RebelPluginExtension { TODO ..}";
+    ToStringBuilder builder = new ToStringBuilder(this);
+    builder.append("packaging", packaging);
+    builder.append("classesDirectory", classesDirectory);
+    builder.append("resourcesDirectory", resourcesDirectory);
+    builder.append("warSourceDirectory", warSourceDirectory);
+    builder.append("webappDirectory", webappDirectory);
+    builder.append("classpath", classpath);
+    builder.append("resourcesClasspath", resourcesClasspath);
+    builder.append("web", web);
+    builder.append("rootPath", rootPath);
+    builder.append("relativePath", relativePath);
+    builder.append("rebelXmlDirectory", rebelXmlDirectory);
+    builder.append("showGenerated", showGenerated);
+    builder.append("addResourcesDirToRebelXml", addResourcesDirToRebelXml);
+    builder.append("alwaysGenerate", alwaysGenerate);
+    builder.append("war", war);
+    return builder.toString();
   }
   
 }

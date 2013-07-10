@@ -27,9 +27,9 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Test;
 import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
-import org.zeroturnaround.jrebel.gradle.RebelPluginExtension;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
@@ -154,7 +154,7 @@ public class RebelPluginTest {
     project.getPlugins().apply(RebelPlugin.class);
     
     // Configure the rebel plugin
-    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
     
     String myWarPath = "/my/war/path";
     RebelDslWar dslWar = new RebelDslWar();
@@ -204,7 +204,7 @@ public class RebelPluginTest {
     project.getPlugins().apply(RebelPlugin.class);
     
     // Cconfigure the rebel plugin
-    RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
     
     String myWarPath = "/my/war/path";
     

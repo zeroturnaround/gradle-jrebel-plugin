@@ -27,6 +27,7 @@ import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
@@ -78,7 +79,7 @@ public class RebelPlugin implements Plugin<Project> {
   private void configure(final Project project) {
     log.info("Configuring Rebel plugin...");
 
-    project.getExtensions().create(REBEL_EXTENSION_NAME, RebelPluginExtension.class);
+    project.getExtensions().create(REBEL_EXTENSION_NAME, RebelDslMain.class);
 
     // configure Rebel task
     final RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
@@ -87,7 +88,7 @@ public class RebelPlugin implements Plugin<Project> {
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME));
 
-    final RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
+    final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
     
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
@@ -172,9 +173,6 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
 
-    // TODO remove
-    log.info("webdsl : " + rebelExtension.getDslWeb());
-
     // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
     project.afterEvaluate(new Action<Project>() {
 
@@ -185,8 +183,6 @@ public class RebelPlugin implements Plugin<Project> {
         //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
         //     until I know what's gonna replace them and have a better solution ready
         
-        // Hmmm... I think this stuff actuall doesn't work here at all.. the "rebel {..}" DSL  is not evaluated yet
-        
         generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
         generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
@@ -194,6 +190,8 @@ public class RebelPlugin implements Plugin<Project> {
         generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
         generateRebelTask.setConfiguredClasspath(rebelExtension.getClasspath());
 
+        
+        // --- end of old dirty code. stuff below here is good again.
         
         // TODO restore
 //        RebelDslWar war = rebelExtension.getWar();
