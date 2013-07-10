@@ -18,6 +18,9 @@ package org.zeroturnaround.jrebel.gradle.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 
 /**
  * Classpath resource configuration.
@@ -101,6 +104,17 @@ public class RebelClasspathResource implements RebelResource {
 
   public void setJarset(String jarset) {
     this.jarset = jarset;
+  }
+  
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
+    builder.append("directory", directory);
+    builder.append("dirset", dirset);
+    builder.append("excludes", excludes);
+    builder.append("includes", includes);
+    builder.append("jar", jar);
+    builder.append("jarset", jarset);
+    return builder.toString();
   }
 
 }

@@ -563,12 +563,4 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
   
-  /**
-   * Stringify all configuration options
-   */
-  // TODO temporary implementation
-  public String toStringConfigurationOptions() {
-    return "RebelGenerateTask[ configuredWarPath = " + war + " ]";
-  }
-  
 }

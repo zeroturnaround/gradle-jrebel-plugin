@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 
 /**
@@ -103,4 +104,16 @@ public class RebelMainModel {
     return new RebelXmlWriter().toXmlString(this);
   }
 
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this);
+    builder.append("classpathDirs", classpathDirs);
+    builder.append("classpathDirsets", classpathDirsets);
+    builder.append("classpathJars", classpathJars);
+    builder.append("classpathJarsets", classpathJarsets);
+    builder.append("fallbackClasspath", fallbackClasspath);
+    builder.append("war", war);
+    builder.append("webResources", webResources);
+    return builder.toString();
+  }
+  
 }

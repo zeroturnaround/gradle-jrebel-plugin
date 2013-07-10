@@ -15,6 +15,7 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
 /**
@@ -41,4 +42,10 @@ public class RebelDslWar {
     return war;
   }
 
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this);
+    builder.append("path", path);
+    return builder.toString();
+  }
+  
 }

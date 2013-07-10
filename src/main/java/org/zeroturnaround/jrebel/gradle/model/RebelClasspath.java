@@ -15,6 +15,9 @@
  */
 package org.zeroturnaround.jrebel.gradle.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * Classpath configuration.
  */
@@ -40,4 +43,11 @@ public class RebelClasspath {
     this.resources = resources;
   }
 
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
+    builder.append("resources", resources);
+    builder.append("fallback", fallback);
+    return builder.toString();
+  }
+  
 }

@@ -220,7 +220,6 @@ public class RebelPluginTest {
     
     // execute the task
     task.generate();
-    project.getLogger().info("RebelGenerateTask : " + task.toStringConfigurationOptions());
     
     // validate the eventual model
     RebelMainModel model = task.getRebelModel();

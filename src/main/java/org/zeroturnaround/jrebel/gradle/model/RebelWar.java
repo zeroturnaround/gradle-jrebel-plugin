@@ -15,6 +15,9 @@
  */
 package org.zeroturnaround.jrebel.gradle.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * War configuration.
  */
@@ -50,7 +53,10 @@ public class RebelWar {
   }
 
   public String toString() {
-    return "RebelWar { path = " + path + " }"; 
+    ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
+    builder.append("path", path);
+    builder.append("originalPath", path);
+    return builder.toString();
   }
   
 }
