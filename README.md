@@ -19,10 +19,11 @@ apply plugin: 'rebel'
 
 buildscript {
   repositories {
-     mavenLocal()
      mavenCentral()
-     mavenRepo(name: 'zt-public-snapshots',
-               url: 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/')
+     mavenRepo(
+       name: 'zt-public-snapshots',
+       url: 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/'
+     )
   }
 
   dependencies {
