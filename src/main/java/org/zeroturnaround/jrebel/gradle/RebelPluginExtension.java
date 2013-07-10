@@ -19,8 +19,9 @@ import groovy.lang.Closure;
 
 import java.io.File;
 
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
+
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
-import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
 import org.gradle.util.ConfigureUtil;
@@ -60,6 +61,12 @@ public class RebelPluginExtension {
 
   private Boolean alwaysGenerate;
 
+  private RebelDslWar war;
+  
+  public RebelPluginExtension() {
+    this.war = new RebelDslWar();
+  }
+  
   public String getPackaging() {
     return packaging;
   }
@@ -186,7 +193,14 @@ public class RebelPluginExtension {
     this.alwaysGenerate = alwaysGenerate;
   }
 
+  public RebelDslWar getWar() {
+    return war;
+  }
 
+  public void setWar(RebelDslWar war) {
+    this.war = war;
+  }
+  
   /**
    * Evaluate the 'war {..}' block
    * 
@@ -195,11 +209,11 @@ public class RebelPluginExtension {
    * XXX
    */
   public void war(Closure closure) {
-    RebelWar war = new RebelWar();
-    
     ConfigureUtil.configure(closure, war);
-    
-    System.out.println("the value after evaluating the closure : " + war.getPath());
-    
   }
+
+  public String toString() {
+    return "RebelPluginExtension { TODO ..}";
+  }
+  
 }

@@ -25,6 +25,7 @@ import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
@@ -161,8 +162,9 @@ public class RebelPlugin implements Plugin<Project> {
     // handle the 'warPath' configuration option 
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_PATH, new Callable<Object>() {
       public Object call() throws Exception {
-        if (rebelExtension.getWarPath() != null) {
-          return rebelExtension.getWarPath();
+        RebelDslWar war = rebelExtension.getWar();
+        if (war != null && war.getPath() != null) {
+          return war.getPath();
         }
         return null;
       }

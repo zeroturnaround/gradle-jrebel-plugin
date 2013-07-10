@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 import org.zeroturnaround.jrebel.gradle.RebelPluginExtension;
+import org.zeroturnaround.jrebel.gradle.dsl.model.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
@@ -155,7 +156,9 @@ public class RebelPluginTest {
     RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
     
     String myWarPath = "/my/war/path";
-    rebelExtension.setWarPath(myWarPath);
+    RebelDslWar dslWar = new RebelDslWar();
+    rebelExtension.setWar(dslWar);
+    dslWar.setPath(myWarPath);
     
     String myWarSourceDirectory = "/my/war/source/dir";
     rebelExtension.setWarSourceDirectory(myWarSourceDirectory);
@@ -201,8 +204,12 @@ public class RebelPluginTest {
     
     // Cconfigure the rebel plugin
     RebelPluginExtension rebelExtension = (RebelPluginExtension) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    
     String myWarPath = "/my/war/path";
-    rebelExtension.setWarPath(myWarPath);
+    
+    RebelDslWar dslWar = new RebelDslWar();
+    dslWar.setPath(myWarPath);
+    rebelExtension.setWar(dslWar);
     
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
