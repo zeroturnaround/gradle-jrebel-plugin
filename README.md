@@ -170,7 +170,7 @@ rebel {
     }
 
 }
-
+```
 
 ### 2.2. Configuring &lt;web&gt;
 
