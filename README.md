@@ -106,6 +106,40 @@ rebel {
 ```
 
 
+2.1. Configuring <classpath>
+----------------------------
+
+The ``<classpath>`` element in rebel.xml defines which locations are monitored by JRebel for new versions of your classes. If you
+use the Java or the War plugin, the plugin will ask for the classes output location from your Gradle project model. In many cases this
+will be the sufficient configuration to make class reloading work (you just have to check that your IDE is also auto-compiling your
+classes into that same directory). In that case, you can just completely leave out the ``classpath { .. } `` configuration and the
+default will be used.
+
+If for some reason the plugin is not getting it right, or you want to add additional classpath locations to your *rebel.xml*, you
+can do so by providing  ``classpath { .. } `` section in your build.gredle DSL:
+
+``` groovy
+rebel {
+  // (other config)
+  
+  classpath {
+    resource {
+      directory = "build/main/classes"
+      includes = ["**/*"]
+      excludes = ["*.java", "*.properties"]
+    }
+    
+    // the default element
+    resource {}
+    
+    resource {
+      directory = "build/integration-tests/classes"
+    }
+  }
+}
+```
+
+
 3. IDE configuration
 --------------------
 
