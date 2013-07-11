@@ -115,8 +115,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   private File configuredResourcesDirectory;
   
-  private File configuredClassesDirectory;
-  
   private RebelClasspath configuredResourcesClasspath;
     
   public String getConfiguredRootPath() {
@@ -143,14 +141,6 @@ public class RebelGenerateTask extends DefaultTask {
     this.configuredResourcesDirectory = dir;
   }
 
-  public File getConfiguredClassesDirectory() {
-    return configuredClassesDirectory;
-  }
-  
-  public void setConfiguredClassesDirectory(File dir) {
-    this.configuredClassesDirectory = dir;
-  }
-  
   public RebelClasspath getConfiguredResourcesClasspath() {
     return configuredResourcesClasspath;
   }

@@ -187,8 +187,10 @@ public class RebelPlugin implements Plugin<Project> {
         
         generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
+        
+        // TODO remove for sure!
         generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
-        generateRebelTask.setConfiguredClassesDirectory(rebelExtension.getClassesDirectory());
+        
         generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
         
         // --- end of old dirty code. stuff below here is good again.
