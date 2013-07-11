@@ -106,17 +106,20 @@ rebel {
 ```
 
 
-2.1. Configuring <classpath>
-----------------------------
+
+
+### 2.1. Configuring &lt;classpath&gt;
+
 
 The ``<classpath>`` element in rebel.xml defines which locations are monitored by JRebel for new versions of your classes. If you
-use the Java or the War plugin, the plugin will ask for the classes output location from your Gradle project model. In many cases this
-will be the sufficient configuration to make class reloading work (you just have to check that your IDE is also auto-compiling your
-classes into that same directory). In that case, you can just completely leave out the ``classpath { .. } `` configuration and the
-default will be used.
+use Gradle's Java or War plugin, the plugin will ask for the classes output location from your Gradle project model. In many cases this
+will be sufficient to make class reloading work (you just have to check that your IDE is also auto-compiling your
+classes into that same directory). In that case, you can just completely leave out the ``classpath { .. } `` block and the
+defaults will be used.
 
-If for some reason the plugin is not getting it right, or you want to add additional classpath locations to your *rebel.xml*, you
-can do so by providing  ``classpath { .. } `` section in your build.gredle DSL:
+If for some reason the plugin is not getting it right, or you want to add additional classpath locations to your *rebel.xml* or
+explicitly fine-tune excluded or included resources, you can do so by providing  ``classpath { .. } `` section in your
+*build.gredle* DSL:
 
 ``` groovy
 rebel {
@@ -124,7 +127,7 @@ rebel {
   
   classpath {
     resource {
-      directory = "build/main/classes"
+      directory = "build/main/other-classes-dir"
       includes = ["**/*"]
       excludes = ["*.java", "*.properties"]
     }
@@ -138,6 +141,16 @@ rebel {
   }
 }
 ```
+
+Each ``resource {..}`` element will define one classpath search location in your ``rebel.xml``. The empty ``resource {}``
+element has a special meaning - this is a placeholder for the default classpath location asked from the
+Java or War plugin. It can be used to control the order where the default location will be placed in the
+generated *rebel.xml*. For example, the above configuration would generate a *rebel.xml* that instructs JRebel
+to search for a class from these directories in that same order:
+
+ 1. ``build/main/other-classes-dir``
+ 2. *[the default compilation output directory known by your Gradle Java plugin]*
+ 3. ``build/integration-tests/classes``
 
 
 3. IDE configuration
