@@ -73,6 +73,7 @@ public class RebelDslMain {
     this.packaging = packaging;
   }
 
+  // TODO deprecated? now that the user can define far more detailed web resources, using the DSL?
   public String getWarSourceDirectory() {
     return warSourceDirectory;
   }

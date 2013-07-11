@@ -88,20 +88,6 @@ rebel {
    */
   rebelXmlDirectory = "build/classes"
 
-  /*
-   * warSourceDirectory - default is 'src/main/webapp'
-   *
-   * The directory with web resources that will be monitored for changes.
-   */
-  warSourceDirectory = "src/main/webapp"
-  
-  
-  /*
-   * Adds the <war> element into the rebel.xml with the specified path attribute.
-   */
-  war {
-    path = "build/war"
-  }
 }
 ```
 
@@ -222,6 +208,7 @@ rebel {
     }
   }
 }
+```
 
 Once again, omit the ``web {..}`` configuration block as a whole if you are satisfied with the defaults.
 

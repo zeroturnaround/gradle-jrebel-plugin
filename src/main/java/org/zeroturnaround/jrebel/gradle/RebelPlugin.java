@@ -113,7 +113,9 @@ public class RebelPlugin implements Plugin<Project> {
 
         // handle the 'warSourceDirectory' configuration option
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
-          public Object call() throws Exception {
+          public Object call() throws Exception { 
+            // TODO 
+            // depreceate this branch, just propagate the default directory thorugh here?? (keep the else branch)
             if (rebelExtension.getWarSourceDirectory() != null) {
               return project.file(rebelExtension.getWarSourceDirectory());
             }
