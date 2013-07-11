@@ -35,9 +35,6 @@ public class RebelDslMain {
 
   private String packaging;
 
-  // TODO obsolete?
-  private File resourcesDirectory;
-
   private String warSourceDirectory;
 
   private String webappDirectory;
@@ -74,14 +71,6 @@ public class RebelDslMain {
 
   public void setPackaging(String packaging) {
     this.packaging = packaging;
-  }
-
-  public File getResourcesDirectory() {
-    return resourcesDirectory;
-  }
-
-  public void setResourcesDirectory(File resourcesDirectory) {
-    this.resourcesDirectory = resourcesDirectory;
   }
 
   public String getWarSourceDirectory() {
@@ -209,7 +198,6 @@ public class RebelDslMain {
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("packaging", packaging);
-    builder.append("resourcesDirectory", resourcesDirectory);
     builder.append("warSourceDirectory", warSourceDirectory);
     builder.append("webappDirectory", webappDirectory);
     builder.append("classpath", classpath);

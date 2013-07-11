@@ -88,8 +88,13 @@ public class RebelGenerateTask extends DefaultTask {
 
   // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
   private File defaultClassesDirectory;
-  
+
   public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory";
+
+  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
+  private File defaultResourcesDirectory;
+  
+  public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory";
   
   // === interal properties of the task
   
@@ -113,8 +118,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   private File configuredRelativePath;
   
-  private File configuredResourcesDirectory;
-  
   private RebelClasspath configuredResourcesClasspath;
     
   public String getConfiguredRootPath() {
@@ -131,14 +134,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   public void setConfiguredRelativePath(File path) {
     this.configuredRelativePath = path;
-  }
-  
-  public File getConfiguredResourcesDirectory() {
-    return configuredResourcesDirectory;
-  }
-
-  public void setConfiguredResourcesDirectory(File dir) {
-    this.configuredResourcesDirectory = dir;
   }
 
   public RebelClasspath getConfiguredResourcesClasspath() {
@@ -238,8 +233,25 @@ public class RebelGenerateTask extends DefaultTask {
     return defaultClassesDirectory;
   }
 
+  /**
+   * XXX .. probably useless method
+   */
   public void setDefaultClassesDirectory(File defaultClassesDirectory) {
     this.defaultClassesDirectory = defaultClassesDirectory;
+  }
+
+  /**
+   * intercepted by Gradle with convention-mapping
+   */
+  public File getDefaultResourcesDirectory() {
+    return defaultResourcesDirectory;
+  }
+
+  /**
+   * XXX .. probably useless method
+   */
+  public void setDefaultResourcesDirectory(File defaultResourcesDirectory) {
+    this.defaultResourcesDirectory = defaultResourcesDirectory;
   }
   
   /**
@@ -272,6 +284,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.web = " + web);
     log.info("rebel.classpath = " + classpath);
     log.info("rebel.defaultClassesDirectory = " + getDefaultClassesDirectory());
+    log.info("rebel.defaultResourcesDirectory = " + getDefaultResourcesDirectory());
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -408,7 +421,7 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getResourcesDirectory()));
+    r.setDirectory(fixFilePath(getDefaultResourcesDirectory()));
     if (!new File(r.getDirectory()).isDirectory()) {
       return;
     }
@@ -551,27 +564,6 @@ public class RebelGenerateTask extends DefaultTask {
 
   private String fixFilePath(String path) {
     return fixFilePath(new File(path));
-  }
-
-  /**
-   * Tiny helper to get Gradle JavaPlugin's SourceSetContainer (knows about project paths)
-   * 
-   * TODO .. get rid of this.. the plugin should by itself send this kind of information down to the task
-   */
-  @Deprecated
-  private SourceSetContainer getSourceSets() {
-    JavaPluginConvention javaConvention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
-    return javaConvention.getSourceSets();
-  }
-
-  @Deprecated
-  private File getResourcesDirectory() {
-    if (getConfiguredResourcesDirectory() != null) {
-      return getConfiguredResourcesDirectory();
-    }
-    else {
-      return getSourceSets().getByName("main").getOutput().getResourcesDir();
-    }
   }
 
   private String getRelativePath() {

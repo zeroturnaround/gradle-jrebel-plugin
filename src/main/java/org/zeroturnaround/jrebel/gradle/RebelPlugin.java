@@ -175,25 +175,35 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
     
+    // handle 'defaultResourcesDirectory' configuration option
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_RESOURCES_DIRECTORY, new Callable<Object>() {
+      public Object call() {
+        try {
+          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+          return javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
+        }
+        catch (Exception e) {
+          return null;
+        }
+      }
+    });
+    
     // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
     project.afterEvaluate(new Action<Project>() {
 
       @Override
       public void execute(Project project) {
         
+        // ==========================
         // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
         //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
         //     until I know what's gonna replace them and have a better solution ready
         
         generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
-        
-        // TODO remove for sure!
-        generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
-        
         generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
         
-        // --- end of old dirty code. stuff below here is good again.
+        // =============== end of old dirty code. stuff below here is good again.
          
         RebelDslClasspath classpath = rebelExtension.getClasspath();
         if (classpath != null) {
