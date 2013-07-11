@@ -20,6 +20,8 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
 /**
  * Gradle DSL level model for war configuration (corresponds to RebelWar in backend model).
+ * 
+ * @author Sander Sonajalg
  */
 public class RebelDslWar {
 

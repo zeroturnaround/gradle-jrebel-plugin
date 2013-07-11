@@ -26,6 +26,8 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
 /**
  * Gradle DSL level model for <web> elements configuration (corresponds to RebelWeb in backend model).
+ * 
+ * @author Sander Sonajalg
  */
 public class RebelDslWeb {
 

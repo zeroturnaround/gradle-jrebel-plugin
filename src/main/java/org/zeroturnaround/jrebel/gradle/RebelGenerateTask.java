@@ -158,6 +158,7 @@ public class RebelGenerateTask extends DefaultTask {
     return configuredClasspath;
   }
   
+  // TODO rename?
   public void setConfiguredClasspath(RebelClasspath path) {
     this.configuredClasspath = path;
   }
@@ -256,15 +257,15 @@ public class RebelGenerateTask extends DefaultTask {
    */
   @TaskAction
   public void generate() {
-    // TODO replace this by a proper rebelTask.toString method!
     log.info("rebel.alwaysGenerate = " + getAlwaysGenerate());
     log.info("rebel.showGenerated = " + getShowGenerated());
     log.info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
     log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
     log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
     log.info("rebel.packaging = " + getPackaging());
-    log.info("rebel.war = " + getWar());
+    log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
+    log.info("rebel.classpath = " + configuredClasspath);
     
     // find rebel.xml location
     File rebelXmlFile = null;

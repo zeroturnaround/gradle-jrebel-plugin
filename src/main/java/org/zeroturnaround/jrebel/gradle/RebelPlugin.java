@@ -25,10 +25,10 @@ import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
+import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
-import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -176,10 +176,13 @@ public class RebelPlugin implements Plugin<Project> {
         generateRebelTask.setConfiguredResourcesDirectory(rebelExtension.getResourcesDirectory());
         generateRebelTask.setConfiguredClassesDirectory(rebelExtension.getClassesDirectory());
         generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
-        generateRebelTask.setConfiguredClasspath(rebelExtension.getClasspath());
-
         
         // --- end of old dirty code. stuff below here is good again.
+         
+        RebelDslClasspath classpath = rebelExtension.getClasspath();
+        if (classpath != null) {
+          generateRebelTask.setConfiguredClasspath(classpath.toRebelClasspath());
+        }
         
         RebelDslWar war = rebelExtension.getWar();
         if (war != null) {

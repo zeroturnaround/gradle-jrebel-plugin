@@ -45,8 +45,7 @@ public class RebelDslMain {
 
   private String webappDirectory;
 
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  private RebelClasspath classpath;
+  private RebelDslClasspath classpath;
 
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   private RebelClasspath resourcesClasspath;
@@ -113,16 +112,6 @@ public class RebelDslMain {
   }
 
   // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public RebelClasspath getClasspath() {
-    return classpath;
-  }
-
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
-  public void setClasspath(RebelClasspath classpath) {
-    this.classpath = classpath;
-  }
-
-  // TODO change to use strings. no-one knows how to nor wants to use our custom types in their build.gradle
   public RebelClasspath getResourcesClasspath() {
     return resourcesClasspath;
   }
@@ -138,6 +127,14 @@ public class RebelDslMain {
   
   public void setWeb(RebelDslWeb _web) {
     this.web = _web;
+  }
+
+  public RebelDslClasspath getClasspath() {
+    return classpath;
+  }
+  
+  public void setClasspath(RebelDslClasspath _classpath) {
+    this.classpath = _classpath;
   }
   
   public String getRootPath() {
@@ -194,6 +191,14 @@ public class RebelDslMain {
 
   public void setWar(RebelDslWar war) {
     this.war = war;
+  }
+
+  /**
+   * Evaluate the 'classpath {..}' block
+   */
+  public void classpath(Closure closure) {
+    classpath = new RebelDslClasspath();
+    ConfigureUtil.configure(closure, classpath);
   }
   
   /**
