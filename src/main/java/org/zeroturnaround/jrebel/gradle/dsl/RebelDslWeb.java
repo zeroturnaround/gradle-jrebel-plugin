@@ -54,13 +54,10 @@ public class RebelDslWeb {
    * DSL-backing method to add a new resource
    */
   public void resource(Closure closure) {
-    System.out.println("  ---------- CALLED THE 'resource {}' BLOCK ");
     RebelDslWebResource webResource = new RebelDslWebResource();
     ConfigureUtil.configure(closure, webResource);
     
     webResources.add(webResource);
-    
-    System.out.println("  ---> constructed a resource, IT LOOKS LIKE THAT : " + webResource);
   }
 
   public String toString() {
