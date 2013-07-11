@@ -90,6 +90,7 @@ public class RebelPlugin implements Plugin<Project> {
 
     final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
     
+    // handle the 'rebelXmlDirectory' configuration option
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
         if (rebelExtension.getRebelXmlDirectory() != null) {
@@ -160,7 +161,20 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
-
+    
+    // handle 'defaultClassesDirectory' configuration option
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORY, new Callable<Object>() {
+      public Object call() {
+        try {
+          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+        }
+        catch (Exception e) {
+          return null;
+        }
+      }
+    });
+    
     // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
     project.afterEvaluate(new Action<Project>() {
 

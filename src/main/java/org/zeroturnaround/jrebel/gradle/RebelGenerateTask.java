@@ -63,14 +63,17 @@ public class RebelGenerateTask extends DefaultTask {
   
   private String packaging;
   
+  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
   private File rebelXmlDirectory;
 
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory";
   
+  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
   private Boolean showGenerated;
   
   public static final String NAME_SHOW_GENERATED = "showGenerated";
-  
+
+  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
   private File warSourceDirectory;
 
   public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
@@ -83,8 +86,11 @@ public class RebelGenerateTask extends DefaultTask {
   
   private RebelWar war;
 
-  public static final String NAME_WAR = "war";
-   
+  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
+  private File defaultClassesDirectory;
+  
+  public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory";
+  
   // === interal properties of the task
   
   private RebelMainModel rebelModel;
@@ -236,6 +242,17 @@ public class RebelGenerateTask extends DefaultTask {
   }
   
   /**
+   * intercepted by Gradle with convention-mapping
+   */
+  public File getDefaultClassesDirectory() {
+    return defaultClassesDirectory;
+  }
+
+  public void setDefaultClassesDirectory(File defaultClassesDirectory) {
+    this.defaultClassesDirectory = defaultClassesDirectory;
+  }
+  
+  /**
    * Getter for the functional tests to examine the model
    */
   public RebelMainModel getRebelModel() {
@@ -264,6 +281,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
     log.info("rebel.classpath = " + classpath);
+    log.info("rebel.defaultClassesDirectory = " + getDefaultClassesDirectory());
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -364,6 +382,7 @@ public class RebelGenerateTask extends DefaultTask {
         // An ordinary element. Add it.
         else {
           // TODO TODO TODO add the fixpath stuff!! --- better implementation!! 
+          // TODO fix paths for other elements as well!
           resource.setDirectory(fixFilePath(resource.getDirectory()));
           model.addClasspathDir(resource);
         }
@@ -381,7 +400,7 @@ public class RebelGenerateTask extends DefaultTask {
   
     // project output directory
     RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getClassesDirectory()));
+    r.setDirectory(fixFilePath(getDefaultClassesDirectory()));
     if (!new File(r.getDirectory()).isDirectory()) {
       return;
     }
@@ -544,23 +563,18 @@ public class RebelGenerateTask extends DefaultTask {
     return fixFilePath(new File(path));
   }
 
-  private File getClassesDirectory() {
-    if (getConfiguredClassesDirectory() != null) {
-      return getConfiguredClassesDirectory();
-    }
-    else {
-      return getSourceSets().getByName("main").getOutput().getClassesDir();
-    }
-  }
-  
   /**
    * Tiny helper to get Gradle JavaPlugin's SourceSetContainer (knows about project paths)
+   * 
+   * TODO .. get rid of this.. the plugin should by itself send this kind of information down to the task
    */
+  @Deprecated
   private SourceSetContainer getSourceSets() {
     JavaPluginConvention javaConvention = getProject().getConvention().getPlugin(JavaPluginConvention.class);
     return javaConvention.getSourceSets();
   }
 
+  @Deprecated
   private File getResourcesDirectory() {
     if (getConfiguredResourcesDirectory() != null) {
       return getConfiguredResourcesDirectory();
