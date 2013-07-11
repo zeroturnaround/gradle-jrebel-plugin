@@ -22,8 +22,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import org.gradle.api.DefaultTask;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.api.logging.Logger;
@@ -43,40 +41,9 @@ public class RebelGenerateTask extends DefaultTask {
   public final static String PACKAGING_TYPE_WAR = "war";
   
   private Logger log = getProject().getLogger(); 
-    
-  /*
-   * User-defined configuration options that are propagated here from the RebelPluginExtension via RebelPlugin#configure
-   * and Gradle's conventionMapping mechanism
-   * 
-   * NB! These property names are also used by the Gradle's Conventions magic, do **NOT** rename them!!
-   * If you still have to, also update the corresponding string constant or things will break for sure!
-   * See their usage in RebelPlugin.
-   */
-  
-  public static final String NAME_ADD_RESOURCES_DIR_TO_REBEL_XML = "addResourcesDirToRebelXml";
-  
-  private Boolean addResourcesDirToRebelXml;
 
-  public static final String NAME_ALWAYS_GENERATE = "alwaysGenerate";
-  
-  private Boolean alwaysGenerate;
   
   private String packaging;
-  
-  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
-  private File rebelXmlDirectory;
-
-  public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory";
-  
-  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
-  private Boolean showGenerated;
-  
-  public static final String NAME_SHOW_GENERATED = "showGenerated";
-
-  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
-  private File warSourceDirectory;
-
-  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
   
   private RebelClasspath classpath;
   
@@ -86,21 +53,28 @@ public class RebelGenerateTask extends DefaultTask {
   
   private RebelWar war;
 
-  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
-  private File defaultClassesDirectory;
-
-  public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory";
-
-  // NB! set by the Gradle's convention-mapping magic! Only use through the getter!
-  private File defaultResourcesDirectory;
-  
-  public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory";
-  
   // === interal properties of the task
   
   private RebelMainModel rebelModel;
   
   private boolean skipWritingRebelXml;
+  
+  // === Options propagated here through the convention-mappings
+  
+  private Boolean addResourcesDirToRebelXml;
+  
+  private Boolean alwaysGenerate;
+
+  private File defaultClassesDirectory;
+  
+  private File defaultResourcesDirectory;
+  
+  private Boolean showGenerated;
+  
+  private File warSourceDirectory;
+  
+  private File rebelXmlDirectory;
+
   
   // =========== START OF WEIRD STUFF ===============================================
 
@@ -146,21 +120,7 @@ public class RebelGenerateTask extends DefaultTask {
 
   // ============================= END OF WEIRD STUFF =========================================
   
-  public Boolean getAddResourcesDirToRebelXml() {
-    return addResourcesDirToRebelXml;
-  }
 
-  public void setAddResourcesDirToRebelXml(Boolean addResourcesDirToRebelXml) {
-    this.addResourcesDirToRebelXml = addResourcesDirToRebelXml;
-  }
-
-  public Boolean getAlwaysGenerate() {
-    return alwaysGenerate;
-  }
-
-  public void setAlwaysGenerate(Boolean alwaysGenerate) {
-    this.alwaysGenerate = alwaysGenerate;
-  }
 
   public String getPackaging() {
     return packaging;
@@ -169,15 +129,7 @@ public class RebelGenerateTask extends DefaultTask {
   public void setPackaging(String packaging) {
     this.packaging = packaging;
   }
-
-  public File getRebelXmlDirectory() {
-    return rebelXmlDirectory;
-  }
-
-  public void setRebelXmlDirectory(File rebelXmlDirectory) {
-    this.rebelXmlDirectory = rebelXmlDirectory;
-  }
-
+  
   public Boolean getShowGenerated() {
     return showGenerated;
   }
@@ -188,10 +140,6 @@ public class RebelGenerateTask extends DefaultTask {
 
   public File getWarSourceDirectory() {
     return warSourceDirectory;
-  }
-
-  public void setWarSourceDirectory(File warSourceDirectory) {
-    this.warSourceDirectory = warSourceDirectory;
   }
 
   public RebelClasspath getClasspath() {
@@ -226,32 +174,24 @@ public class RebelGenerateTask extends DefaultTask {
     this.war = _war;
   }
   
-  /**
-   * intercepted by Gradle with convention-mapping
-   */
+  public Boolean getAddResourcesDirToRebelXml() {
+    return addResourcesDirToRebelXml;
+  }
+
+  public Boolean getAlwaysGenerate() {
+    return alwaysGenerate;
+  }
+  
   public File getDefaultClassesDirectory() {
     return defaultClassesDirectory;
   }
 
-  /**
-   * XXX .. probably useless method
-   */
-  public void setDefaultClassesDirectory(File defaultClassesDirectory) {
-    this.defaultClassesDirectory = defaultClassesDirectory;
-  }
-
-  /**
-   * intercepted by Gradle with convention-mapping
-   */
   public File getDefaultResourcesDirectory() {
     return defaultResourcesDirectory;
   }
 
-  /**
-   * XXX .. probably useless method
-   */
-  public void setDefaultResourcesDirectory(File defaultResourcesDirectory) {
-    this.defaultResourcesDirectory = defaultResourcesDirectory;
+  public File getRebelXmlDirectory() {
+    return rebelXmlDirectory;
   }
   
   /**
@@ -274,29 +214,31 @@ public class RebelGenerateTask extends DefaultTask {
    */
   @TaskAction
   public void generate() {
-    log.info("rebel.alwaysGenerate = " + getAlwaysGenerate());
-    log.info("rebel.showGenerated = " + getShowGenerated());
-    log.info("rebel.rebelXmlDirectory = " + getRebelXmlDirectory());
-    log.info("rebel.warSourceDirectory = " + getWarSourceDirectory());
-    log.info("rebel.addResourcesDirToRebelXml = " + getAddResourcesDirToRebelXml());
-    log.info("rebel.packaging = " + getPackaging());
+    propagateConventionMappingSettings();
+    
+    log.info("rebel.alwaysGenerate = " + alwaysGenerate);
+    log.info("rebel.showGenerated = " + showGenerated);
+    log.info("rebel.rebelXmlDirectory = " + rebelXmlDirectory);
+    log.info("rebel.warSourceDirectory = " + warSourceDirectory);
+    log.info("rebel.addResourcesDirToRebelXml = " + addResourcesDirToRebelXml);
+    log.info("rebel.packaging = " + packaging);
     log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
     log.info("rebel.classpath = " + classpath);
-    log.info("rebel.defaultClassesDirectory = " + getDefaultClassesDirectory());
-    log.info("rebel.defaultResourcesDirectory = " + getDefaultResourcesDirectory());
+    log.info("rebel.defaultClassesDirectory = " + defaultClassesDirectory);
+    log.info("rebel.defaultResourcesDirectory = " + defaultResourcesDirectory);
     
     // find rebel.xml location
     File rebelXmlFile = null;
   
-    if (getRebelXmlDirectory() != null) {
-      rebelXmlFile = new File(getRebelXmlDirectory(), "rebel.xml");
+    if (rebelXmlDirectory != null) {
+      rebelXmlFile = new File(rebelXmlDirectory, "rebel.xml");
     }
   
     // find build.gradle location
     File buildXmlFile = getProject().getBuildFile();
   
-    if (!getAlwaysGenerate() && (rebelXmlFile != null) && rebelXmlFile.exists() && (buildXmlFile != null) && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
+    if (!alwaysGenerate && (rebelXmlFile != null) && rebelXmlFile.exists() && (buildXmlFile != null) && buildXmlFile.exists() && rebelXmlFile.lastModified() > buildXmlFile.lastModified()) {
       return;
     }
   
@@ -397,13 +339,13 @@ public class RebelGenerateTask extends DefaultTask {
    * Add the default classes directory to classpath
    */
   private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
-    if (getAddResourcesDirToRebelXml()) {
+    if (addResourcesDirToRebelXml) {
       buildDefaultClasspathResources(model);
     }
   
     // project output directory
     RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getDefaultClassesDirectory()));
+    r.setDirectory(fixFilePath(defaultClassesDirectory));
     if (!new File(r.getDirectory()).isDirectory()) {
       return;
     }
@@ -421,7 +363,7 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
     RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(getDefaultResourcesDirectory()));
+    r.setDirectory(fixFilePath(defaultResourcesDirectory));
     if (!new File(r.getDirectory()).isDirectory()) {
       return;
     }
@@ -492,7 +434,7 @@ public class RebelGenerateTask extends DefaultTask {
   private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
     RebelWebResource r = new RebelWebResource();
     r.setTarget("/");
-    r.setDirectory(fixFilePath(getWarSourceDirectory()));
+    r.setDirectory(fixFilePath(warSourceDirectory));
   
     if (defaultWeb != null) {
       r.setIncludes(defaultWeb.getIncludes());
@@ -583,5 +525,72 @@ public class RebelGenerateTask extends DefaultTask {
       return getProject().getProjectDir().getAbsolutePath();
     }
   }
+ 
+  /* ====================================================================================================
+   *   Properties intercepted by Gradle's convention-mapping byte code magic. These methods will actually
+   *   be intercepted and return values set by the callback set up in RebelPlugin#configure.
+   * 
+   *   These properties are cached into local variables to lessen the magic. See propagateConventionMappingSettings().
+   */
+  
+  public static final String NAME_ADD_RESOURCES_DIR_TO_REBEL_XML = "addResourcesDirToRebelXml$MAGIC";
+
+  public static final String NAME_ALWAYS_GENERATE = "alwaysGenerate$MAGIC";
+
+  public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory$MAGIC";
+  
+  public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory$MAGIC";
+  
+  public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
+
+  public static final String NAME_SHOW_GENERATED = "showGenerated$MAGIC";
+  
+  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory$MAGIC";
+  
+  public Boolean getAddResourcesDirToRebelXml$MAGIC() {
+    return null;
+  }
+  
+  public Boolean getAlwaysGenerate$MAGIC() {
+    return null;
+  }
+
+  public File getDefaultClassesDirectory$MAGIC() {
+    return null;
+  }
+  
+  public File getDefaultResourcesDirectory$MAGIC() {
+    return null;
+  }
+  
+  public File getRebelXmlDirectory$MAGIC() {
+    return null;
+  }
+
+  public Boolean getShowGenerated$MAGIC() {
+    return null;
+  }
+  
+  public File getWarSourceDirectory$MAGIC() {
+    return null;
+  }
+  
+  /**
+   * Let the convention-mappings propagate its settings to me through the magic getters,
+   * save copies of them locally into normal instance variables.
+   * 
+   * (public only for unit tests)
+   */
+  public void propagateConventionMappingSettings() {
+    addResourcesDirToRebelXml = getAddResourcesDirToRebelXml$MAGIC();
+    alwaysGenerate = getAlwaysGenerate$MAGIC();
+    defaultClassesDirectory = getDefaultClassesDirectory$MAGIC();
+    defaultResourcesDirectory = getDefaultResourcesDirectory$MAGIC();
+    rebelXmlDirectory = getRebelXmlDirectory$MAGIC();
+    showGenerated = getShowGenerated$MAGIC();
+    warSourceDirectory = getWarSourceDirectory$MAGIC();
+  }
+  
+  // ========== END OF convention-mapping's intercepted magic methods
   
 }

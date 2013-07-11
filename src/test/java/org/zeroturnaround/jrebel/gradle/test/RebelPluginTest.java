@@ -21,7 +21,6 @@ import java.util.List;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectEvaluationListener;
-import org.gradle.api.ProjectState;
 import org.gradle.api.Task;
 import org.gradle.api.internal.project.AbstractProject;
 import org.gradle.api.internal.project.ProjectStateInternal;
@@ -189,6 +188,8 @@ public class RebelPluginTest {
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     
     assertNotNull(task);
+
+    task.propagateConventionMappingSettings();
     
     // 'warSourceDirectory'
     assertEquals(myWarSourceDirectory, task.getWarSourceDirectory().getAbsolutePath());
