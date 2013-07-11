@@ -15,6 +15,8 @@
  */
 package org.zeroturnaround.jrebel.gradle.model;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -25,13 +27,13 @@ public class RebelClasspath {
 
   private String fallback;
 
-  private RebelClasspathResource[] resources;
+  private List<RebelClasspathResource> resources;
 
   public String getFallback() {
     return fallback;
   }
 
-  public RebelClasspathResource[] getResources() {
+  public List<RebelClasspathResource> getResources() {
     return resources;
   }
 
@@ -39,10 +41,14 @@ public class RebelClasspath {
     this.fallback = fallback;
   }
 
-  public void setResources(RebelClasspathResource[] resources) {
-    this.resources = resources;
+  public void setResources(List<RebelClasspathResource> _resources) {
+    this.resources = _resources;
   }
 
+  public void addResource(RebelClasspathResource resource) {
+    this.resources.add(resource);
+  }
+  
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("resources", resources);

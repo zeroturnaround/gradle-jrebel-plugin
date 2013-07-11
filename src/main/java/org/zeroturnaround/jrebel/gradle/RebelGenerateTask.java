@@ -332,12 +332,12 @@ public class RebelGenerateTask extends DefaultTask {
     // first but put it where this element was.
   
     if (classpath != null) {
-      RebelClasspathResource[] resources = classpath.getResources();
+      List<RebelClasspathResource> resources = classpath.getResources();
   
-      if (resources != null && resources.length > 0) {
-        for (int i = 0; i < resources.length; i++) {
-          RebelClasspathResource r = resources[i];
-  
+      if (resources != null && resources.size() > 0) {
+        for (int i = 0; i < resources.size(); i++) {
+          RebelClasspathResource r = resources.get(i);
+          
           if (!r.isTargetSet()) {
             addDefaultAsFirst = false;
             defaultClasspath = r;
