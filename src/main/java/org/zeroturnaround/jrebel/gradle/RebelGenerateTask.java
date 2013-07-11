@@ -28,7 +28,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.api.logging.Logger;
 
-import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
@@ -76,6 +75,8 @@ public class RebelGenerateTask extends DefaultTask {
 
   public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory";
   
+  private RebelClasspath classpath;
+  
   private RebelWeb web;
   
   private File webappDirectory;
@@ -111,9 +112,7 @@ public class RebelGenerateTask extends DefaultTask {
   private File configuredClassesDirectory;
   
   private RebelClasspath configuredResourcesClasspath;
-  
-  private RebelClasspath configuredClasspath;
-  
+    
   public String getConfiguredRootPath() {
     return configuredRootPath;
   }
@@ -154,15 +153,6 @@ public class RebelGenerateTask extends DefaultTask {
     this.configuredResourcesClasspath = rebelPath;
   }
 
-  public RebelClasspath getConfiguredClasspath() {
-    return configuredClasspath;
-  }
-  
-  // TODO rename?
-  public void setConfiguredClasspath(RebelClasspath path) {
-    this.configuredClasspath = path;
-  }
-  
   // ============================= END OF WEIRD STUFF =========================================
   
   public Boolean getAddResourcesDirToRebelXml() {
@@ -213,6 +203,14 @@ public class RebelGenerateTask extends DefaultTask {
     this.warSourceDirectory = warSourceDirectory;
   }
 
+  public RebelClasspath getClasspath() {
+    return classpath;
+  }
+  
+  public void setClasspath(RebelClasspath path) {
+    this.classpath = path;
+  }
+  
   public RebelWeb getWeb() {
     return web;
   }
@@ -265,7 +263,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.packaging = " + getPackaging());
     log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
-    log.info("rebel.classpath = " + configuredClasspath);
+    log.info("rebel.classpath = " + classpath);
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -323,36 +321,61 @@ public class RebelGenerateTask extends DefaultTask {
     return model;
   }
 
+  /**
+   * Compile the model that corresponds to the <classpath> node in rebel.xml.
+   */
   private void buildClasspath(RebelMainModel model) {
+
+    // Search for the default element. If we find it, we have to place it exactly into the same place where we
+    // found it (preserving the order). If we *don't* find it, we'll add the default classpath as first element.
+    
+    // TODO later on there probably also has to be a "omitDefault" setting!
+    
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
-    RebelClasspath classpath = getConfiguredClasspath();
   
-    // check if there is a element with no dir/jar/dirset/jarset set. if there
-    // is then don't put default classpath as
-    // first but put it where this element was.
-  
+    // Just search for the default element. Don't add anything anywhere yet.
     if (classpath != null) {
-      List<RebelClasspathResource> resources = classpath.getResources();
-  
-      if (resources != null && resources.size() > 0) {
-        for (int i = 0; i < resources.size(); i++) {
-          RebelClasspathResource r = resources.get(i);
-          
-          if (!r.isTargetSet()) {
-            addDefaultAsFirst = false;
-            defaultClasspath = r;
-            break;
-          }
+      for (RebelClasspathResource resource : classpath.getResources()) {
+
+        // we found the default.
+        if (resource.isDefaultClasspathElement()) {
+          addDefaultAsFirst = false;
+          defaultClasspath = resource;
+          break;
         }
       }
     }
   
+    // Default classpath element not found. Put the default as first.
     if (addDefaultAsFirst) {
       buildDefaultClasspath(model, defaultClasspath);
     }
+    
+    // Iterate through all classpath elements and add them.
+    
+    if (classpath != null) {
+      for (RebelClasspathResource resource : classpath.getResources()) {
+
+        // Special treatment for the default.
+        if (resource.isDefaultClasspathElement()) {
+          addDefaultAsFirst = false;
+          defaultClasspath = resource;
+          break;
+        }
+        // An ordinary element. Add it.
+        else {
+          // TODO TODO TODO add the fixpath stuff!! --- better implementation!! 
+          resource.setDirectory(fixFilePath(resource.getDirectory()));
+          model.addClasspathDir(resource);
+        }
+      }
+    }
   }
 
+  /**
+   * Add the default classes directory to classpath
+   */
   private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
     if (getAddResourcesDirToRebelXml()) {
       buildDefaultClasspathResources(model);
@@ -373,21 +396,24 @@ public class RebelGenerateTask extends DefaultTask {
     model.addClasspathDir(r);
   }
 
+  /**
+   * Add the default resources directory to classpath
+   */
   private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
-      RebelClasspathResource r = new RebelClasspathResource();
-      r.setDirectory(fixFilePath(getResourcesDirectory()));
-      if (!new File(r.getDirectory()).isDirectory()) {
-        return;
-      }
-  
-      RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
-      if (resourcesClasspath != null) {
-        // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
-  //      r.setIncludes(resourcesClasspath.getIncludes());
-  //      r.setExcludes(resourcesClasspath.getExcludes());
-      }
-      model.addClasspathDir(r);
+    RebelClasspathResource r = new RebelClasspathResource();
+    r.setDirectory(fixFilePath(getResourcesDirectory()));
+    if (!new File(r.getDirectory()).isDirectory()) {
+      return;
     }
+
+    RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
+    if (resourcesClasspath != null) {
+      // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
+//      r.setIncludes(resourcesClasspath.getIncludes());
+//      r.setExcludes(resourcesClasspath.getExcludes());
+    }
+    model.addClasspathDir(r);
+  }
 
   /**
    * Build the model for the <web> element in rebel.xml

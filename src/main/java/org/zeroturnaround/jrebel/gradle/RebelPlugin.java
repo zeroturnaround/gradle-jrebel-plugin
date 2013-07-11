@@ -181,7 +181,7 @@ public class RebelPlugin implements Plugin<Project> {
          
         RebelDslClasspath classpath = rebelExtension.getClasspath();
         if (classpath != null) {
-          generateRebelTask.setConfiguredClasspath(classpath.toRebelClasspath());
+          generateRebelTask.setClasspath(classpath.toRebelClasspath());
         }
         
         RebelDslWar war = rebelExtension.getWar();

@@ -63,9 +63,19 @@ public class RebelClasspathResource implements RebelResource {
     return jarset;
   }
 
+  /**
+   * True if at least one of the target attributes is defined for this resource.
+   */
   public boolean isTargetSet() {
     return directory != null || jar != null || jarset != null
         || dirset != null;
+  }
+  
+  /**
+   * We consider an empty "resource {}" element to mark the placement of the default classpath.
+   */
+  public boolean isDefaultClasspathElement() {
+    return !isTargetSet();
   }
 
   public void setDirectory(String directory) {
