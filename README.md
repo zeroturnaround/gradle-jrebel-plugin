@@ -142,16 +142,34 @@ rebel {
 }
 ```
 
-Each ``resource {..}`` element will define one classpath search location in your ``rebel.xml``. The empty ``resource {}``
-element has a special meaning - this is a placeholder for the default classpath location asked from the
-Java or War plugin. It can be used to control the order where the default location will be placed in the
-generated *rebel.xml*. For example, the above configuration would generate a *rebel.xml* that instructs JRebel
-to search for a class from these directories in that same order:
+Each ``resource {..}`` element will define one classpath search location in your ``rebel.xml``.
+
+The empty ``resource {}`` element has a special meaning - this is a placeholder for the default classpath
+location asked from the Java or War plugin. It can be used to control the order where the default location will
+be placed in the generated *rebel.xml*. For example, the above configuration would generate a *rebel.xml* that
+instructs JRebel to search for a class from these directories in that same order:
 
  1. ``build/main/other-classes-dir``
  2. *[the default compilation output directory known by your Gradle Java plugin]*
  3. ``build/integration-tests/classes``
 
+If you omit the empty ``resource {}`` block, the default classpath will be added as the first element into your
+*rebel.xml*. If you want the default classpath not to appear at all, use the ``omitDefault`` configuration option:
+
+``` groovy
+rebel {
+  // (other config)
+  
+  classpath {
+    omitDefault = true
+  
+    resource {
+      directory = "build/main/other-classes-dir"
+      includes = ["**/*"]
+      excludes = ["*.java", "*.properties"]
+    }
+
+}
 
 
 ### 2.2. Configuring &lt;web&gt;

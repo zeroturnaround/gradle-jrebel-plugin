@@ -35,6 +35,11 @@ public class RebelDslClasspath {
   private String fallback;
 
   private List<RebelDslClasspathResource> resources;
+  
+  /**
+   * Don't add the default classpath element (the one asked from the project model)
+   */
+  private Boolean omitDefault = false;
 
   public RebelDslClasspath() {
     resources = new ArrayList<RebelDslClasspathResource>();
@@ -60,6 +65,14 @@ public class RebelDslClasspath {
     this.resources.add(resource);
   }
   
+  public Boolean getOmitDefault() {
+    return omitDefault;
+  }
+
+  public void setOmitDefault(Boolean omitDefault) {
+    this.omitDefault = omitDefault;
+  }
+  
   /**
    * DSL method to handle the 'resource { .. }' configuration block
    */
@@ -80,6 +93,7 @@ public class RebelDslClasspath {
   public RebelClasspath toRebelClasspath() {
     RebelClasspath rebelClasspath = new RebelClasspath();
     rebelClasspath.setFallback(this.fallback);
+    rebelClasspath.setOmitDefault(this.getOmitDefault());
     
     for (RebelDslClasspathResource resource : resources) {
       rebelClasspath.addResource(resource.toRebelClasspathResource());

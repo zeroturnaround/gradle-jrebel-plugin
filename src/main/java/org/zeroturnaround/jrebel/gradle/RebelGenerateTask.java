@@ -322,7 +322,9 @@ public class RebelGenerateTask extends DefaultTask {
 
         // Special treatment for the default.
         if (resource.isDefaultClasspathElement()) {
-          buildDefaultClasspath(model, resource);
+          if (!classpath.isOmitDefault()) {
+            buildDefaultClasspath(model, resource);
+          }
         }
         // An ordinary element. Add it.
         else {

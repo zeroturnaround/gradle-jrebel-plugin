@@ -30,6 +30,11 @@ public class RebelClasspath {
 
   private List<RebelClasspathResource> resources;
 
+  /**
+   * Don't add the default classpath element (the one asked from the project model)
+   */
+  private Boolean omitDefault = false;
+  
   public RebelClasspath() {
     this.resources = new ArrayList<RebelClasspathResource>();
   }
@@ -58,7 +63,16 @@ public class RebelClasspath {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("resources", resources);
     builder.append("fallback", fallback);
+    builder.append("omitDefault", omitDefault);
     return builder.toString();
+  }
+
+  public void setOmitDefault(Boolean omit) {
+    this.omitDefault = omit;
+  }
+  
+  public Boolean isOmitDefault() {
+    return this.omitDefault;
   }
   
 }
