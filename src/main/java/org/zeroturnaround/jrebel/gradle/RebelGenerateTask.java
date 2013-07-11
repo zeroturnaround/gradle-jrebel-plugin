@@ -312,7 +312,9 @@ public class RebelGenerateTask extends DefaultTask {
   
     // Default classpath element not found. Put the default as first.
     if (addDefaultAsFirst) {
-      buildDefaultClasspath(model, defaultClasspath);
+      if (classpath != null && !classpath.isOmitDefault()) {
+        buildDefaultClasspath(model, defaultClasspath);
+      }
     }
     
     // Iterate through all classpath elements and add them.
@@ -383,48 +385,45 @@ public class RebelGenerateTask extends DefaultTask {
    * Build the model for the <web> element in rebel.xml
    */
   private void buildWeb(RebelMainModel model) {
+    
+    // Go through all elements, look up the default one
     boolean addDefaultAsFirst = true;
     RebelWebResource defaultWeb = null;
-  
-    // Hmm.. this first part looks like a hack to go through all the elements just to find 
-    // out if one of them is the default element. Nothing is actually added anywhere. [sander]
-    // TODO rewrite
-    
     if (web != null) {
-      List<RebelWebResource> resources = web.getResources();
-  
-      if (resources != null && resources.size() > 0) {
-        for (int i = 0; i < resources.size(); i++) {
-          RebelWebResource r = resources.get(i);
-  
-          if (r.getDirectory() == null && r.getTarget() == null) {
-            defaultWeb = r;
-            addDefaultAsFirst = false;
-            break;
-          }
+      for (RebelWebResource resource : web.getResources()) {
+        if (resource.isDefaultElement()) {
+          defaultWeb = resource;
+          addDefaultAsFirst = false;
+          break;
         }
       }
     }
   
-    // Add the default, if we are gonna add it at all 
+    // Add the default one as first, if a specific location was not specified by the empty element 
     if (addDefaultAsFirst) {
-      buildDefaultWeb(model, defaultWeb);
+      if (web != null && !web.getOmitDefault()) {
+        buildDefaultWeb(model, defaultWeb);
+      }
     }
   
+    // Add all the other elements from the user's configuration
     if (web != null) {
       List<RebelWebResource> resources = web.getResources();
       if (resources != null && resources.size() > 0) {
         for (int i = 0; i < resources.size(); i++) {
-          RebelWebResource r = resources.get(i);
+          RebelWebResource resource = resources.get(i);
           
-          // Skip the default (hmm..)
-          if (r.getDirectory() == null && r.getTarget() == null) {
-            buildDefaultWeb(model, r);
-            continue;
+          // Add the default element
+          if (resource.isDefaultElement()) {
+            if (!web.getOmitDefault()) {
+              buildDefaultWeb(model, resource);
+            }
           }
-          // Otherwise, add the resource.
-          r.setDirectory(fixFilePath(r.getDirectory()));
-          model.addWebResource(r);
+          // Add a normal, non-default element
+          else {
+            resource.setDirectory(fixFilePath(resource.getDirectory()));
+            model.addWebResource(resource);
+          }
         }
       }
     }

@@ -27,7 +27,7 @@ buildscript {
   }
 
   dependencies {
-     classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.0.3'
+     classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.0'
   }
 }
 ```
@@ -203,10 +203,27 @@ rebel {
 }
 ```
 
-Once again, the empty ``resource {}`` block marks the default mapping that links your war's root
-to the main webapp directory known by Gradle's project model.
+The empty ``resource {}`` block here has similar meaning and properties as the one in ``classpath {..}``
+configuration block.  It can be used to control the placement of the default resource-mapping element.
+The default resource-mapping maps your war's root to the main webapp directory known by Gradle's project model.
 
-And once again, omit the element as whole if you are satisfied with the defaults.
+Also here you can use the ``omitDefault`` setting to completely exclude the default configuration from
+the generated *rebel.xml*:
+  
+``` groovy
+rebel {
+  // other config ..
+
+  web {
+    omitDefault = true
+    resource {
+      directory = "src/main/jsps"
+      target = "/WEB-INF/jsps"
+    }
+  }
+}
+
+Once again, omit the ``web {..}`` configuration block as a whole if you are satisfied with the defaults.
 
 
 

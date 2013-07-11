@@ -20,13 +20,14 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-
 /**
  * Web configuration.
  */
 public class RebelWeb {
 
   private List<RebelWebResource> resources;
+  
+  private Boolean omitDefault;
 
   public RebelWeb() {
     resources = new ArrayList<RebelWebResource>();
@@ -48,6 +49,14 @@ public class RebelWeb {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("resources", resources);
     return builder.toString();
+  }
+
+  public Boolean getOmitDefault() {
+    return this.omitDefault;
+  }
+  
+  public void setOmitDefault(Boolean omit) {
+    this.omitDefault = omit;
   }
   
 }

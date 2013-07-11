@@ -33,6 +33,11 @@ public class RebelDslWeb {
 
   private List<RebelDslWebResource> webResources;
   
+  /**
+   * Don't add the default element (the one asked from the project model)
+   */
+  private Boolean omitDefault = false;
+  
   public RebelDslWeb() {
     webResources = new ArrayList<RebelDslWebResource>();
   }
@@ -50,6 +55,14 @@ public class RebelDslWeb {
    */
   public void addWebResources(RebelDslWebResource webResources) {
     this.webResources.add(webResources);
+  }
+  
+  public Boolean getOmitDefault() {
+    return omitDefault;
+  }
+
+  public void setOmitDefault(Boolean omitDefault) {
+    this.omitDefault = omitDefault;
   }
   
   /**
@@ -70,6 +83,7 @@ public class RebelDslWeb {
   
   public RebelWeb toRebelWeb() {
     RebelWeb web = new RebelWeb();
+    web.setOmitDefault(this.omitDefault);
     for (RebelDslWebResource webDslResource : webResources) {
       web.addResource(webDslResource.toRebelWebResource());
     }

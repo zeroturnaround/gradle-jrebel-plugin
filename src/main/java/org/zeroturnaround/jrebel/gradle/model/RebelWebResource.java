@@ -65,6 +65,13 @@ public class RebelWebResource implements RebelResource {
     this.target = target;
   }
   
+  /**
+   * Matches to the empty 'resource {..}' block that has a special meaning to mark the default element.
+   */
+  public boolean isDefaultElement() {
+    return this.directory == null && this.target == null;
+  }
+  
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("directory", directory);
