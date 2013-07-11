@@ -153,6 +153,59 @@ to search for a class from these directories in that same order:
  3. ``build/integration-tests/classes``
 
 
+
+### 2.2. Configuring &lt;web&gt;
+
+The ``<web>`` element is valid for war projects and lets you map specific locations of your workspace
+against specific locations inside your war archive. An example: your war contains a folder */WEB-INF/jsps*,
+which's contents comes from your workspace folder *src/main/jsps*. In order to make the changes you
+make to JSPs in your workspace immediately available in your deployed application, you have to define
+a mapping in your *rebel.xml*. The corresponding mapping is created by the first ``resource { .. }`` block
+in the example below:
+
+``` groovy
+rebel {
+  // other config ..
+
+  web {
+    resource {
+      directory = "src/main/jsps"
+      target = "/WEB-INF/jsps"
+    }
+    
+    resource { }
+    
+    resource {
+      directory = "src/main/WEB-INF-resources"
+      target = "/WEB-INF/"
+      includes = ["**/*.xml"]
+      excludes = ["*.java", "*.groovy", "*.scala"]
+    }
+  }
+}
+```
+
+Once again, the empty ``resource {}`` block marks the default mapping that links your war's root
+to the main webapp directory known by Gradle's project model.
+
+And once again, omit the element as whole if you are satisfied with the defaults.
+
+
+
+### 2.3 Configuring &lt;war&gt;
+
+You can also add the *<war>* element to your *rebel.xml* by adding the following to your *build.gradle*.
+Refer to JRebel manual for details on the meaning of the *<war>* element.
+
+``` groovy
+rebel {
+  war {
+    path = "build/dist/my-other-webapp.war"
+  }
+}
+```
+
+
 3. IDE configuration
 --------------------
 
