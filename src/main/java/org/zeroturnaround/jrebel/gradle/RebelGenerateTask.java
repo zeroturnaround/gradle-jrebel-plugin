@@ -36,9 +36,9 @@ import org.zeroturnaround.jrebel.gradle.util.FileUtil;
 
 public class RebelGenerateTask extends DefaultTask {
     
-  public final static String PACKAGING_TYPE_JAR = "jar";
+  public static final String PACKAGING_TYPE_JAR = "jar";
     
-  public final static String PACKAGING_TYPE_WAR = "war";
+  public static final String PACKAGING_TYPE_WAR = "war";
   
   private Logger log = getProject().getLogger(); 
   

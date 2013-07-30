@@ -54,7 +54,7 @@ public class RebelPlugin implements Plugin<Project> {
     log = project.getLogger();
     
     // register the Rebel task
-    project.getTasks().add(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
+    project.getTasks().create(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
     
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
