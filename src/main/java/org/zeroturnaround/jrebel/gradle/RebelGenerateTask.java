@@ -285,8 +285,6 @@ public class RebelGenerateTask extends DefaultTask {
     // Search for the default element. If we find it, we have to place it exactly into the same place where we
     // found it (preserving the order). If we *don't* find it, we'll add the default classpath as first element.
     
-    // TODO later on there probably also has to be a "omitDefault" setting!
-    
     boolean addDefaultAsFirst = true;
     RebelClasspathResource defaultClasspath = null;
   
