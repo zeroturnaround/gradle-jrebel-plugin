@@ -48,8 +48,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   private RebelWeb web;
   
-  private File webappDirectory;
-  
   private RebelWar war;
 
   // === interal properties of the task
@@ -68,12 +66,13 @@ public class RebelGenerateTask extends DefaultTask {
   
   private File defaultResourcesDirectory;
   
+  private File defaultWebappDirectory;
+
   private Boolean showGenerated;
-  
-  private File warSourceDirectory;
   
   private File rebelXmlDirectory;
 
+  private Boolean isPluginConfigured = false;
   
   // =========== START OF WEIRD STUFF ===============================================
 
@@ -90,9 +89,7 @@ public class RebelGenerateTask extends DefaultTask {
   private String configuredRootPath;
   
   private File configuredRelativePath;
-  
-  private Boolean isPluginConfigured = false;
-    
+      
   public String getConfiguredRootPath() {
     return configuredRootPath;
   }
@@ -127,10 +124,6 @@ public class RebelGenerateTask extends DefaultTask {
     this.showGenerated = showGenerated;
   }
 
-  public File getWarSourceDirectory() {
-    return warSourceDirectory;
-  }
-
   public RebelClasspath getClasspath() {
     return classpath;
   }
@@ -147,14 +140,6 @@ public class RebelGenerateTask extends DefaultTask {
     this.web = web;
   }
 
-  public File getWebappDirectory() {
-    return webappDirectory;
-  }
-
-  public void setWebappDirectory(File webappDirectory) {
-    this.webappDirectory = webappDirectory;
-  }
-  
   public RebelWar getWar() {
     return war;
   }
@@ -177,6 +162,10 @@ public class RebelGenerateTask extends DefaultTask {
 
   public File getDefaultResourcesDirectory() {
     return defaultResourcesDirectory;
+  }
+  
+  public File getDefaultWebappDirectory() {
+    return defaultWebappDirectory;
   }
 
   public File getRebelXmlDirectory() {
@@ -223,7 +212,6 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.alwaysGenerate = " + alwaysGenerate);
     log.info("rebel.showGenerated = " + showGenerated);
     log.info("rebel.rebelXmlDirectory = " + rebelXmlDirectory);
-    log.info("rebel.warSourceDirectory = " + warSourceDirectory);
     log.info("rebel.addResourcesDirToRebelXml = " + addResourcesDirToRebelXml);
     log.info("rebel.packaging = " + packaging);
     log.info("rebel.war = " + war);
@@ -231,6 +219,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.classpath = " + classpath);
     log.info("rebel.defaultClassesDirectory = " + defaultClassesDirectory);
     log.info("rebel.defaultResourcesDirectory = " + defaultResourcesDirectory);
+    log.info("rebel.defaultWebappDirectory = " + defaultWebappDirectory);
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -433,7 +422,7 @@ public class RebelGenerateTask extends DefaultTask {
   private void buildDefaultWeb(RebelMainModel model, RebelWebResource defaultWeb) {
     RebelWebResource r = new RebelWebResource();
     r.setTarget("/");
-    r.setDirectory(fixFilePath(warSourceDirectory));
+    r.setDirectory(fixFilePath(defaultWebappDirectory));
   
     if (defaultWeb != null) {
       r.setIncludes(defaultWeb.getIncludes());
@@ -540,11 +529,11 @@ public class RebelGenerateTask extends DefaultTask {
   
   public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory$MAGIC";
   
+  public static final String NAME_DEFAULT_WEBAPP_DIRECTORY = "defaultWebappDirectory$MAGIC";
+
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
 
   public static final String NAME_SHOW_GENERATED = "showGenerated$MAGIC";
-  
-  public static final String NAME_WAR_SOURCE_DIRECTORY = "warSourceDirectory$MAGIC";
   
   public Boolean getAddResourcesDirToRebelXml$MAGIC() {
     return null;
@@ -562,15 +551,15 @@ public class RebelGenerateTask extends DefaultTask {
     return null;
   }
   
+  public File getDefaultWebappDirectory$MAGIC() {
+    return null;
+  }
+  
   public File getRebelXmlDirectory$MAGIC() {
     return null;
   }
 
   public Boolean getShowGenerated$MAGIC() {
-    return null;
-  }
-  
-  public File getWarSourceDirectory$MAGIC() {
     return null;
   }
   
@@ -585,9 +574,9 @@ public class RebelGenerateTask extends DefaultTask {
     alwaysGenerate = getAlwaysGenerate$MAGIC();
     defaultClassesDirectory = getDefaultClassesDirectory$MAGIC();
     defaultResourcesDirectory = getDefaultResourcesDirectory$MAGIC();
+    defaultWebappDirectory = getDefaultWebappDirectory$MAGIC();
     rebelXmlDirectory = getRebelXmlDirectory$MAGIC();
     showGenerated = getShowGenerated$MAGIC();
-    warSourceDirectory = getWarSourceDirectory$MAGIC();
   }
   
   // ========== END OF convention-mapping's intercepted magic methods

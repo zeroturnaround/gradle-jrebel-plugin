@@ -19,10 +19,6 @@ import groovy.lang.Closure;
 
 import java.io.File;
 
-
-import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
-import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.gradle.util.ConfigureUtil;
 
@@ -35,15 +31,14 @@ public class RebelDslMain {
 
   private String packaging;
 
-  private String warSourceDirectory;
-
   private String webappDirectory;
 
   private RebelDslClasspath classpath;
-  
+
+  // TODO implement propagation to backend, document
   private String rootPath;
 
-  // TODO obsolete?
+  // TODO implement propagation to backend, document
   private File relativePath;
 
   private String rebelXmlDirectory;
@@ -54,7 +49,6 @@ public class RebelDslMain {
 
   private Boolean alwaysGenerate;
 
-  // TODO rename
   private RebelDslWeb web;
 
   private RebelDslWar war;
@@ -68,15 +62,6 @@ public class RebelDslMain {
 
   public void setPackaging(String packaging) {
     this.packaging = packaging;
-  }
-
-  // TODO deprecated? now that the user can define far more detailed web resources, using the DSL?
-  public String getWarSourceDirectory() {
-    return warSourceDirectory;
-  }
-
-  public void setWarSourceDirectory(String warSourceDirectory) {
-    this.warSourceDirectory = warSourceDirectory;
   }
 
   public String getWebappDirectory() {
@@ -186,7 +171,6 @@ public class RebelDslMain {
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("packaging", packaging);
-    builder.append("warSourceDirectory", warSourceDirectory);
     builder.append("webappDirectory", webappDirectory);
     builder.append("classpath", classpath);
     builder.append("web", web);

@@ -135,16 +135,14 @@ public class RebelPlugin implements Plugin<Project> {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
 
         // handle the 'warSourceDirectory' configuration option
-        conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
+        conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_WEBAPP_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception { 
-            // TODO 
-            // deprecate this branch, just propagate the default directory through here?? (keep the else branch)
-            if (rebelExtension.getWarSourceDirectory() != null) {
-              return project.file(rebelExtension.getWarSourceDirectory());
-            }
-            else {
+            try {
               WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
               return warConvention.getWebAppDir();
+            }
+            catch (Exception e) {
+              return null;
             }
           }
         });
