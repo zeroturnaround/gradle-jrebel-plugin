@@ -41,7 +41,6 @@ public class RebelGenerateTask extends DefaultTask {
   public final static String PACKAGING_TYPE_WAR = "war";
   
   private Logger log = getProject().getLogger(); 
-
   
   private String packaging;
   
@@ -93,6 +92,8 @@ public class RebelGenerateTask extends DefaultTask {
   private File configuredRelativePath;
   
   private RebelClasspath configuredResourcesClasspath;
+  
+  private Boolean isPluginConfigured = false;
     
   public String getConfiguredRootPath() {
     return configuredRootPath;
@@ -209,11 +210,26 @@ public class RebelGenerateTask extends DefaultTask {
   }
   
   /**
+   * The RebelPlugin#configure block has been executed
+   */
+  public void setPluginConfigured() {
+    this.isPluginConfigured = true; 
+  }
+  
+  /**
    * The actual invocation of our plugin task. Will construct the in-memory model (RebelXmlBuilder),
    * generate the XML output based on it and write the XML into a file-system file (rebel.xml). 
    */
   @TaskAction
   public void generate() {
+    // Only able to run if the 'RebelPlugin#configure' block has been executed, i.e. if the Java Plugin has been added. 
+    if (!isPluginConfigured) {
+      throw new IllegalStateException(
+        "generateRebel is only valid when JavaPlugin is applied directly or indirectly " +
+        "(via other plugins that apply it implicitly, like Groovy or War); please update your build"
+      );  
+    }
+    
     propagateConventionMappingSettings();
     
     log.info("rebel.alwaysGenerate = " + alwaysGenerate);

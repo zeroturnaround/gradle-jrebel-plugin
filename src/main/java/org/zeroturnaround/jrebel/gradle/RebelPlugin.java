@@ -22,6 +22,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
@@ -52,15 +53,8 @@ public class RebelPlugin implements Plugin<Project> {
   public void apply(final Project project) {
     log = project.getLogger();
     
-    // by default, register a dummy task that reports missing JavaPlugin
-    // TODO also get rid of this deprecated "add" method. Also, Luke says using this task replacement is bad idea anyway.
-    project.getTasks().add(GENERATE_REBEL_TASK_NAME).doLast(new Action<Task>() {
-      public void execute(Task task) {
-        throw new IllegalStateException(
-            "generateRebel is only valid when JavaPlugin is aplied directly or indirectly " +
-            "(via other plugins that apply it implicitly, like Groovy or War); please update your build");        
-      }
-    });
+    // register the Rebel task
+    project.getTasks().add(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
     
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
@@ -80,9 +74,8 @@ public class RebelPlugin implements Plugin<Project> {
     log.info("Configuring Rebel plugin...");
 
     project.getExtensions().create(REBEL_EXTENSION_NAME, RebelDslMain.class);
-
-    // configure Rebel task
-    final RebelGenerateTask generateRebelTask = project.getTasks().replace(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
+    
+    final RebelGenerateTask generateRebelTask = (RebelGenerateTask) project.getTasks().getByName(GENERATE_REBEL_TASK_NAME);
     final IConventionAware conventionAwareRebelTask = (IConventionAware) generateRebelTask;
     
     // let everything be compiled and processed so that classes / resources directories are there
@@ -115,7 +108,7 @@ public class RebelPlugin implements Plugin<Project> {
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_WAR_SOURCE_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception { 
             // TODO 
-            // depreceate this branch, just propagate the default directory thorugh here?? (keep the else branch)
+            // deprecate this branch, just propagate the default directory through here?? (keep the else branch)
             if (rebelExtension.getWarSourceDirectory() != null) {
               return project.file(rebelExtension.getWarSourceDirectory());
             }
@@ -225,5 +218,7 @@ public class RebelPlugin implements Plugin<Project> {
       
     });
     
+    // raise the flag that plugin configuration has been executed.
+    generateRebelTask.setPluginConfigured();
   }
 }
