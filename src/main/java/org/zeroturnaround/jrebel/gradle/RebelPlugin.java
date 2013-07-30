@@ -17,12 +17,10 @@ package org.zeroturnaround.jrebel.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
-import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.logging.Logger;
@@ -83,7 +81,35 @@ public class RebelPlugin implements Plugin<Project> {
 
     final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
     
-    // handle the 'rebelXmlDirectory' configuration option
+    configureRebelXmlDirectory(project, conventionAwareRebelTask, rebelExtension);
+
+    // handle the 'packaging' configuration option
+    generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
+
+    configureWarPluginSettings(project, generateRebelTask, conventionAwareRebelTask, rebelExtension);
+
+    configureAddResourcesDirToRebelXml(conventionAwareRebelTask, rebelExtension);
+
+    configureShowGenerated(conventionAwareRebelTask, rebelExtension);
+
+    configureAlwaysGenerate(conventionAwareRebelTask, rebelExtension);
+    
+    configureDefaultClassesDirectory(project, conventionAwareRebelTask);
+    
+    configureDefaultResourcesDirectory(project, conventionAwareRebelTask);
+    
+    configureProjectAfterEvaluate(project, generateRebelTask, rebelExtension);
+    
+    // raise the flag that plugin configuration has been executed.
+    generateRebelTask.setPluginConfigured();
+  }
+
+  /**
+   * Handle the 'rebelXmlDirectory' configuration option
+   */
+  private void configureRebelXmlDirectory(final Project project, final IConventionAware conventionAwareRebelTask,
+      final RebelDslMain rebelExtension)
+  {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
         if (rebelExtension.getRebelXmlDirectory() != null) {
@@ -95,11 +121,15 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
+  }
 
-    // handle the 'packaging' configuration option
-    generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_JAR);
-
-    // if WarPlugin already applied, or if it is applied later than this plugin...
+  /**
+   * Configure things that need to be configured exactly if the WarPlugin has been enabled
+   */
+  private void configureWarPluginSettings(final Project project, final RebelGenerateTask generateRebelTask,
+      final IConventionAware conventionAwareRebelTask, final RebelDslMain rebelExtension)
+  {
+    // 'execute' will be run if WarPlugin is already applied, or if it will be applied later during the configuration lifecycle
     project.getPlugins().withType(WarPlugin.class).all(new Action<Plugin>() {
       public void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
@@ -120,8 +150,14 @@ public class RebelPlugin implements Plugin<Project> {
         });
       }
     });
+  }
 
-    // handle the 'addResourcesDirToRebelXml' configuration option
+  /**
+   * Handle the 'addResourcesDirToRebelXml' configuration option
+   */
+  private void configureAddResourcesDirToRebelXml(final IConventionAware conventionAwareRebelTask,
+      final RebelDslMain rebelExtension)
+  {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ADD_RESOURCES_DIR_TO_REBEL_XML, new Callable<Object>() {
       public Object call() throws Exception {
         if (rebelExtension.getAddResourcesDirToRebelXml() != null) {
@@ -132,8 +168,12 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
+  }
 
-    // handle the 'showGenerated' configuration option
+  /**
+   * Handle the 'showGenerated' configuration option
+   */
+  private void configureShowGenerated(final IConventionAware conventionAwareRebelTask, final RebelDslMain rebelExtension) {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_SHOW_GENERATED,  new Callable<Object>() {
       public Object call() throws Exception {
         if (rebelExtension.getShowGenerated() != null) {
@@ -144,8 +184,14 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
+  }
 
-    // handle the 'alwaysGenerate' configuration option
+  /**
+   * Handle the 'alwaysGenerate' configuration option
+   */
+  private void configureAlwaysGenerate(final IConventionAware conventionAwareRebelTask,
+      final RebelDslMain rebelExtension)
+  {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ALWAYS_GENERATE, new Callable<Object>() {
       public Object call() throws Exception {
         if (rebelExtension.getAlwaysGenerate() != null) {
@@ -156,8 +202,12 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
-    
-    // handle 'defaultClassesDirectory' configuration option
+  }
+  
+  /**
+   * Handle 'defaultClassesDirectory' configuration option
+   */
+  private void configureDefaultClassesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORY, new Callable<Object>() {
       public Object call() {
         try {
@@ -169,8 +219,12 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
-    
-    // handle 'defaultResourcesDirectory' configuration option
+  }
+
+  /**
+   * Handle 'defaultResourcesDirectory' configuration option
+   */
+  private void configureDefaultResourcesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_RESOURCES_DIRECTORY, new Callable<Object>() {
       public Object call() {
         try {
@@ -182,8 +236,15 @@ public class RebelPlugin implements Plugin<Project> {
         }
       }
     });
-    
-    // This has to be here.. if i just execute it right away, rebel DSL is not yet evaluated
+  }
+
+  /**
+   * Things executed in the end of configuration lifecycle. Mostly have to be here.. rebel DSL is not yet evaluated and these
+   * things cannot be called within RebelPlugin#configure.
+   */
+  private void configureProjectAfterEvaluate(final Project project, final RebelGenerateTask generateRebelTask,
+      final RebelDslMain rebelExtension)
+  { 
     project.afterEvaluate(new Action<Project>() {
 
       @Override
@@ -196,7 +257,6 @@ public class RebelPlugin implements Plugin<Project> {
         
         generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
-        generateRebelTask.setConfiguredResourcesClasspath(rebelExtension.getResourcesClasspath());
         
         // =============== end of old dirty code. stuff below here is good again.
          
@@ -217,8 +277,5 @@ public class RebelPlugin implements Plugin<Project> {
       }
       
     });
-    
-    // raise the flag that plugin configuration has been executed.
-    generateRebelTask.setPluginConfigured();
   }
 }

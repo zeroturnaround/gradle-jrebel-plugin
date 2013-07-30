@@ -91,8 +91,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   private File configuredRelativePath;
   
-  private RebelClasspath configuredResourcesClasspath;
-  
   private Boolean isPluginConfigured = false;
     
   public String getConfiguredRootPath() {
@@ -110,18 +108,8 @@ public class RebelGenerateTask extends DefaultTask {
   public void setConfiguredRelativePath(File path) {
     this.configuredRelativePath = path;
   }
-
-  public RebelClasspath getConfiguredResourcesClasspath() {
-    return configuredResourcesClasspath;
-  }
   
-  public void setConfiguredResourcesClasspath(RebelClasspath rebelPath) {
-    this.configuredResourcesClasspath = rebelPath;
-  }
-
   // ============================= END OF WEIRD STUFF =========================================
-  
-
 
   public String getPackaging() {
     return packaging;
@@ -382,19 +370,13 @@ public class RebelGenerateTask extends DefaultTask {
    * Add the default resources directory to classpath
    */
   private void buildDefaultClasspathResources(RebelMainModel model) throws BuildException {
-    RebelClasspathResource r = new RebelClasspathResource();
-    r.setDirectory(fixFilePath(defaultResourcesDirectory));
-    if (!new File(r.getDirectory()).isDirectory()) {
+    RebelClasspathResource resourcesClasspathResource = new RebelClasspathResource();
+    resourcesClasspathResource.setDirectory(fixFilePath(defaultResourcesDirectory));
+    if (!new File(resourcesClasspathResource.getDirectory()).isDirectory()) {
       return;
     }
 
-    RebelClasspath resourcesClasspath = getConfiguredResourcesClasspath();
-    if (resourcesClasspath != null) {
-      // XXX TODO TODO TODO it seems that this code has never been working.. it does not even have correct typing! review!
-//      r.setIncludes(resourcesClasspath.getIncludes());
-//      r.setExcludes(resourcesClasspath.getExcludes());
-    }
-    model.addClasspathDir(r);
+    model.addClasspathDir(resourcesClasspathResource);
   }
 
   /**
