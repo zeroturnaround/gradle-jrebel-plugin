@@ -154,6 +154,7 @@ rebel {
       includes = ["**/*"]
       excludes = ["*.java", "*.properties"]
     }
+  }
 
 }
 ```
