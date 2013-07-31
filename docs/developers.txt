@@ -17,10 +17,8 @@ Key points:
 
 
 
-
 Releasing the plugin
 ====================
-
 
 NB! Build with Gradle 1.0-milestone-6 or higher
 
