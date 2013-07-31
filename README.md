@@ -237,3 +237,4 @@ JRebel can pick them up. The compilation output directory of your IDE and the mo
 for the class reloading to work. Therefore, make sure that your IDE is compiling classes into the same directory where your Gradle project model
 and the rebel.xml file are expecting them (*build/classes/main* by default, as opposed to *bin* which is the default for Eclipse).
 
+
