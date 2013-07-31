@@ -1,6 +1,23 @@
 JRebele Gradle Plugin changelog
 ===============================
 
+1.1.1 (2013-07-31)
+------------------
+
+* [fixed] Fixed bug of empty XML being generated when DSL configuration blocks ('web', 'classpath') were not
+             specified in build.gradle (issue # 4). 
+* [fixed] Stopped using the deprecated API TaskContainer#add() (issue # 2).
+* [improved] Cleaner info-level logging. 
+
+
+1.1.0 (2013-07-11)
+------------------
+
+* [new] Implementation of DSL syntax to support customizing rebel.xml locations straight from build.gradle. 
+* [improved] Documentation largely rewritten. DSL syntax covered with documentation.
+* [improved] Major refactoring according to a code review by a Gradle developer.
+
+
 1.0.3 (2013-07-02)
 ------------------
 
