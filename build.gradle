@@ -7,7 +7,7 @@ apply plugin: 'maven'
 
 // Artifact settings
 group = 'org.zeroturnaround'
-version = '1.1.1-SNAPSHOT'
+version = '1.1.1'
 
 // Compiler settings
 targetCompatibility = "1.5"
