@@ -23,11 +23,11 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.Action;
 import org.gradle.api.internal.IConventionAware;
-import org.gradle.api.logging.Logger;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -46,10 +46,10 @@ public class RebelPlugin implements Plugin<Project> {
   
   public static final String REBEL_EXTENSION_NAME = "rebel";
   
-  private Logger log; 
+  private LoggerWrapper log; 
 
   public void apply(final Project project) {
-    log = project.getLogger();
+    log = new LoggerWrapper(project.getLogger());
     
     // register the Rebel task
     project.getTasks().create(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);

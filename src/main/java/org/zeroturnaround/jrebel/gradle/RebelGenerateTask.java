@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
-import org.gradle.api.logging.Logger;
+import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
@@ -40,7 +40,7 @@ public class RebelGenerateTask extends DefaultTask {
     
   public static final String PACKAGING_TYPE_WAR = "war";
   
-  private Logger log = getProject().getLogger(); 
+  private LoggerWrapper log = new LoggerWrapper(getProject().getLogger()); 
   
   private String packaging;
   
@@ -209,19 +209,19 @@ public class RebelGenerateTask extends DefaultTask {
     
     propagateConventionMappingSettings();
     
-    logInfo("rebel.alwaysGenerate = " + alwaysGenerate);
-    logInfo("rebel.showGenerated = " + showGenerated);
-    logInfo("rebel.rebelXmlDirectory = " + rebelXmlDirectory);
-    logInfo("rebel.addResourcesDirToRebelXml = " + addResourcesDirToRebelXml);
-    logInfo("rebel.packaging = " + packaging);
-    logInfo("rebel.war = " + war);
-    logInfo("rebel.web = " + web);
-    logInfo("rebel.classpath = " + classpath);
-    logInfo("rebel.defaultClassesDirectory = " + defaultClassesDirectory);
-    logInfo("rebel.defaultResourcesDirectory = " + defaultResourcesDirectory);
-    logInfo("rebel.defaultWebappDirectory = " + defaultWebappDirectory);
-    logInfo("rebel.configuredRootPath = " + configuredRootPath);
-    logInfo("rebel.configuredRelativePath = " + configuredRelativePath);
+    log.info("rebel.alwaysGenerate = " + alwaysGenerate);
+    log.info("rebel.showGenerated = " + showGenerated);
+    log.info("rebel.rebelXmlDirectory = " + rebelXmlDirectory);
+    log.info("rebel.addResourcesDirToRebelXml = " + addResourcesDirToRebelXml);
+    log.info("rebel.packaging = " + packaging);
+    log.info("rebel.war = " + war);
+    log.info("rebel.web = " + web);
+    log.info("rebel.classpath = " + classpath);
+    log.info("rebel.defaultClassesDirectory = " + defaultClassesDirectory);
+    log.info("rebel.defaultResourcesDirectory = " + defaultResourcesDirectory);
+    log.info("rebel.defaultWebappDirectory = " + defaultWebappDirectory);
+    log.info("rebel.configuredRootPath = " + configuredRootPath);
+    log.info("rebel.configuredRelativePath = " + configuredRelativePath);
     
     // find rebel.xml location
     File rebelXmlFile = null;
@@ -254,12 +254,12 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct a builder for jar projects
    */
   private RebelMainModel buildModelForJar() {
-    logInfo("Building rebel backend model for jar ..");
+    log.info("Building rebel backend model for jar ..");
     RebelMainModel model = new RebelMainModel();
     
     buildClasspath(model);
     
-    logInfo("Backend model eventually built: " + model);
+    log.info("Backend model eventually built: " + model);
     return model;
   }
 
@@ -267,14 +267,14 @@ public class RebelGenerateTask extends DefaultTask {
    * Construct a builder for war projects
    */
   private RebelMainModel buildModelForWar() {
-    logInfo("Building rebel backend model for war ..");
+    log.info("Building rebel backend model for war ..");
     RebelMainModel model = new RebelMainModel();
   
     buildWeb(model);
     buildClasspath(model);
     buildWar(model);
 
-    logInfo("Backend model eventually built: " + model);
+    log.info("Backend model eventually built: " + model);
     return model;
   }
 
@@ -285,7 +285,7 @@ public class RebelGenerateTask extends DefaultTask {
 
     // User has defined no 'classpath {}' block in the DSL configuration. Just add the default and return.
     if (classpath == null) {
-      logInfo("No custom classpath configuration found .. using the defaults");
+      log.info("No custom classpath configuration found .. using the defaults");
       buildDefaultClasspath(model, null);
       return;
     }
@@ -343,6 +343,7 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
     // XXX not sure about this.. review [sander]
+    //      UDPATE: this seems to work, but is undocumented
     if (addResourcesDirToRebelXml) {
       addDefaultResourcesDirToClasspath(model);
     }
@@ -351,11 +352,11 @@ public class RebelGenerateTask extends DefaultTask {
     RebelClasspathResource r = new RebelClasspathResource();
     
     String fixedDefaultClassesDirectory = fixFilePath(defaultClassesDirectory);
-    logInfo("fixed default classes directory : " + fixedDefaultClassesDirectory); 
+    log.info("fixed default classes directory : " + fixedDefaultClassesDirectory); 
     
     r.setDirectory(fixedDefaultClassesDirectory);
     if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
-      logInfo("Not adding default classes directory as it doesn't exist or is not a directory");
+      log.info("Not adding default classes directory as it doesn't exist or is not a directory");
       return;
     }
   
@@ -371,15 +372,15 @@ public class RebelGenerateTask extends DefaultTask {
    * Add the default resources directory to classpath
    */
   private void addDefaultResourcesDirToClasspath(RebelMainModel model) throws BuildException {
-    logInfo("Adding default resources directory to classpath ..");
+    log.info("Adding default resources directory to classpath ..");
     
     RebelClasspathResource resourcesClasspathResource = new RebelClasspathResource();
     String fixedDefaultResourcesDir = fixFilePath(defaultResourcesDirectory);
-    logInfo("Default resources directory after normalizing: " + fixedDefaultResourcesDir);
+    log.info("Default resources directory after normalizing: " + fixedDefaultResourcesDir);
     
     resourcesClasspathResource.setDirectory(fixedDefaultResourcesDir);
     if (!new File(resourcesClasspathResource.getDirectory()).isDirectory()) {
-      logInfo("Didn't add default resources directory as it doesn't exist or is not a directory!");
+      log.info("Didn't add default resources directory as it doesn't exist or is not a directory!");
       return;
     }
     model.addClasspathDir(resourcesClasspathResource);
@@ -469,8 +470,8 @@ public class RebelGenerateTask extends DefaultTask {
 
   private void generateRebelXml(File rebelXmlFile) {
     // TODO replacement of those placeholders does not work and probably has never worked (probably copy-pasted from maven plugin). REPLACE!
-    logInfo("Processing ${project.group}:${project.name} with packaging " + getPackaging());
-    logInfo("Generating \"${rebelXmlFile}\"...");
+    log.info("Processing ${project.group}:${project.name} with packaging " + getPackaging());
+    log.info("Generating \"${rebelXmlFile}\"...");
  
     // Do generate the rebel.xml
     try {
@@ -547,11 +548,6 @@ public class RebelGenerateTask extends DefaultTask {
     else {
       return getProject().getProjectDir().getAbsolutePath();
     }
-  }
-  
-  // TODO a small logger wrapper?
-  private void logInfo(String msg) {
-    log.info("[rebel] " + msg);
   }
   
  
