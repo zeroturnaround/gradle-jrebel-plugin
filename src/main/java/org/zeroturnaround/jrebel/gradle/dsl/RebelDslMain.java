@@ -45,6 +45,7 @@ public class RebelDslMain {
 
   private Boolean showGenerated;
 
+  // TODO DOCUMENT!!!
   private Boolean addResourcesDirToRebelXml;
 
   private Boolean alwaysGenerate;
