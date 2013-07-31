@@ -31,6 +31,7 @@ import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.plugins.jetty.JettyPlugin;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -242,19 +243,15 @@ public class RebelPluginTest {
     
     log("defaultResourcesDir: " + defaultResourcesDir.getAbsolutePath());
     
-    // Get the rebel task
+    // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-
-    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
-    
-    // execute the task
     task.generate();
     
     RebelMainModel model = task.getRebelModel();
     
+    // Check the classpath directories
     List<RebelClasspathResource> classpathDirs = model.getClasspathDirs();
-    
     Assert.assertEquals(2, classpathDirs.size());
     
     log("classpathDirs size = " + classpathDirs.size());
@@ -262,9 +259,67 @@ public class RebelPluginTest {
       String dir = resource.getDirectory();
       assertTrue(dir.equals(defaultClassesDir.getAbsolutePath()) || dir.equals(defaultResourcesDir.getAbsolutePath()));
     }
+    
+    // TODO i should probably clean the temp directory up after myself.. JVM is not doing it automatically.
   }
   
-  // TODO add testWarDefaults
+  /**
+   * Test the default configuration (i.e. without any classpath/web/war DSL blocks) for a war project.
+   */
+  @Test
+  public void testWarProjectDefaults() throws Exception {
+    
+    Project project = ProjectBuilder.builder().build();
+    project.getPlugins().apply(WarPlugin.class);
+    project.getPlugins().apply(RebelPlugin.class);
+        
+    callAfterEvaluated(project);
+    
+    // Default classes directory  
+    JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+    File defaultClassesDir = javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+    // create directory by hand, as the Java plugin is not actually executing in our test
+    defaultClassesDir.mkdirs();
+    log("Default classes dir: " + defaultClassesDir.getAbsolutePath());
+    
+    // Default resources directory
+    File defaultResourcesDir = javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
+    // create directory by hand, as the Java plugin is not actually executing in our test
+    defaultResourcesDir.mkdirs();
+    log("Default resources dir: " + defaultResourcesDir.getAbsolutePath());
+
+    // Default webapp directory
+    WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
+    File defaultWebappDirectory = warConvention.getWebAppDir();
+    // create directory by hand, as the War plugin is not actually executing in our test
+    defaultWebappDirectory.mkdirs();
+    log("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
+    
+    // Get and execute the rebel task
+    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    task.skipWritingRebelXml();
+    task.generate();
+    
+    RebelMainModel model = task.getRebelModel();
+
+    // Check the classpath directories
+    List<RebelClasspathResource> classpathDirs = model.getClasspathDirs();
+    Assert.assertEquals(2, classpathDirs.size());
+    
+    for (RebelClasspathResource resource : classpathDirs) {
+      String dir = resource.getDirectory();
+      assertTrue(dir.equals(defaultClassesDir.getAbsolutePath()) || dir.equals(defaultResourcesDir.getAbsolutePath()));
+    }
+
+    // Check the web directories
+    List<RebelWebResource> webappResources = model.getWebResources();
+    Assert.assertEquals(1, webappResources.size());
+    
+    for (RebelWebResource resource : webappResources) {
+      String dir = resource.getDirectory();
+      assertTrue(dir.equals(defaultWebappDirectory.getAbsolutePath()));
+    }
+  }
   
   /**
    * Test handling of the "war { .. }" configuration block. Should create a RebelWar element in the model.
@@ -275,7 +330,7 @@ public class RebelPluginTest {
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
     
-    // Cconfigure the rebel plugin
+    // Configure the rebel plugin
     RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
     
     String myWarPath = "/my/war/path";

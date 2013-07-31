@@ -134,7 +134,7 @@ public class RebelPlugin implements Plugin<Project> {
       public void execute(Plugin p) {
         generateRebelTask.setPackaging(RebelGenerateTask.PACKAGING_TYPE_WAR);
 
-        // handle the 'warSourceDirectory' configuration option
+        // Propagate 'defaultWebappDirectory'
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_WEBAPP_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception { 
             try {
@@ -203,7 +203,7 @@ public class RebelPlugin implements Plugin<Project> {
   }
   
   /**
-   * Handle 'defaultClassesDirectory' configuration option
+   * Propagate 'defaultClassesDirectory'
    */
   private void configureDefaultClassesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORY, new Callable<Object>() {
@@ -220,7 +220,7 @@ public class RebelPlugin implements Plugin<Project> {
   }
 
   /**
-   * Handle 'defaultResourcesDirectory' configuration option
+   * Propagate 'defaultResourcesDirectory'
    */
   private void configureDefaultResourcesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_RESOURCES_DIRECTORY, new Callable<Object>() {
