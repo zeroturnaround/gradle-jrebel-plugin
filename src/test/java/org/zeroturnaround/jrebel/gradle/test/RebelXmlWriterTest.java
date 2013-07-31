@@ -17,7 +17,6 @@ package org.zeroturnaround.jrebel.gradle.test;
 
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Before;
 import org.junit.Test;
 import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
@@ -25,15 +24,21 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
+/**
+ * WARNING! The underlying JUnit implementation here is a JUnit 3.x fork, due to XMLUnit's dependencies!
+ * 
+ * @author Sander Sõnajalg
+ */
 public class RebelXmlWriterTest extends XMLTestCase {
 
   private RebelXmlWriter writer = new RebelXmlWriter(); 
-
+  
   /**
-   * Overriding some XMLUnit's non-sense defaults (especially the white spaces!)
+   * This will be run once before each method. Cannot use @Before and @BeforeClass, as this is Junit 3.x here.
    */
-  @Before
   public void setUp() {
+    log("\n\n === Executing test " + getName() + "\n");
+    // Overriding some XMLUnit's non-sense defaults (especially the white spaces!)
     XMLUnit.setIgnoreWhitespace(true);
     XMLUnit.setIgnoreComments(true);
   }
@@ -223,5 +228,12 @@ public class RebelXmlWriterTest extends XMLTestCase {
     System.out.println("testXmlWithWar -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);    
+  }
+  
+  /**
+   * TODO implement properly
+   */
+  private static void log(String msg) {
+    System.out.println(msg);
   }
 }
