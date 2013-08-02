@@ -196,7 +196,7 @@ You can also provide it directly on the command line:
 gradle build -Prebel.rootPath=/opt/myproject
 ```
 
-You can use this option to generate a rebel.xml that contains a placeholder root directory so that every
+You can use this option to generate a *rebel.xml* that contains a placeholder root directory so that every
 developer can specify the value for it via a JVM argument when executing their JRebel-enabled JVM:
 
 *build.gradle* :
