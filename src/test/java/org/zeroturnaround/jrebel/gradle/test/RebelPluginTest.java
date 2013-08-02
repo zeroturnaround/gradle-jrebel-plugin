@@ -188,9 +188,6 @@ public class RebelPluginTest {
     rebelExtension.setWar(dslWar);
     dslWar.setPath(myWarPath);
     
-    Boolean myAddResourcesDirToRebelXml = getRandomBoolean();
-    rebelExtension.setAddResourcesDirToRebelXml(myAddResourcesDirToRebelXml);
-
     Boolean myShowGenerated = getRandomBoolean();
     rebelExtension.setShowGenerated(myShowGenerated);
     
@@ -205,9 +202,6 @@ public class RebelPluginTest {
     assertNotNull(task);
 
     task.propagateConventionMappingSettings();
-    
-    // 'addResourcesDirToRebelXml'
-    assertEquals(myAddResourcesDirToRebelXml, task.getAddResourcesDirToRebelXml());
 
     // 'showGenerate'
     assertEquals(myShowGenerated, task.getShowGenerated());

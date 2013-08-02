@@ -88,8 +88,6 @@ public class RebelPlugin implements Plugin<Project> {
 
     configureWarPluginSettings(project, generateRebelTask, conventionAwareRebelTask, rebelExtension);
 
-    configureAddResourcesDirToRebelXml(conventionAwareRebelTask, rebelExtension);
-
     configureShowGenerated(conventionAwareRebelTask, rebelExtension);
 
     configureAlwaysGenerate(conventionAwareRebelTask, rebelExtension);
@@ -146,24 +144,6 @@ public class RebelPlugin implements Plugin<Project> {
             }
           }
         });
-      }
-    });
-  }
-
-  /**
-   * Handle the 'addResourcesDirToRebelXml' configuration option
-   */
-  private void configureAddResourcesDirToRebelXml(final IConventionAware conventionAwareRebelTask,
-      final RebelDslMain rebelExtension)
-  {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ADD_RESOURCES_DIR_TO_REBEL_XML, new Callable<Object>() {
-      public Object call() throws Exception {
-        if (rebelExtension.getAddResourcesDirToRebelXml() != null) {
-          return rebelExtension.getAddResourcesDirToRebelXml();
-        }
-        else {
-          return true;
-        }
       }
     });
   }

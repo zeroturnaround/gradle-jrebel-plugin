@@ -31,9 +31,14 @@ public class RebelClasspath {
   private List<RebelClasspathResource> resources;
 
   /**
-   * Don't add the default classpath element (the one asked from the project model)
+   * Don't add the default classes dir to classpath (the one asked from the project model)
    */
-  private Boolean omitDefault = false;
+  private Boolean omitDefaultClassesDir = false;
+
+  /**
+   * Don't add the default resources dir to classpath (the one asked from the project model)
+   */
+  private Boolean omitDefaultResourcesDir = false;
   
   public RebelClasspath() {
     this.resources = new ArrayList<RebelClasspathResource>();
@@ -63,16 +68,24 @@ public class RebelClasspath {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("resources", resources);
     builder.append("fallback", fallback);
-    builder.append("omitDefault", omitDefault);
+    builder.append("omitDefaultClassesDir", omitDefaultClassesDir);
+    builder.append("omitDefaultResourcesDir", omitDefaultResourcesDir);
     return builder.toString();
   }
 
-  public void setOmitDefault(Boolean omit) {
-    this.omitDefault = omit;
+  public Boolean isOmitDefaultClassesDir() {
+    return omitDefaultClassesDir;
   }
-  
-  public Boolean isOmitDefault() {
-    return this.omitDefault;
+
+  public void setOmitDefaultClassesDir(Boolean omitDefaultClassesDir) {
+    this.omitDefaultClassesDir = omitDefaultClassesDir;
   }
-  
+
+  public Boolean isOmitDefaultResourcesDir() {
+    return omitDefaultResourcesDir;
+  }
+
+  public void setOmitDefaultResourcesDir(Boolean omitDefaultResourcesDir) {
+    this.omitDefaultResourcesDir = omitDefaultResourcesDir;
+  }
 }

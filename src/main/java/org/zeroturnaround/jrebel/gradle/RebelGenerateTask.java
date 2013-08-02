@@ -58,8 +58,6 @@ public class RebelGenerateTask extends DefaultTask {
   
   // === Options propagated here through the convention-mappings
   
-  private Boolean addResourcesDirToRebelXml;
-  
   private Boolean alwaysGenerate;
 
   private File defaultClassesDirectory;
@@ -147,10 +145,6 @@ public class RebelGenerateTask extends DefaultTask {
   public void setWar(RebelWar _war) {
     this.war = _war;
   }
-  
-  public Boolean getAddResourcesDirToRebelXml() {
-    return addResourcesDirToRebelXml;
-  }
 
   public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
@@ -212,7 +206,6 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.alwaysGenerate = " + alwaysGenerate);
     log.info("rebel.showGenerated = " + showGenerated);
     log.info("rebel.rebelXmlDirectory = " + rebelXmlDirectory);
-    log.info("rebel.addResourcesDirToRebelXml = " + addResourcesDirToRebelXml);
     log.info("rebel.packaging = " + packaging);
     log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
@@ -312,9 +305,7 @@ public class RebelGenerateTask extends DefaultTask {
       // Default classpath element not found. Put the default as first.
       if (addDefaultAsFirst) {
         // check if configuration allows adding the default
-        if (!classpath.isOmitDefault()) {
-          buildDefaultClasspath(model, defaultClasspath);
-        }
+        buildDefaultClasspath(model, defaultClasspath);
       }
       
       // Iterate through all classpath elements and add them.
@@ -322,9 +313,7 @@ public class RebelGenerateTask extends DefaultTask {
 
         // Special treatment for the default.
         if (resource.isDefaultClasspathElement()) {
-          if (!classpath.isOmitDefault()) {
-            buildDefaultClasspath(model, resource);
-          }
+          buildDefaultClasspath(model, resource);
         }
         // An ordinary element. Add it.
         else {
@@ -342,30 +331,39 @@ public class RebelGenerateTask extends DefaultTask {
    * Add the default classes directory to classpath
    */
   private void buildDefaultClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) throws BuildException {
-    // XXX not sure about this.. review [sander]
-    //      UDPATE: this seems to work, but is undocumented
-    if (addResourcesDirToRebelXml) {
+    // Add default resources dir to rebel.xml unless user's configuration disallows it
+    if (classpath == null || !classpath.isOmitDefaultResourcesDir()) {
       addDefaultResourcesDirToClasspath(model);
     }
-  
+
+    // Add default classes dir to rebel.xml unless user's configuration disallows it
+    if (classpath == null || !classpath.isOmitDefaultClassesDir()) {
+      addDefaultClassesDirToClasspath(model, defaultClasspath);
+    }
+  }
+
+  /**
+   * Add the default classes directory to classpath
+   */
+  private void addDefaultClassesDirToClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) {
     // project output directory
-    RebelClasspathResource r = new RebelClasspathResource();
+    RebelClasspathResource classpathResource = new RebelClasspathResource();
     
     String fixedDefaultClassesDirectory = fixFilePath(defaultClassesDirectory);
     log.info("fixed default classes directory : " + fixedDefaultClassesDirectory); 
     
-    r.setDirectory(fixedDefaultClassesDirectory);
+    classpathResource.setDirectory(fixedDefaultClassesDirectory);
     if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
       log.info("Not adding default classes directory as it doesn't exist or is not a directory");
       return;
     }
   
     if (defaultClasspath != null) {
-      r.setIncludes(defaultClasspath.getIncludes());
-      r.setExcludes(defaultClasspath.getExcludes());
+      classpathResource.setIncludes(defaultClasspath.getIncludes());
+      classpathResource.setExcludes(defaultClasspath.getExcludes());
     }
   
-    model.addClasspathDir(r);
+    model.addClasspathDir(classpathResource);
   }
 
   /**
@@ -557,8 +555,6 @@ public class RebelGenerateTask extends DefaultTask {
    * 
    *   These properties are cached into local variables to lessen the magic. See propagateConventionMappingSettings().
    */
-  
-  public static final String NAME_ADD_RESOURCES_DIR_TO_REBEL_XML = "addResourcesDirToRebelXml$MAGIC";
 
   public static final String NAME_ALWAYS_GENERATE = "alwaysGenerate$MAGIC";
 
@@ -571,10 +567,6 @@ public class RebelGenerateTask extends DefaultTask {
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
 
   public static final String NAME_SHOW_GENERATED = "showGenerated$MAGIC";
-  
-  public Boolean getAddResourcesDirToRebelXml$MAGIC() {
-    return null;
-  }
   
   public Boolean getAlwaysGenerate$MAGIC() {
     return null;
@@ -607,7 +599,6 @@ public class RebelGenerateTask extends DefaultTask {
    * (public only for unit tests)
    */
   public void propagateConventionMappingSettings() {
-    addResourcesDirToRebelXml = getAddResourcesDirToRebelXml$MAGIC();
     alwaysGenerate = getAlwaysGenerate$MAGIC();
     defaultClassesDirectory = getDefaultClassesDirectory$MAGIC();
     defaultResourcesDirectory = getDefaultResourcesDirectory$MAGIC();

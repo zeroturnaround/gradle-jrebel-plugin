@@ -33,13 +33,18 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 public class RebelDslClasspath {
 
   private String fallback;
-
+  
   private List<RebelDslClasspathResource> resources;
   
   /**
-   * Don't add the default classpath element (the one asked from the project model)
+   * Don't add the default classes dir to classpath (the one asked from the project model)
    */
-  private Boolean omitDefault = false;
+  private Boolean omitDefaultClassesDir = false;
+
+  /**
+   * Don't add the default resources dir to classpath (the one asked from the project model)
+   */
+  private Boolean omitDefaultResourcesDir = false;
 
   public RebelDslClasspath() {
     resources = new ArrayList<RebelDslClasspathResource>();
@@ -64,15 +69,23 @@ public class RebelDslClasspath {
   public void addResource(RebelDslClasspathResource resource) {
     this.resources.add(resource);
   }
-  
-  public Boolean getOmitDefault() {
-    return omitDefault;
+
+  public Boolean getOmitDefaultClassesDir() {
+    return omitDefaultClassesDir;
   }
 
-  public void setOmitDefault(Boolean omitDefault) {
-    this.omitDefault = omitDefault;
+  public void setOmitDefaultClassesDir(Boolean omitDefaultClassesDir) {
+    this.omitDefaultClassesDir = omitDefaultClassesDir;
   }
-  
+
+  public Boolean getOmitDefaultResourcesDir() {
+    return omitDefaultResourcesDir;
+  }
+
+  public void setOmitDefaultResourcesDir(Boolean omitDefaultResourcesDir) {
+    this.omitDefaultResourcesDir = omitDefaultResourcesDir;
+  }
+
   /**
    * DSL method to handle the 'resource { .. }' configuration block
    */
@@ -93,7 +106,8 @@ public class RebelDslClasspath {
   public RebelClasspath toRebelClasspath() {
     RebelClasspath rebelClasspath = new RebelClasspath();
     rebelClasspath.setFallback(this.fallback);
-    rebelClasspath.setOmitDefault(this.getOmitDefault());
+    rebelClasspath.setOmitDefaultClassesDir(this.omitDefaultClassesDir);
+    rebelClasspath.setOmitDefaultResourcesDir(this.omitDefaultResourcesDir);
     
     for (RebelDslClasspathResource resource : resources) {
       rebelClasspath.addResource(resource.toRebelClasspathResource());
