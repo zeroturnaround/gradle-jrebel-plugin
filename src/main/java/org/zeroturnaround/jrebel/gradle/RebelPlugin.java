@@ -27,6 +27,7 @@ import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.util.BooleanUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
 import java.io.File;
@@ -88,10 +89,6 @@ public class RebelPlugin implements Plugin<Project> {
 
     configureWarPluginSettings(project, generateRebelTask, conventionAwareRebelTask, rebelExtension);
 
-    configureShowGenerated(conventionAwareRebelTask, rebelExtension);
-
-    configureAlwaysGenerate(conventionAwareRebelTask, rebelExtension);
-    
     configureDefaultClassesDirectory(project, conventionAwareRebelTask);
     
     configureDefaultResourcesDirectory(project, conventionAwareRebelTask);
@@ -147,40 +144,6 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
   }
-
-  /**
-   * Handle the 'showGenerated' configuration option
-   */
-  private void configureShowGenerated(final IConventionAware conventionAwareRebelTask, final RebelDslMain rebelExtension) {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_SHOW_GENERATED,  new Callable<Object>() {
-      public Object call() throws Exception {
-        if (rebelExtension.getShowGenerated() != null) {
-          return rebelExtension.getShowGenerated();
-        }
-        else {
-          return false;
-        }
-      }
-    });
-  }
-
-  /**
-   * Handle the 'alwaysGenerate' configuration option
-   */
-  private void configureAlwaysGenerate(final IConventionAware conventionAwareRebelTask,
-      final RebelDslMain rebelExtension)
-  {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_ALWAYS_GENERATE, new Callable<Object>() {
-      public Object call() throws Exception {
-        if (rebelExtension.getAlwaysGenerate() != null) {
-          return rebelExtension.getAlwaysGenerate();
-        }
-        else {
-          return false;
-        }
-      }
-    });
-  }
   
   /**
    * Propagate 'defaultClassesDirectory'
@@ -227,16 +190,15 @@ public class RebelPlugin implements Plugin<Project> {
 
       @Override
       public void execute(Project project) {
+        Boolean showGenerated = BooleanUtil.convertNullToFalse(rebelExtension.getShowGenerated());
+        generateRebelTask.setShowGenerated(showGenerated);
         
-        // ==========================
-        // XXX below is actually basically a bunch of dead code.. its not dead technically, but these are the undocumented
-        //     features bljahhin somehow copy-pasted from Maven plugin and that have never been used. I'll keep them here
-        //     until I know what's gonna replace them and have a better solution ready
+        Boolean alwaysGenerate = BooleanUtil.convertNullToFalse(rebelExtension.getAlwaysGenerate());
+        generateRebelTask.setAlwaysGenerate(alwaysGenerate);
         
+        // XXX these two variables are untested and undocumented
         generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
-        
-        // =============== end of old dirty code. stuff below here is good again.
          
         RebelDslClasspath classpath = rebelExtension.getClasspath();
         if (classpath != null) {

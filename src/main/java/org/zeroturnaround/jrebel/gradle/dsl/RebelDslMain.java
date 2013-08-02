@@ -45,9 +45,6 @@ public class RebelDslMain {
 
   private Boolean showGenerated;
 
-  // TODO DOCUMENT!!!
-  private Boolean addResourcesDirToRebelXml;
-
   private Boolean alwaysGenerate;
 
   private RebelDslWeb web;
@@ -121,14 +118,6 @@ public class RebelDslMain {
     this.showGenerated = showGenerated;
   }
 
-  public Boolean getAddResourcesDirToRebelXml() {
-    return addResourcesDirToRebelXml;
-  }
-
-  public void setAddResourcesDirToRebelXml(Boolean addResourcesDirToRebelXml) {
-    this.addResourcesDirToRebelXml = addResourcesDirToRebelXml;
-  }
-
   public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }
@@ -179,7 +168,6 @@ public class RebelDslMain {
     builder.append("relativePath", relativePath);
     builder.append("rebelXmlDirectory", rebelXmlDirectory);
     builder.append("showGenerated", showGenerated);
-    builder.append("addResourcesDirToRebelXml", addResourcesDirToRebelXml);
     builder.append("alwaysGenerate", alwaysGenerate);
     builder.append("war", war);
     return builder.toString();

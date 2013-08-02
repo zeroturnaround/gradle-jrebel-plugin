@@ -149,6 +149,10 @@ public class RebelGenerateTask extends DefaultTask {
   public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }
+
+  public void setAlwaysGenerate(Boolean _alwaysGenerate) {
+    this.alwaysGenerate = _alwaysGenerate;
+  }
   
   public File getDefaultClassesDirectory() {
     return defaultClassesDirectory;
@@ -556,8 +560,6 @@ public class RebelGenerateTask extends DefaultTask {
    *   These properties are cached into local variables to lessen the magic. See propagateConventionMappingSettings().
    */
 
-  public static final String NAME_ALWAYS_GENERATE = "alwaysGenerate$MAGIC";
-
   public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory$MAGIC";
   
   public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory$MAGIC";
@@ -565,12 +567,6 @@ public class RebelGenerateTask extends DefaultTask {
   public static final String NAME_DEFAULT_WEBAPP_DIRECTORY = "defaultWebappDirectory$MAGIC";
 
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
-
-  public static final String NAME_SHOW_GENERATED = "showGenerated$MAGIC";
-  
-  public Boolean getAlwaysGenerate$MAGIC() {
-    return null;
-  }
 
   public File getDefaultClassesDirectory$MAGIC() {
     return null;
@@ -588,10 +584,6 @@ public class RebelGenerateTask extends DefaultTask {
     return null;
   }
 
-  public Boolean getShowGenerated$MAGIC() {
-    return null;
-  }
-  
   /**
    * Let the convention-mappings propagate its settings to me through the magic getters,
    * save copies of them locally into normal instance variables.
@@ -599,12 +591,10 @@ public class RebelGenerateTask extends DefaultTask {
    * (public only for unit tests)
    */
   public void propagateConventionMappingSettings() {
-    alwaysGenerate = getAlwaysGenerate$MAGIC();
     defaultClassesDirectory = getDefaultClassesDirectory$MAGIC();
     defaultResourcesDirectory = getDefaultResourcesDirectory$MAGIC();
     defaultWebappDirectory = getDefaultWebappDirectory$MAGIC();
     rebelXmlDirectory = getRebelXmlDirectory$MAGIC();
-    showGenerated = getShowGenerated$MAGIC();
   }
   
   // ========== END OF convention-mapping's intercepted magic methods
