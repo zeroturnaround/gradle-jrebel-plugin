@@ -196,6 +196,38 @@ You can also provide it directly on the command line:
 gradle build -Prebel.rootPath=/opt/myproject
 ```
 
+You can use this option to generate a rebel.xml that contains a placeholder root directory so that every
+developer can specify the value for it via a JVM argument when executing their JRebel-enabled JVM:
+
+*build.gradle* :
+
+
+``` groovy
+rebel {
+  classpath {
+    resource {
+      directory = "build/classes/main"
+    }
+  }
+}
+``` 
+
+*gradle.properties*:
+
+``` properties
+rebel.rootPath = ${my-workspace}
+```
+
+Fragment of the generated *rebel.xml*:
+``` xml
+  <classpath>
+    <dir name="${my-workspace}/build/classes/main">
+    </dir>
+  </classpath>
+```
+
+Now when running the JVM, each developer would just add an extra JVM argument like ``-Dmy-workspace=/opt/my-project``.  
+
 
 ### 2.2. Configuring &lt;web&gt;
 
