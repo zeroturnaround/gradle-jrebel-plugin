@@ -204,7 +204,7 @@ developer can specify the value for it via a JVM argument when executing their J
 
 ``` groovy
 rebel {
-  rootPath = "${my-workspace}"
+  rootPath = "\${my-workspace}"
   classpath {
     resource {
       directory = "build/classes/main"
