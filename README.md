@@ -147,7 +147,11 @@ rebel {
   // (other config)
   
   classpath {
-    omitDefault = true
+    // don't add the default classes target directory 
+    omitDefaultClassesDir = true
+    
+    // don't add the default resources directory 
+    omitDefaultResourcesDir = true
   
     resource {
       directory = "build/main/other-classes-dir"
