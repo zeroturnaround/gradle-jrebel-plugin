@@ -105,7 +105,7 @@ defaults will be used.
 
 If for some reason the plugin is not getting it right, or you want to add additional classpath locations to your *rebel.xml* or
 explicitly fine-tune excluded or included resources, you can do so by providing  ``classpath { .. } `` section in your
-*build.gredle* DSL:
+*build.gradle* DSL:
 
 ``` groovy
 rebel {
@@ -162,6 +162,40 @@ rebel {
 
 }
 ```
+
+#### 2.1.1. Customizing root path
+
+You have the option to explicitly specify the root path of your workspace, should the JRebel Gradle plugin
+for any reason get it incorrectly by default or should you have multiple symlinks / aliases for the same folder
+and you want to specify which one to use.
+
+Notice that for default resources, the plugin will check if the default directories prepended by this
+workspace root path really exist. If they don't, they will not be added to *rebel.xml*. Non-default
+locations (i.e. the ones that you define manually in your ``classpath { .. } `` and ``web { .. } ``
+blocks) are added even if they don't exist at the moment when the plugin executes.
+
+You can add the *rootPath* configuration option to your *build.gradle* as all the other configuration options:
+
+``` groovy
+rebel {
+  rootPath = "/opt/my-project"
+}
+```
+
+But this would probably annoy your colleagues, who would get this configuration from the SCM although
+they might have different workspace path in their environment. Therefore, it is better to provide
+this configuration option in your personal *gradle.properties* file that is not added to the SCM:
+
+``` properties
+rebel.rootPath = /opt/my-project
+```
+
+You can also provide it directly on the command line:
+
+``` 
+gradle build -Prebel.rootPath=/opt/myproject
+```
+
 
 ### 2.2. Configuring &lt;web&gt;
 
