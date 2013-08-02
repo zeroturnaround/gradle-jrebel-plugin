@@ -291,10 +291,8 @@ public class RebelGenerateTask extends DefaultTask {
     else {
       // Search for the default element. If we find it, we have to place it exactly into the same place where we
       // found it (preserving the order). If we *don't* find it, we'll add the default classpath as first element.
-      
       boolean addDefaultAsFirst = true;
       RebelClasspathResource defaultClasspath = null;
-      
       
       // Just search for the default element. Don't add anything anywhere yet.
       for (RebelClasspathResource resource : classpath.getResources()) {
@@ -357,6 +355,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("fixed default classes directory : " + fixedDefaultClassesDirectory); 
     
     classpathResource.setDirectory(fixedDefaultClassesDirectory);
+    // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
     if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
       log.info("Not adding default classes directory as it doesn't exist or is not a directory");
       return;
@@ -381,6 +380,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("Default resources directory after normalizing: " + fixedDefaultResourcesDir);
     
     resourcesClasspathResource.setDirectory(fixedDefaultResourcesDir);
+    // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
     if (!new File(resourcesClasspathResource.getDirectory()).isDirectory()) {
       log.info("Didn't add default resources directory as it doesn't exist or is not a directory!");
       return;
@@ -493,6 +493,10 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
+  /**
+   * Get the absolute, normalized path. 
+   * XXX maybe should be moved to an external utility class
+   */
   private String fixFilePath(File file) {
     File baseDir = getProject().getProjectDir();
 

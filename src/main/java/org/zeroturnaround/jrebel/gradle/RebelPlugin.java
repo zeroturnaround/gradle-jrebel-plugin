@@ -31,6 +31,7 @@ import org.zeroturnaround.jrebel.gradle.util.BooleanUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
 import java.io.File;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -196,8 +197,23 @@ public class RebelPlugin implements Plugin<Project> {
         Boolean alwaysGenerate = BooleanUtil.convertNullToFalse(rebelExtension.getAlwaysGenerate());
         generateRebelTask.setAlwaysGenerate(alwaysGenerate);
         
-        // XXX these two variables are untested and undocumented
-        generateRebelTask.setConfiguredRootPath(rebelExtension.getRootPath());
+        Map<String, ?> properties = project.getProperties();
+        String rootPathFromProjectProperties = (String) properties.get("rebel.rootPath");
+        
+        // The value from external configuration wins
+        String rootPath = null;
+        if (rootPathFromProjectProperties != null) {
+          rootPath = rootPathFromProjectProperties;
+        }
+        else {
+          rootPath = rebelExtension.getRootPath();
+        }
+
+        generateRebelTask.setConfiguredRootPath(rootPath);
+        
+        // XXX i can't think of any use for this property and don't know how it works. ask Rein, it is 
+        //     copy-pasted from maven plugin. maybe it is useless for Gradle and can be deleted.
+        // XXX it is undocumented as well.
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
          
         RebelDslClasspath classpath = rebelExtension.getClasspath();
