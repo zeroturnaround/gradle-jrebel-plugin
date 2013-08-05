@@ -1,6 +1,11 @@
 JRebele Gradle Plugin changelog
 ===============================
 
+1.1.2 (2013-08-05)
+------------------
+
+* [improved] Improved and documented usage of rootPath configuration option.
+
 1.1.1 (2013-07-31)
 ------------------
 
