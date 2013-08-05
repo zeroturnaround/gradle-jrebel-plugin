@@ -50,13 +50,9 @@ public class RebelGenerateTask extends DefaultTask {
   
   private RebelWar war;
 
-  // === interal properties of the task
-  
   private RebelMainModel rebelModel;
   
   private boolean skipWritingRebelXml;
-  
-  // === Options propagated here through the convention-mappings
   
   private Boolean alwaysGenerate;
 
@@ -72,20 +68,12 @@ public class RebelGenerateTask extends DefaultTask {
 
   private Boolean isPluginConfigured = false;
   
-  // =========== START OF WEIRD STUFF ===============================================
-
-  // XXX most of this is just leftovers from refactoring and will eventually be removed
-  
-  // Stuff starting from here is the old copy-pasted model from the Maven plugin. These configuration objects are available
-  // to the end-user via RebelPluginExtension only theoretically (they are never documented and only available secretly..
-  // probably never used in practice!
-  // 
-  // - see how the appropriate DSL-aware model should replace that model
-  // - propagate from RebelPluginExtension to here through the ConventionMappings if there's need for it
-  
-  
   private String configuredRootPath;
   
+  /**
+   * XXX -- i'm not sure about this property at all. this is used in fixPath, so i don't dare to delete it as well.. ask
+   *        Rein who probably originally introduced it to Maven plugin where it was copy-pasted from. 
+   */
   private File configuredRelativePath;
       
   public String getConfiguredRootPath() {
@@ -104,8 +92,6 @@ public class RebelGenerateTask extends DefaultTask {
     this.configuredRelativePath = path;
   }
   
-  // ============================= END OF WEIRD STUFF =========================================
-
   public String getPackaging() {
     return packaging;
   }

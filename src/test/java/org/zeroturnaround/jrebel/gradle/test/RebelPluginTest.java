@@ -16,11 +16,13 @@
 package org.zeroturnaround.jrebel.gradle.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectEvaluationListener;
@@ -54,21 +56,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
- * 
- * TODO -- IMPLEMENT PROPER LOGGING IN UNIT TESTS!!!
- * 
+ *  
  * @author Sander Sonajalg, Igor Bljahhin
  */
 public class RebelPluginTest {
 
+  private static Logger log = LoggerFactory.getLogger(RebelPluginTest.class);
+  
   @Rule
   public TestName name = new TestName();
   
   @Before
   public void beforeEachTest() {
-    log("\n\n === Executing test " + name.getMethodName() + "\n");
+    log.info("\n\n === Executing test " + name.getMethodName() + "\n");
   }
   
   /**
@@ -88,6 +93,8 @@ public class RebelPluginTest {
     catch (TaskExecutionException e) {
       throw e.getCause();
     }
+    
+    cleanUp(project);
   }
 
   /**
@@ -108,6 +115,8 @@ public class RebelPluginTest {
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
+    
+    cleanUp(project);
   }
 
   /**
@@ -128,6 +137,8 @@ public class RebelPluginTest {
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
+    
+    cleanUp(project);
   }
 
   /**
@@ -148,6 +159,8 @@ public class RebelPluginTest {
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
+    
+    cleanUp(project);
   }
   
   /**
@@ -168,6 +181,8 @@ public class RebelPluginTest {
     // check that the dependsOn got set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
     assertTrue(task.getDependsOn().contains(classesTask));
+    
+    cleanUp(project);
   }
   
   /**
@@ -211,6 +226,8 @@ public class RebelPluginTest {
     
     // 'warPath'
     assertEquals(myWarPath, task.getWar().getPath());
+    
+    cleanUp(project);
   }
 
   /**
@@ -229,13 +246,13 @@ public class RebelPluginTest {
     File defaultClassesDir = javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
     defaultClassesDir.mkdirs();
     
-    log("defaultClassesDir: " + defaultClassesDir.getAbsolutePath());
+    log.info("defaultClassesDir: " + defaultClassesDir.getAbsolutePath());
     
     // Create the default resources directory by hand
     File defaultResourcesDir = javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
     defaultResourcesDir.mkdirs();
     
-    log("defaultResourcesDir: " + defaultResourcesDir.getAbsolutePath());
+    log.info("defaultResourcesDir: " + defaultResourcesDir.getAbsolutePath());
     
     // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -248,13 +265,15 @@ public class RebelPluginTest {
     List<RebelClasspathResource> classpathDirs = model.getClasspathDirs();
     Assert.assertEquals(2, classpathDirs.size());
     
-    log("classpathDirs size = " + classpathDirs.size());
+    log.info("classpathDirs size = " + classpathDirs.size());
     for (RebelClasspathResource resource : classpathDirs) {
       String dir = resource.getDirectory();
       assertTrue(dir.equals(defaultClassesDir.getAbsolutePath()) || dir.equals(defaultResourcesDir.getAbsolutePath()));
     }
     
     // TODO i should probably clean the temp directory up after myself.. JVM is not doing it automatically.
+    
+    cleanUp(project);
   }
   
   /**
@@ -274,20 +293,20 @@ public class RebelPluginTest {
     File defaultClassesDir = javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
     // create directory by hand, as the Java plugin is not actually executing in our test
     defaultClassesDir.mkdirs();
-    log("Default classes dir: " + defaultClassesDir.getAbsolutePath());
+    log.info("Default classes dir: " + defaultClassesDir.getAbsolutePath());
     
     // Default resources directory
     File defaultResourcesDir = javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
     // create directory by hand, as the Java plugin is not actually executing in our test
     defaultResourcesDir.mkdirs();
-    log("Default resources dir: " + defaultResourcesDir.getAbsolutePath());
+    log.info("Default resources dir: " + defaultResourcesDir.getAbsolutePath());
 
     // Default webapp directory
     WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
     File defaultWebappDirectory = warConvention.getWebAppDir();
     // create directory by hand, as the War plugin is not actually executing in our test
     defaultWebappDirectory.mkdirs();
-    log("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
+    log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
     
     // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -313,6 +332,8 @@ public class RebelPluginTest {
       String dir = resource.getDirectory();
       assertTrue(dir.equals(defaultWebappDirectory.getAbsolutePath()));
     }
+    
+    cleanUp(project);
   }
   
   /**
@@ -350,6 +371,8 @@ public class RebelPluginTest {
     
     assertNotNull(war);
     assertEquals(myWarPath, war.getOriginalPath());
+    
+    cleanUp(project);
   }
   
   /**
@@ -380,7 +403,7 @@ public class RebelPluginTest {
     webResource2.setDirectory("src/main/my-web-inf");
     web.addWebResources(webResource2);
     
-    log("WEB IS : " + web);
+    log.info("RebelDslWeb : " + web);
     
     rebelExtension.setWeb(web);
 
@@ -405,7 +428,9 @@ public class RebelPluginTest {
     // TODO make it test the real requirements more thoroughly
     assertTrue(webResources.size() > 0);
     
-    log("testWeb() XML :  \n" + model.toXmlString());
+    log.info("testWeb() XML :  \n" + model.toXmlString());
+    
+    cleanUp(project);
   }
   
   // TODO tests for other properties -- what should the model look like after setting those config options 
@@ -424,6 +449,20 @@ public class RebelPluginTest {
 
   // TODO a test for the fixPath... somehow
   
+  /**
+   * Make sure the temporary project folder gets deleted after running the test
+   */
+  private static void cleanUp(Project project) {
+    File projectDir = project.getProjectDir();
+    try {
+      FileUtils.deleteDirectory(projectDir);
+    }
+    catch (IOException e) {
+      log.info("Exception while deleting the temporary project directory when running unit tests : ");
+      e.printStackTrace();
+    }
+  }
+  
   private static boolean getRandomBoolean() {
     return Math.random() < 0.5;
   }
@@ -438,10 +477,4 @@ public class RebelPluginTest {
     evaluationListener.afterEvaluate(project, projectState);    
   }
   
-  /**
-   * TODO implement properly
-   */
-  private void log(String msg) {
-    System.out.println(msg);
-  }
 }

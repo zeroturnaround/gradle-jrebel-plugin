@@ -18,6 +18,8 @@ package org.zeroturnaround.jrebel.gradle.test;
 import org.custommonkey.xmlunit.XMLTestCase;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
@@ -31,13 +33,15 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
  */
 public class RebelXmlWriterTest extends XMLTestCase {
 
+  private static Logger log = LoggerFactory.getLogger(RebelXmlWriterTest.class);
+  
   private RebelXmlWriter writer = new RebelXmlWriter(); 
   
   /**
    * This will be run once before each method. Cannot use @Before and @BeforeClass, as this is Junit 3.x here.
    */
   public void setUp() {
-    log("\n\n === Executing test " + getName() + "\n");
+    log.info("\n\n\n === Executing test " + getName() + "\n");
     // Overriding some XMLUnit's non-sense defaults (especially the white spaces!)
     XMLUnit.setIgnoreWhitespace(true);
     XMLUnit.setIgnoreComments(true);
@@ -62,7 +66,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </classpath>" +
       "</application>";
     
-    System.out.println("testXmlWithClasspathDir -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithClasspathDir -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -88,7 +92,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </classpath>" +
       "</application>";
     
-    System.out.println("testXmlWithClasspathJar -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithClasspathJar -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -114,7 +118,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </classpath>" +
       "</application>";
     
-    System.out.println("testXmlWithClasspathDirset -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithClasspathDirset -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -137,7 +141,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </classpath>" +
       "</application>";
     
-    System.out.println("testXmlWithClasspathJarset -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithClasspathJarset -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -167,7 +171,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </web>" +
       "</application>";
     
-    System.out.println("testXmlWithWebResource -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithWebResource -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -200,7 +204,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  </classpath>" +
       "</application>";
     
-    System.out.println("testXmlWithClasspathIncludesExcludes -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithClasspathIncludesExcludes -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
@@ -225,15 +229,9 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "  <war dir=\"/my/path\" />" +
       "</application>";
     
-    System.out.println("testXmlWithWar -- generated xml: \n" + generatedXml);    
+    log.info("testXmlWithWar -- generated xml: \n" + generatedXml);    
     
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);    
   }
-  
-  /**
-   * TODO implement properly
-   */
-  private static void log(String msg) {
-    System.out.println(msg);
-  }
+
 }
