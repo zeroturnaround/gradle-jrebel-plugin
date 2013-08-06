@@ -1,0 +1,2 @@
+// Defines the artifact name
+rootProject.name = 'gradle-jrebel-plugin'
