@@ -88,6 +88,11 @@ def pomFile = pom {
 }
 
 onlyFor(uploadPublished) {
+  if (version.contains("SNAPSHOT")) {
+    throw new GradleException("ERROR! You are not supposed to run 'release' task for a SNAPSHOT version! If releasing the plugin is " +
+        "what you really wanted to do, please first change the version!");
+  }
+    
   uploadPublished {
     repositories {
       mavenDeployer {
