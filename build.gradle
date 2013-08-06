@@ -101,7 +101,7 @@ onlyFor(uploadPublished) {
         // Use sonatype central
         if (project.getProperties().get("release_to_central") != null) {
           repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-            authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+            authentication(userName: sonatypeNexusStagingUsername, password: sonatypeNexusStagingPassword)
           }
     
           snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
