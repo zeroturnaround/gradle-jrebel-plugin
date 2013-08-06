@@ -1,3 +1,8 @@
+/**
+ * To release to Sonatype's central nexus, run:
+ *
+ *   gradle release -Prelease_to_central
+ */
 import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
 
 apply plugin: 'groovy'
@@ -163,33 +168,33 @@ task generatePom(type: GeneratePomTask) {
   }
 }
 
-task bundle( type: Zip, dependsOn: signArchives) {
-  description = 'Prepares the bundle with artifacts for Sonatype.'
-  classifier = 'bundle'
+//task bundle( type: Zip, dependsOn: signArchives) {
+//  description = 'Prepares the bundle with artifacts for Sonatype.'
+//  classifier = 'bundle'
+//
+//  from('build/libs/') {
+//    include "${rootProject.name}-*.jar"
+//    include "${rootProject.name}-*.jar.asc"
+//  }
+//
+//  from('build/generatedPoms/') {
+//    include '*.pom'
+//    include '*.pom.asc'
+//  }
+//
+//  doFirst {
+//    bundleFile = file("${buildDir}/distributions/${project.name}-${project.version}-bundle.zip")
+//
+//    println "Creating bundle ${bundleFile}"
+//
+//    configurations.add "publishBundle"
+//    configurations.publishBundle.artifacts.add(
+//        new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new Date(), bundleFile)
+//    )
+//  }
+//}
 
-  from('build/libs/') {
-    include "${rootProject.name}-*.jar"
-    include "${rootProject.name}-*.jar.asc"
-  }
-
-  from('build/generatedPoms/') {
-    include '*.pom'
-    include '*.pom.asc'
-  }
-
-  doFirst {
-    bundleFile = file("${buildDir}/distributions/${project.name}-${project.version}-bundle.zip")
-
-    println "Creating bundle ${bundleFile}"
-
-    configurations.add "publishBundle"
-    configurations.publishBundle.artifacts.add(
-        new DefaultPublishArtifact("bundle", "zip", "zip", "bundle", new Date(), bundleFile)
-    )
-  }
-}
-
-uploadPublished.dependsOn bundle
+//uploadPublished.dependsOn bundle
 
 // Define list of artifacts
 
