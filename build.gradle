@@ -98,12 +98,26 @@ onlyFor(uploadPublished) {
       mavenDeployer {
         configuration = configurations.deployerJars
   
-        repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
-          authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+        // Use sonatype central
+        if (project.getProperties().get("release_to_central") != null) {
+          repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+            authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+          }
+    
+          snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
+            authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
+          }
         }
-  
-        snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
-          authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
+
+        // Use zeroturnaround central
+        else {
+          repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
+            authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+          }
+          
+          snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+            authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
+          }
         }
   
         pom = pomFile
