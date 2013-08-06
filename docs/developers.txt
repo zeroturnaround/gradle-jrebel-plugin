@@ -30,22 +30,12 @@ NB! Build with Gradle 1.0-milestone-6 or higher
 
 !!
 
-Do not forget to put "gradle.properties" into your %HOMEPATH%/.gradle directory
-and store the following properties:
-
-nexusReleasesUsername = <nexus username for release repository>
-nexusReleasesPassword = <nexus password for release repository>
-
-nexusSnapshotsUsername = <nexus username for snapshots repository>
-nexusSnapshotsPassword = <nexus password for snapshots repository>
-
-signing.keyId = <the public key ID (an 8 character hexadecimal string)>
-signing.password = <the passphrase used to protect your private key>
-signing.secretKeyRingFile = <the absolute path to the secret key ring file containing your private key, like C:/Users/Igor Bljahhin/AppData/Roaming/gnupg/secring.gpg>
+Create a gradle.properties file based on gradle.properties.sample and put it into
+your %HOMEPATH%/.gradle directory or within project root folder (but then don't commit it!) !!
 
 !!
 
-To release to Maven Central:
+To release to Maven Central: (TODO .. this will currently only release to zt-public, right?)
 
 1. increase the version number in build.gradle
 

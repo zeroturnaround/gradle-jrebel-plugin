@@ -1,0 +1,15 @@
+zeroturnaroundNexusReleasesUsername = <zeroturnaround nexus username for release repository>
+zeroturnaroundNexusReleasesPassword = <zeroturnaround nexus password for release repository>
+
+zeroturnaroundNexusSnapshotsUsername = <zeroturnaround nexus username for snapshots repository>
+zeroturnaroundNexusSnapshotsPassword = <zeroturnaround nexus password for snapshots repository>
+
+sonatypeNexusSnapshotsUsername = <sonatype nexus username for snapshots repository>
+sonatypeNexusSnapshotsPassword = <sonatype nexus username for snapshots repository>
+
+sonatypeNexusStagingUsername = <sonatype nexus username for staging repository>
+sonatypeNexusStagingPassword = <sonatype nexus password for staging repository>
+
+signing.keyId = <the public key ID (an 8 character hexadecimal string)>
+signing.password = <the passphrase used to protect your private key>
+signing.secretKeyRingFile = <the absolute path to the secret key ring file containing your private key, like C:/Users/Igor Bljahhin/AppData/Roaming/gnupg/secring.gpg>

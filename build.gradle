@@ -81,11 +81,11 @@ uploadPublished {
       configuration = configurations.deployerJars
 
       repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
-        authentication(userName: nexusReleasesUsername, password: nexusReleasesPassword)
+        authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
       }
 
       snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
-        authentication(userName: nexusSnapshotsUsername, password: nexusSnapshotsPassword)
+        authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
       }
 
       pom = pomFile
