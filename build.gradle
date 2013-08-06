@@ -34,6 +34,18 @@ repositories {
   mavenCentral()
 }
 
+/**
+* This method helps to run certain parts of config only when these tasks are really going to be executed.
+* This is very useful as to not force somebody who just wants to build locally define nexus usernames/passwords, etc.
+*/
+def onlyFor(task, config) {
+ gradle.taskGraph.whenReady { graph ->
+   if (graph.hasTask(task)) {
+     project.configure(project, config)
+   }
+ }
+}
+
 // =========================== TESTING ===========================
 
 // Run tests before installing the artifact
@@ -75,20 +87,22 @@ def pomFile = pom {
   }
 }
 
-uploadPublished {
-  repositories {
-    mavenDeployer {
-      configuration = configurations.deployerJars
-
-      repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
-        authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+onlyFor(uploadPublished) {
+  uploadPublished {
+    repositories {
+      mavenDeployer {
+        configuration = configurations.deployerJars
+  
+        repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
+          authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
+        }
+  
+        snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+          authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
+        }
+  
+        pom = pomFile
       }
-
-      snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
-        authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
-      }
-
-      pom = pomFile
     }
   }
 }
