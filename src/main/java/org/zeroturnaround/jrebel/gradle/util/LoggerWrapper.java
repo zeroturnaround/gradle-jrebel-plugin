@@ -5,7 +5,7 @@ import org.gradle.api.logging.Logger;
 /**
  * Tiny wrapper around the Gradle's own logger
  * 
- * @author Sander Sõnajalg
+ * @author Sander Sonajalg
  */
 public class LoggerWrapper {
   

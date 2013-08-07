@@ -29,7 +29,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 /**
  * WARNING! The underlying JUnit implementation here is a JUnit 3.x fork, due to XMLUnit's dependencies!
  * 
- * @author Sander Sõnajalg
+ * @author Sander Sonajalg
  */
 public class RebelXmlWriterTest extends XMLTestCase {
 

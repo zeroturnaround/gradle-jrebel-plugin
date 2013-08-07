@@ -25,7 +25,7 @@ import org.gradle.util.ConfigureUtil;
 /**
  * The parent class of the Rebel plugin's DSL extension. 
  * 
- * @author Sander Sõnajalg
+ * @author Sander Sonajalg
  */
 public class RebelDslMain {
 
