@@ -20,13 +20,6 @@ apply plugin: 'rebel'
 buildscript {
   repositories {
      mavenCentral()
-     // This repo is optional, as since version 1.1.2, we also always deploy to Maven central.
-     // Be aware that it could take a bit of time (couple of hours) before a published new
-     // version will appear in the central repository.
-     mavenRepo(
-       name: 'zt-public-snapshots',
-       url: 'http://repos.zeroturnaround.com/nexus/content/groups/zt-public/'
-     )
   }
 
   dependencies {
