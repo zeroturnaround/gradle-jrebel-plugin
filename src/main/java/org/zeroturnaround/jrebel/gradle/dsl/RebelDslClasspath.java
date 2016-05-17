@@ -26,7 +26,7 @@ import org.gradle.util.ConfigureUtil;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
 /**
- * Gradle DSL level model for <web> elements configuration (corresponds to RebelWeb in backend model).
+ * Gradle DSL level model for &lt;web&gt; elements configuration (corresponds to RebelWeb in backend model).
  * 
  * @author Sander Sonajalg
  */
