@@ -1,5 +1,10 @@
-JRebele Gradle Plugin changelog
+JRebel Gradle Plugin changelog
 ===============================
+
+1.1.3 (2016-05-17)
+------------------
+
+* [new] Added "generated-by" attribute to 'rebel.xml'.
 
 1.1.2 (2013-08-05)
 ------------------
