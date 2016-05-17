@@ -60,7 +60,11 @@ public class RebelXmlWriter {
 
   private void writeHeader(Writer writer) throws IOException {
     writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    writer.write("<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">\n");
+    writer.write("<application " +
+        "generated-by=\"gradle\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+        "xmlns=\"http://www.zeroturnaround.com\" " +
+        "xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">\n");
     writer.write("\n");
   }
   

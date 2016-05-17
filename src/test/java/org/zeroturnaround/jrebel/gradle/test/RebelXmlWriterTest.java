@@ -60,7 +60,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath> " +
       "    <dir name=\"build/classes\" />" +
       "  </classpath>" +
@@ -86,7 +86,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath> " +
       "    <jar name=\"/my/library.jar\" />" +
       "  </classpath>" +
@@ -112,7 +112,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath> " +
       "    <dirset dir=\"/my/workspace/build/classes\" />" +
       "  </classpath>" +
@@ -135,7 +135,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath> " +
       "    <jarset dir=\"/my/workspace/build/classes\" />" +
       "  </classpath>" +
@@ -162,7 +162,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath />" +
       "  <web>" +
       "    <link target=\"/\">" +
@@ -194,7 +194,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath> " +
       "    <dir name=\"build/classes\">" +
       "      <exclude name=\"*.xml\"/>" +
@@ -224,7 +224,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd\">" +
+      "<application generated-by=\"gradle\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_1.xsd\">" +
       "  <classpath />" +
       "  <war dir=\"/my/path\" />" +
       "</application>";
