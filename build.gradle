@@ -116,11 +116,11 @@ onlyFor(uploadPublished) {
 
         // Use zeroturnaround central
         else {
-          repository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
+          repository(url: 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
             authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
           }
           
-          snapshotRepository(url: 'http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
+          snapshotRepository(url: 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
             authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
           }
         }
