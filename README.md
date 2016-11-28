@@ -28,9 +28,15 @@ buildscript {
 }
 ```
 
-This will provide your Gradle build with a new task called *generateRebel*.
+When using Gradle 2.1 or newer, add the following snippet to the top of your build.gradle script:
 
-You probably also want to make the *generateRebel* task part of your main
+``` groovy
+plugins {
+  id "org.zeroturnaround.gradle.jrebel" version "1.1.3"
+}
+```
+
+This will provide your Gradle build with a new task called *generateRebel*. You probably also want to make the *generateRebel* task part of your main
 build flow, instead of executing it manually after every clean. A good place to plug it in is right before the task that generates the build archive
 (the .jar or the .war).
 
