@@ -27,7 +27,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectEvaluationListener;
 import org.gradle.api.Task;
-import org.gradle.api.internal.project.AbstractProject;
+import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.project.ProjectStateInternal;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -473,7 +473,7 @@ public class RebelPluginTest {
   private static void callAfterEvaluated(Project project) {
     ProjectStateInternal projectState = new ProjectStateInternal();
     projectState.executed();
-    ProjectEvaluationListener evaluationListener = ((AbstractProject) project).getProjectEvaluationBroadcaster();
+    ProjectEvaluationListener evaluationListener = ((ProjectInternal) project).getProjectEvaluationBroadcaster();
     evaluationListener.afterEvaluate(project, projectState);    
   }
   
