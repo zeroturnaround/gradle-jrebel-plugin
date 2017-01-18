@@ -23,7 +23,7 @@ buildscript {
   }
 
   dependencies {
-     classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.3'
+     classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.5'
   }
 }
 ```
@@ -32,7 +32,7 @@ When using Gradle 2.1 or newer, add the following snippet to the top of your bui
 
 ``` groovy
 plugins {
-  id "org.zeroturnaround.gradle.jrebel" version "1.1.3"
+  id "org.zeroturnaround.gradle.jrebel" version "1.1.5"
 }
 ```
 

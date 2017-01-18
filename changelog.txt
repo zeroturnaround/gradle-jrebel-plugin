@@ -1,7 +1,7 @@
 JRebel Gradle Plugin changelog
 ===============================
 
-1.1.4 (2017-01-03)
+1.1.5 (2017-01-18)
 ------------------
 
 * [new] Added a helpful explanation paragraph to rebel.xml.
