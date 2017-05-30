@@ -1,5 +1,4 @@
-JRebel Gradle Plugin
-====================
+# JRebel Gradle Plugin
 
 The *rebel.xml* descriptor file is the main resource you need to add to your project in order to start reloading classes and resources with JRebel.
 Have a look at [this page](http://manuals.zeroturnaround.com/jrebel/standalone/config.html) for a reference on the *rebel.xml* file format.
@@ -8,8 +7,7 @@ JRebel Gradle plugin can be used to automatically generate a suitable *rebel.xml
 
 
 
-1. Enable JRebel Gradle plugin
-------------------------------
+## 1. Enable JRebel Gradle plugin
 
 Add the following to your *build.gradle* script. (NB! This adds a dependency for Gradle itself. Don't mix it up with your project's
 project-level dependencies - you have to put this code into the ``buildscript {..}`` block!)
@@ -57,8 +55,7 @@ and put them into your *rebel.xml*.
 
 
 
-2. Additional configuration
----------------------------
+## 2. Additional configuration
 
 In some cases, the out-of-box configuration will be insufficient and you need to set some configuration explicitly. To get an idea about this,
 start off by having a look at the *rebel.xml* that was generated based on the defaults, and figure out where is it going wrong.  
@@ -296,8 +293,7 @@ rebel {
 ```
 
 
-3. IDE configuration
---------------------
+## IDE configuration
 
 Please note that the Grade Eclipse plugin does not seem to generate project files that would configure Eclipse to auto-compile your classes into
 the same folder where Gradle is compiling them. JRebel class reloading relies on your IDE to automatically re-compile your classes, so that
