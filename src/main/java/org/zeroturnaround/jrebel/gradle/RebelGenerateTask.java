@@ -18,6 +18,7 @@ package org.zeroturnaround.jrebel.gradle;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -56,7 +57,7 @@ public class RebelGenerateTask extends DefaultTask {
   
   private Boolean alwaysGenerate;
 
-  private File defaultClassesDirectory;
+  private Set<File> defaultClassesDirectories;
   
   private File defaultResourcesDirectory;
   
@@ -140,8 +141,8 @@ public class RebelGenerateTask extends DefaultTask {
     this.alwaysGenerate = _alwaysGenerate;
   }
   
-  public File getDefaultClassesDirectory() {
-    return defaultClassesDirectory;
+  public Set<File> getDefaultClassesDirectories() {
+    return defaultClassesDirectories;
   }
 
   public File getDefaultResourcesDirectory() {
@@ -200,7 +201,7 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("rebel.war = " + war);
     log.info("rebel.web = " + web);
     log.info("rebel.classpath = " + classpath);
-    log.info("rebel.defaultClassesDirectory = " + defaultClassesDirectory);
+    log.info("rebel.defaultClassesDirectories = " + defaultClassesDirectories);
     log.info("rebel.defaultResourcesDirectory = " + defaultResourcesDirectory);
     log.info("rebel.defaultWebappDirectory = " + defaultWebappDirectory);
     log.info("rebel.configuredRootPath = " + configuredRootPath);
@@ -334,25 +335,27 @@ public class RebelGenerateTask extends DefaultTask {
    * Add the default classes directory to classpath
    */
   private void addDefaultClassesDirToClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) {
-    // project output directory
-    RebelClasspathResource classpathResource = new RebelClasspathResource();
-    
-    String fixedDefaultClassesDirectory = fixFilePath(defaultClassesDirectory);
-    log.info("fixed default classes directory : " + fixedDefaultClassesDirectory); 
-    
-    classpathResource.setDirectory(fixedDefaultClassesDirectory);
-    // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
-    if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
-      log.info("Not adding default classes directory as it doesn't exist or is not a directory");
-      return;
+
+    for(File defaultClassesDirectory: defaultClassesDirectories) {
+        String fixedDefaultClassesDirectory = fixFilePath(defaultClassesDirectory);
+        // project output directory
+        RebelClasspathResource classpathResource = new RebelClasspathResource();
+        log.info("fixed default classes directory : " + fixedDefaultClassesDirectory); 
+
+        classpathResource.setDirectory(fixedDefaultClassesDirectory);
+        // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
+        if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
+          log.info("Not adding default classes directory as it doesn't exist or is not a directory");
+          return;
+        }
+
+        if (defaultClasspath != null) {
+          classpathResource.setIncludes(defaultClasspath.getIncludes());
+          classpathResource.setExcludes(defaultClasspath.getExcludes());
+        }
+
+        model.addClasspathDir(classpathResource);
     }
-  
-    if (defaultClasspath != null) {
-      classpathResource.setIncludes(defaultClasspath.getIncludes());
-      classpathResource.setExcludes(defaultClasspath.getExcludes());
-    }
-  
-    model.addClasspathDir(classpathResource);
   }
 
   /**
@@ -550,7 +553,7 @@ public class RebelGenerateTask extends DefaultTask {
    *   These properties are cached into local variables to lessen the magic. See propagateConventionMappingSettings().
    */
 
-  public static final String NAME_DEFAULT_CLASSES_DIRECTORY = "defaultClassesDirectory$MAGIC";
+  public static final String NAME_DEFAULT_CLASSES_DIRECTORIES = "defaultClassesDirectories$MAGIC";
   
   public static final String NAME_DEFAULT_RESOURCES_DIRECTORY = "defaultResourcesDirectory$MAGIC";
   
@@ -558,7 +561,7 @@ public class RebelGenerateTask extends DefaultTask {
 
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
 
-  public File getDefaultClassesDirectory$MAGIC() {
+  public Set<File> getDefaultClassesDirectories$MAGIC() {
     return null;
   }
   
@@ -581,7 +584,7 @@ public class RebelGenerateTask extends DefaultTask {
    * (public only for unit tests)
    */
   public void propagateConventionMappingSettings() {
-    defaultClassesDirectory = getDefaultClassesDirectory$MAGIC();
+    defaultClassesDirectories = getDefaultClassesDirectories$MAGIC();
     defaultResourcesDirectory = getDefaultResourcesDirectory$MAGIC();
     defaultWebappDirectory = getDefaultWebappDirectory$MAGIC();
     rebelXmlDirectory = getRebelXmlDirectory$MAGIC();
