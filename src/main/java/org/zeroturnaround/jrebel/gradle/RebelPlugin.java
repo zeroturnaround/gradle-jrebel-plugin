@@ -113,7 +113,7 @@ public class RebelPlugin implements Plugin<Project> {
         }
         else {
           JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDirs().getFiles().iterator().next();
         }
       }
     });
@@ -150,11 +150,11 @@ public class RebelPlugin implements Plugin<Project> {
    * Propagate 'defaultClassesDirectory'
    */
   private void configureDefaultClassesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORY, new Callable<Object>() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORIES, new Callable<Object>() {
       public Object call() {
         try {
           JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDirs().getFiles();
         }
         catch (Exception e) {
           return null;
