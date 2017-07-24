@@ -1,4 +1,4 @@
-/**
+/*
  *  Copyright (C) 2012 ZeroTurnaround <support@zeroturnaround.com>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,19 @@
  */
 package org.zeroturnaround.jrebel.gradle.test;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.Assert;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask;
@@ -34,13 +41,16 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
-import org.gradle.api.plugins.jetty.JettyPlugin;
-import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
@@ -52,48 +62,40 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
- *  
+ *
  * @author Sander Sonajalg, Igor Bljahhin
  */
 public class RebelPluginTest {
 
-  private static Logger log = LoggerFactory.getLogger(RebelPluginTest.class);
-  
+  private static final Logger log = LoggerFactory.getLogger(RebelPluginTest.class);
+
   @Rule
   public TestName name = new TestName();
-  
+  @Rule
+  public ExpectedException ex = ExpectedException.none();
+
   @Before
   public void beforeEachTest() {
     log.info("\n\n === Executing test " + name.getMethodName() + "\n");
   }
-  
+
   /**
    * Test that the plugin adds a dummy task to the project when no JavaPlugin is applied
-   * @throws TaskExecutionException 
    */
-  @Test(expected = IllegalStateException.class)
-  public void testAddsDummyTaskWhenJavaPluginNotApplied() throws Throwable {
+  @Test
+  public void testAddsDummyTaskWhenJavaPluginNotApplied() {
+    ex.expectCause(CoreMatchers.<Throwable>instanceOf(IllegalStateException.class));
+    ex.expectCause(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
+
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof DefaultTask);
-    try {
-      ((DefaultTask) task).execute();
-    }
-    catch (TaskExecutionException e) {
-      throw e.getCause();
-    }
-    
+    ((DefaultTask) task).execute();
+
     cleanUp(project);
   }
 
@@ -108,14 +110,14 @@ public class RebelPluginTest {
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
-    
+
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
-    
+
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
     assertTrue(task.getDependsOn().contains(classesTask));
-    
+
     cleanUp(project);
   }
 
@@ -130,14 +132,14 @@ public class RebelPluginTest {
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
-    
+
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
-    
+
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
     assertTrue(task.getDependsOn().contains(classesTask));
-    
+
     cleanUp(project);
   }
 
@@ -152,17 +154,17 @@ public class RebelPluginTest {
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
-    
+
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
-    
+
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
     assertTrue(task.getDependsOn().contains(classesTask));
-    
+
     cleanUp(project);
   }
-  
+
   /**
    * Test that the plugin uses war packaging mode after JettyPlugin gets applied
    */
@@ -170,21 +172,21 @@ public class RebelPluginTest {
   public void testUsesWarPackagingWithJettyPlugin() {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(RebelPlugin.class);
-    project.getProject().getPlugins().apply(JettyPlugin.class);
+    project.getProject().getPlugins().apply(WarPlugin.class);
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);
-    
+
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
-    
+
     // check that the dependsOn got set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME); 
+    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
     assertTrue(task.getDependsOn().contains(classesTask));
-    
+
     cleanUp(project);
   }
-  
+
   /**
    * Test that the configuration options from RebelPluginExtension propagate nicely
    * through to RebelGenerateTaks.
@@ -194,39 +196,39 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
-    
+
     // Configure the rebel plugin
     RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-    
+
     String myWarPath = "/my/war/path";
     RebelDslWar dslWar = new RebelDslWar();
     rebelExtension.setWar(dslWar);
     dslWar.setPath(myWarPath);
-    
+
     Boolean myShowGenerated = getRandomBoolean();
     rebelExtension.setShowGenerated(myShowGenerated);
-    
+
     Boolean myAlwaysGenerate = getRandomBoolean();
     rebelExtension.setAlwaysGenerate(myAlwaysGenerate);
-    
+
     callAfterEvaluated(project);
-    
+
     // Just get the rebel task (don't execute it)
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    
+
     assertNotNull(task);
 
     task.propagateConventionMappingSettings();
 
     // 'showGenerate'
     assertEquals(myShowGenerated, task.getShowGenerated());
-    
+
     // 'alwasGenerate'
     assertEquals(myAlwaysGenerate, task.getAlwaysGenerate());
-    
+
     // 'warPath'
     assertEquals(myWarPath, task.getWar().getPath());
-    
+
     cleanUp(project);
   }
 
@@ -238,68 +240,57 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(JavaPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
-        
+
     callAfterEvaluated(project);
-    
-    // Create the default classes directory by hand, as the Java plugin is not actually executing in our test 
+
+    // Create the default classes directory by hand, as the Java plugin is not actually executing in our test
     JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-    File defaultClassesDir = javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
-    defaultClassesDir.mkdirs();
-    
-    log.info("defaultClassesDir: " + defaultClassesDir.getAbsolutePath());
-    
-    // Create the default resources directory by hand
-    File defaultResourcesDir = javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
-    defaultResourcesDir.mkdirs();
-    
-    log.info("defaultResourcesDir: " + defaultResourcesDir.getAbsolutePath());
-    
+    Set<File> defaultOutputDirs = javaConvention.getSourceSets().getByName("main").getOutput().getFiles();
+    for (File f : defaultOutputDirs) {
+      f.mkdirs();
+      log.info("defaultClassesDir: {}", f.getAbsolutePath());
+    }
+
     // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
-    
+
     RebelMainModel model = task.getRebelModel();
-    
+
     // Check the classpath directories
     List<RebelClasspathResource> classpathDirs = model.getClasspathDirs();
     Assert.assertEquals(2, classpathDirs.size());
-    
-    log.info("classpathDirs size = " + classpathDirs.size());
+
+    log.info("classpathDirs size = {}", classpathDirs.size());
     for (RebelClasspathResource resource : classpathDirs) {
-      String dir = resource.getDirectory();
-      assertTrue(dir.equals(defaultClassesDir.getAbsolutePath()) || dir.equals(defaultResourcesDir.getAbsolutePath()));
+      File dir = new File(resource.getDirectory());
+      assertThat(defaultOutputDirs, hasItem(dir));
     }
-    
-    // TODO i should probably clean the temp directory up after myself.. JVM is not doing it automatically.
-    
+
     cleanUp(project);
   }
-  
+
   /**
    * Test the default configuration (i.e. without any classpath/web/war DSL blocks) for a war project.
    */
   @Test
   public void testWarProjectDefaults() throws Exception {
-    
+
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
-        
+
     callAfterEvaluated(project);
-    
-    // Default classes directory  
+
+    // Default classes directory
     JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-    File defaultClassesDir = javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+    Set<File> defaultOutputDirs = javaConvention.getSourceSets().getByName("main").getOutput().getFiles();
     // create directory by hand, as the Java plugin is not actually executing in our test
-    defaultClassesDir.mkdirs();
-    log.info("Default classes dir: " + defaultClassesDir.getAbsolutePath());
-    
-    // Default resources directory
-    File defaultResourcesDir = javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
-    // create directory by hand, as the Java plugin is not actually executing in our test
-    defaultResourcesDir.mkdirs();
-    log.info("Default resources dir: " + defaultResourcesDir.getAbsolutePath());
+    for (File f : defaultOutputDirs) {
+      f.mkdirs();
+      log.info("Default classes dir: " + f.getAbsolutePath());
+    }
 
     // Default webapp directory
     WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
@@ -307,35 +298,35 @@ public class RebelPluginTest {
     // create directory by hand, as the War plugin is not actually executing in our test
     defaultWebappDirectory.mkdirs();
     log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
-    
+
     // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
-    
+
     RebelMainModel model = task.getRebelModel();
 
     // Check the classpath directories
     List<RebelClasspathResource> classpathDirs = model.getClasspathDirs();
     Assert.assertEquals(2, classpathDirs.size());
-    
+
     for (RebelClasspathResource resource : classpathDirs) {
-      String dir = resource.getDirectory();
-      assertTrue(dir.equals(defaultClassesDir.getAbsolutePath()) || dir.equals(defaultResourcesDir.getAbsolutePath()));
+      File dir = new File(resource.getDirectory());
+      assertThat(defaultOutputDirs, hasItem(dir));
     }
 
     // Check the web directories
     List<RebelWebResource> webappResources = model.getWebResources();
     Assert.assertEquals(1, webappResources.size());
-    
+
     for (RebelWebResource resource : webappResources) {
-      String dir = resource.getDirectory();
-      assertTrue(dir.equals(defaultWebappDirectory.getAbsolutePath()));
+      File dir = new File(resource.getDirectory());
+      assertEquals(defaultWebappDirectory, dir);
     }
-    
+
     cleanUp(project);
   }
-  
+
   /**
    * Test handling of the "war { .. }" configuration block. Should create a RebelWar element in the model.
    */
@@ -344,40 +335,40 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
-    
+
     // Configure the rebel plugin
     RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-    
+
     String myWarPath = "/my/war/path";
-    
+
     RebelDslWar dslWar = new RebelDslWar();
     dslWar.setPath(myWarPath);
     rebelExtension.setWar(dslWar);
-    
+
     callAfterEvaluated(project);
-    
+
     // Get the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
-    
+
     // execute the task
     task.generate();
-    
+
     // validate the eventual model
     RebelMainModel model = task.getRebelModel();
     RebelWar war = model.getWar();
-    
+
     assertNotNull(war);
     assertEquals(myWarPath, war.getOriginalPath());
-    
+
     cleanUp(project);
   }
-  
+
   /**
    * Test handling of the "web { .. }" configuration block.
-   * 
+   *
    * TODO not finished
    */
   @Test
@@ -385,12 +376,12 @@ public class RebelPluginTest {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(RebelPlugin.class);
-    
+
     // Configure the rebel plugin
     RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
-    
+
     RebelDslWeb web = new RebelDslWeb();
-    
+
     RebelDslWebResource webResource1 = new RebelDslWebResource();
     webResource1.setTarget("/");
     webResource1.setDirectory("src/main/webapp");
@@ -402,53 +393,53 @@ public class RebelPluginTest {
     webResource2.setTarget("/WEB-INF/");
     webResource2.setDirectory("src/main/my-web-inf");
     web.addWebResources(webResource2);
-    
+
     log.info("RebelDslWeb : " + web);
-    
+
     rebelExtension.setWeb(web);
 
     callAfterEvaluated(project);
-    
+
     // Execute the rebel task, validate the generated model
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
-    
+
     // execute the task
     task.generate();
-    
+
     // validate the eventual model
     RebelMainModel model = task.getRebelModel();
     assertNotNull(model);
-    
+
     List<RebelWebResource> webResources = model.getWebResources();
-    
+
     // TODO very rough test that doesn't actually validate almost anything... just make sure the code runs through
     // TODO make it test the real requirements more thoroughly
     assertTrue(webResources.size() > 0);
-    
+
     log.info("testWeb() XML :  \n" + model.toXmlString());
-    
+
     cleanUp(project);
   }
-  
-  // TODO tests for other properties -- what should the model look like after setting those config options 
-  
+
+  // TODO tests for other properties -- what should the model look like after setting those config options
+
   // TODO a test for java plugin project with customized source location -
-  
+
   // TODO a test for java plugin project with MULTIPLE source locations with customized source location
-  
+
   // TODO a test for war plugin project with customized source location -
-  
+
   // TODO a test for war plugin project with MULTIPLE source locations with customized source location
-  
+
   // TODO finally, write a combined end-to-end smoke test for simple scenario --
   //      a project goes in, rebel.xml goes out, XMLunit checks that its contents is adequate
-  
+
 
   // TODO a test for the fixPath... somehow
-  
+
   /**
    * Make sure the temporary project folder gets deleted after running the test
    */
@@ -462,11 +453,11 @@ public class RebelPluginTest {
       e.printStackTrace();
     }
   }
-  
+
   private static boolean getRandomBoolean() {
     return Math.random() < 0.5;
   }
-  
+
   /**
    * Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called
    */
@@ -474,7 +465,7 @@ public class RebelPluginTest {
     ProjectStateInternal projectState = new ProjectStateInternal();
     projectState.executed();
     ProjectEvaluationListener evaluationListener = ((ProjectInternal) project).getProjectEvaluationBroadcaster();
-    evaluationListener.afterEvaluate(project, projectState);    
+    evaluationListener.afterEvaluate(project, projectState);
   }
-  
+
 }

@@ -28,17 +28,17 @@ import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 public class RebelMainModel {
 
   private List<RebelClasspathResource> classpathDirs = new ArrayList<RebelClasspathResource>();
-  
+
   private List<RebelClasspathResource> classpathDirsets = new ArrayList<RebelClasspathResource>();
-  
+
   private List<RebelClasspathResource> classpathJars = new ArrayList<RebelClasspathResource>();
-  
+
   private List<RebelClasspathResource> classpathJarsets = new ArrayList<RebelClasspathResource>();
-  
+
   private String fallbackClasspath;
-  
+
   private RebelWar war;
-  
+
   private List<RebelWebResource> webResources = new ArrayList<RebelWebResource>();
 
   public List<RebelClasspathResource> getClasspathDirs() {
@@ -52,7 +52,7 @@ public class RebelMainModel {
   public List<RebelClasspathResource> getClasspathDirsets() {
     return classpathDirsets;
   }
-  
+
   public void addClasspathDirset(RebelClasspathResource dirset) {
     classpathDirsets.add(dirset);
   }
@@ -60,7 +60,7 @@ public class RebelMainModel {
   public List<RebelClasspathResource> getClasspathJars() {
     return classpathJars;
   }
-  
+
   public void addClasspathJar(RebelClasspathResource jar) {
     classpathJars.add(jar);
   }
@@ -68,7 +68,7 @@ public class RebelMainModel {
   public List<RebelClasspathResource> getClasspathJarsets() {
     return classpathJarsets;
   }
-  
+
   public void addClasspathJarset(RebelClasspathResource jarset) {
     classpathJarsets.add(jarset);
   }
@@ -76,7 +76,7 @@ public class RebelMainModel {
   public List<RebelWebResource> getWebResources() {
     return webResources;
   }
-  
+
   public void addWebResource(RebelWebResource webResource) {
     webResources.add(webResource);
   }
@@ -84,15 +84,15 @@ public class RebelMainModel {
   public void setFallbackClasspath(String fallbackClasspath) {
     this.fallbackClasspath = fallbackClasspath;
   }
-  
+
   public String getFallbackClasspath() {
     return fallbackClasspath;
   }
-  
+
   public RebelWar getWar() {
     return war;
   }
-  
+
   public void setWar(RebelWar war) {
     this.war = war;
   }
@@ -115,5 +115,5 @@ public class RebelMainModel {
     builder.append("webResources", webResources);
     return builder.toString();
   }
-  
+
 }

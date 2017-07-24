@@ -15,14 +15,21 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
-import org.gradle.api.Action;
-import org.gradle.api.internal.IConventionAware;
+import org.gradle.api.tasks.SourceSetOutput;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
@@ -30,13 +37,9 @@ import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.util.BooleanUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
-import java.io.File;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 /**
  * The main entry-point for the JRebel Gradle plugin.
- * 
+ *
  * @author Sander Sonajalg, Igor Bljahhin
  */
 public class RebelPlugin implements Plugin<Project> {
@@ -45,17 +48,17 @@ public class RebelPlugin implements Plugin<Project> {
    * The name of the task that our plugin will define
    */
   public static final String GENERATE_REBEL_TASK_NAME = "generateRebel";
-  
+
   public static final String REBEL_EXTENSION_NAME = "rebel";
-  
-  private LoggerWrapper log; 
+
+  private LoggerWrapper log;
 
   public void apply(final Project project) {
     log = new LoggerWrapper(project.getLogger());
-    
+
     // register the Rebel task
     project.getTasks().create(GENERATE_REBEL_TASK_NAME, RebelGenerateTask.class);
-    
+
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
     project.getPlugins().withType(JavaPlugin.class).all(new Action<Plugin>() {
@@ -74,15 +77,15 @@ public class RebelPlugin implements Plugin<Project> {
     log.info("Configuring Rebel plugin...");
 
     project.getExtensions().create(REBEL_EXTENSION_NAME, RebelDslMain.class);
-    
+
     final RebelGenerateTask generateRebelTask = (RebelGenerateTask) project.getTasks().getByName(GENERATE_REBEL_TASK_NAME);
     final IConventionAware conventionAwareRebelTask = (IConventionAware) generateRebelTask;
-    
+
     // let everything be compiled and processed so that classes / resources directories are there
     generateRebelTask.dependsOn(project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME));
 
     final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
-    
+
     configureRebelXmlDirectory(project, conventionAwareRebelTask, rebelExtension);
 
     // handle the 'packaging' configuration option
@@ -91,11 +94,11 @@ public class RebelPlugin implements Plugin<Project> {
     configureWarPluginSettings(project, generateRebelTask, conventionAwareRebelTask, rebelExtension);
 
     configureDefaultClassesDirectory(project, conventionAwareRebelTask);
-    
+
     configureDefaultResourcesDirectory(project, conventionAwareRebelTask);
-    
+
     configureProjectAfterEvaluate(project, generateRebelTask, rebelExtension);
-    
+
     // raise the flag that plugin configuration has been executed.
     generateRebelTask.setPluginConfigured();
   }
@@ -112,8 +115,7 @@ public class RebelPlugin implements Plugin<Project> {
           return new File(rebelExtension.getRebelXmlDirectory());
         }
         else {
-          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return getMainOutput(project).getResourcesDir();
         }
       }
     });
@@ -132,7 +134,7 @@ public class RebelPlugin implements Plugin<Project> {
 
         // Propagate 'defaultWebappDirectory'
         conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_WEBAPP_DIRECTORY, new Callable<Object>() {
-          public Object call() throws Exception { 
+          public Object call() throws Exception {
             try {
               WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
               return warConvention.getWebAppDir();
@@ -145,16 +147,15 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
   }
-  
+
   /**
    * Propagate 'defaultClassesDirectory'
    */
   private void configureDefaultClassesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORY, new Callable<Object>() {
-      public Object call() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_CLASSES_DIRECTORIES, new Callable<List<File>>() {
+      public List<File> call() {
         try {
-          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return getClassesDirs(getMainOutput(project));
         }
         catch (Exception e) {
           return null;
@@ -163,15 +164,22 @@ public class RebelPlugin implements Plugin<Project> {
     });
   }
 
+  private List<File> getClassesDirs(SourceSetOutput sourceSet) {
+    // gradle 4.0 api
+    //return sourceSet.getClassesDirs().getFiles();
+    List<File> files = new ArrayList<File>(sourceSet.getFiles());
+    files.remove(sourceSet.getResourcesDir());
+    return files;
+  }
+
   /**
    * Propagate 'defaultResourcesDirectory'
    */
   private void configureDefaultResourcesDirectory(final Project project, final IConventionAware conventionAwareRebelTask) {
-    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_RESOURCES_DIRECTORY, new Callable<Object>() {
-      public Object call() {
+    conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_DEFAULT_RESOURCES_DIRECTORY, new Callable<File>() {
+      public File call() {
         try {
-          JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
+          return getMainOutput(project).getResourcesDir();
         }
         catch (Exception e) {
           return null;
@@ -179,6 +187,12 @@ public class RebelPlugin implements Plugin<Project> {
       }
     });
   }
+
+  private SourceSetOutput getMainOutput(Project project) {
+    JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
+    return javaConvention.getSourceSets().getByName("main").getOutput();
+  }
+
 
   /**
    * Things executed in the end of configuration lifecycle. Mostly have to be here.. rebel DSL is not yet evaluated and these
@@ -186,22 +200,21 @@ public class RebelPlugin implements Plugin<Project> {
    */
   private void configureProjectAfterEvaluate(final Project project, final RebelGenerateTask generateRebelTask,
       final RebelDslMain rebelExtension)
-  { 
+  {
     project.afterEvaluate(new Action<Project>() {
 
-      @Override
       public void execute(Project project) {
         Boolean showGenerated = BooleanUtil.convertNullToFalse(rebelExtension.getShowGenerated());
         generateRebelTask.setShowGenerated(showGenerated);
-        
+
         Boolean alwaysGenerate = BooleanUtil.convertNullToFalse(rebelExtension.getAlwaysGenerate());
         generateRebelTask.setAlwaysGenerate(alwaysGenerate);
-        
+
         Map<String, ?> properties = project.getProperties();
         String rootPathFromProjectProperties = (String) properties.get("rebel.rootPath");
-        
+
         // The value from external configuration wins
-        String rootPath = null;
+        String rootPath;
         if (rootPathFromProjectProperties != null) {
           rootPath = rootPathFromProjectProperties;
         }
@@ -210,28 +223,28 @@ public class RebelPlugin implements Plugin<Project> {
         }
 
         generateRebelTask.setConfiguredRootPath(rootPath);
-        
-        // XXX i can't think of any use for this property and don't know how it works. ask Rein, it is 
+
+        // XXX i can't think of any use for this property and don't know how it works. ask Rein, it is
         //     copy-pasted from maven plugin. maybe it is useless for Gradle and can be deleted.
         // XXX it is undocumented as well.
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
-         
+
         RebelDslClasspath classpath = rebelExtension.getClasspath();
         if (classpath != null) {
           generateRebelTask.setClasspath(classpath.toRebelClasspath());
         }
-        
+
         RebelDslWar war = rebelExtension.getWar();
         if (war != null) {
           generateRebelTask.setWar(war.toRebelWar());
         }
-        
+
         RebelDslWeb web = rebelExtension.getWeb();
         if (web != null) {
           generateRebelTask.setWeb(rebelExtension.getWeb().toRebelWeb());
         }
       }
-      
+
     });
   }
 }
