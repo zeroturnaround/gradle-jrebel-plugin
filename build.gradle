@@ -1,12 +1,26 @@
 /**
  * To release to Sonatype's central nexus, run:
+ *   ./gradlew clean release -Prelease_to_central
  *
- *   gradle release -Prelease_to_central
+ * To release to gradle plugin portal run:
+ *   ./gradlew clean publishPlugins
  */
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
+  }
+}
+
 apply plugin: 'java'
 apply plugin: 'signing'
 apply plugin: 'project-report'
 apply plugin: 'maven'
+apply plugin: 'com.gradle.plugin-publish'
 
 // Artifact settings
 group = 'org.zeroturnaround'
@@ -92,11 +106,6 @@ def pomFile = pom {
 }
 
 onlyFor(uploadPublished) {
-  if (version.contains("SNAPSHOT")) {
-    throw new GradleException("ERROR! You are not supposed to run 'release' task for a SNAPSHOT version! If releasing the plugin is " +
-        "what you really wanted to do, please first change the version!");
-  }
-
   uploadPublished {
     repositories {
       mavenDeployer {
@@ -109,7 +118,7 @@ onlyFor(uploadPublished) {
           }
 
           snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
-            authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
+            authentication(userName: sonatypeNexusSnapshotsUsername, password: sonatypeNexusSnapshotsPassword)
           }
         }
 
@@ -162,24 +171,48 @@ task generatePom(type: GeneratePomTask) {
 
   inputs.file project.buildFile
   outputs.file destFile
+  enabled = false
 
   doLast {
     println "Generate POM into " + destFile
-
     pomFile.writeTo(destFile)
   }
 }
 
+signArchives.dependsOn generatePom
+
+// portal task publishPlugins generates own pom.xml
+onlyFor(uploadPublished) {
+  generatePom.enabled = true
+  artifacts {
+    archives (generatePom.destFile) {
+      name 'pom'
+      type 'pom'
+    }
+  }
+
+  println 'Project artifacts: ' + artifacts
+}
+
 // Define list of artifacts
 artifacts {
-  archives (generatePom.destFile) {
-    name 'pom'
-    type 'pom'
-    builtBy generatePom
-  }
   archives jar
   archives sourcesJar
   archives javadocJar
+}
+
+pluginBundle {
+  website = 'http://www.zeroturnaround.com/jrebel'
+  vcsUrl = 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
+  description = 'ZeroTurnaround JRebel Gradle plugin!'
+  tags = ['JRebel', 'rebel.xml', 'ZeroTurnaround']
+
+  plugins {
+    rebelPlugin {
+      id = 'org.zeroturnaround.gradle.jrebel'
+      displayName = 'ZeroTurnaround JRebel Gradle plugin'
+    }
+  }
 }
 
 task wrapper(type: Wrapper) {
