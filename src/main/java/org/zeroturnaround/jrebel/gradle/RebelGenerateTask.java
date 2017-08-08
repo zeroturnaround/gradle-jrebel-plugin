@@ -17,12 +17,17 @@ package org.zeroturnaround.jrebel.gradle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
+import org.gradle.util.GradleVersion;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
@@ -37,6 +42,10 @@ public class RebelGenerateTask extends DefaultTask {
   public static final String PACKAGING_TYPE_JAR = "jar";
 
   public static final String PACKAGING_TYPE_WAR = "war";
+
+  public static final String GRADLE_PLUGIN_VERSION = extractVersionOfPluginFromManifest();
+
+  public static final String GRADLE_VERSION = GradleVersion.current().getVersion();
 
   private LoggerWrapper log = new LoggerWrapper(getProject().getLogger());
 
@@ -229,6 +238,41 @@ public class RebelGenerateTask extends DefaultTask {
     if (rebelModel != null && !skipWritingRebelXml) {
       generateRebelXml(rebelXmlFile);
     }
+  }
+
+  public static Manifest getManifest(Class<?> clz) {
+    String resource = "/" + clz.getName().replace(".", "/") + ".class";
+    String fullPath = clz.getResource(resource).toString();
+    String archivePath = fullPath.substring(0, fullPath.length() - resource.length());
+    if (archivePath.endsWith("\\WEB-INF\\classes") || archivePath.endsWith("/WEB-INF/classes")) {
+      archivePath = archivePath.substring(0, archivePath.length() - "/WEB-INF/classes".length());
+    }
+
+    InputStream input = null;
+    try {
+      input = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream();
+      return new Manifest(input);
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      return new Manifest();
+    }
+    finally {
+      if (input != null) {
+        try {
+          input.close();
+        }
+        catch (IOException ex) {
+        }
+      }
+    }
+  }
+
+  private static String extractVersionOfPluginFromManifest() {
+    Manifest mf = getManifest(RebelGenerateTask.class);
+    Attributes attrs = mf.getMainAttributes();
+    String result = attrs.getValue("Gradle-JR-Plugin-Version");
+    return result == null ? "Unknown" : result;
   }
 
   /**
