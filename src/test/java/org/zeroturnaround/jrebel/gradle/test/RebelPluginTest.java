@@ -203,7 +203,7 @@ public class RebelPluginTest {
     String myWarPath = "/my/war/path";
     RebelDslWar dslWar = new RebelDslWar();
     rebelExtension.setWar(dslWar);
-    dslWar.setPath(myWarPath);
+    dslWar.setDir(myWarPath);
 
     Boolean myShowGenerated = getRandomBoolean();
     rebelExtension.setShowGenerated(myShowGenerated);
@@ -227,7 +227,7 @@ public class RebelPluginTest {
     assertEquals(myAlwaysGenerate, task.getAlwaysGenerate());
 
     // 'warPath'
-    assertEquals(myWarPath, task.getWar().getPath());
+    assertEquals(myWarPath, task.getWar().getDir());
 
     cleanUp(project);
   }
@@ -342,7 +342,7 @@ public class RebelPluginTest {
     String myWarPath = "/my/war/path";
 
     RebelDslWar dslWar = new RebelDslWar();
-    dslWar.setPath(myWarPath);
+    dslWar.setDir(myWarPath);
     rebelExtension.setWar(dslWar);
 
     callAfterEvaluated(project);
@@ -361,7 +361,7 @@ public class RebelPluginTest {
     RebelWar war = model.getWar();
 
     assertNotNull(war);
-    assertEquals(myWarPath, war.getOriginalPath());
+    assertEquals(myWarPath, war.getOriginalDir());
 
     cleanUp(project);
   }

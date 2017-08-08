@@ -236,7 +236,7 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelMainModel model = new RebelMainModel();
     
     RebelWar rebelWar = new RebelWar();
-    rebelWar.setPath("/my/path");
+    rebelWar.setDir("/my/path");
     model.setWar(rebelWar);
     
     String generatedXml = writer.toXmlString(model);

@@ -254,7 +254,6 @@ public class RebelGenerateTask extends DefaultTask {
       return new Manifest(input);
     }
     catch (Exception e) {
-      e.printStackTrace();
       return new Manifest();
     }
     finally {
@@ -493,9 +492,9 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private void buildWar(RebelMainModel model) {
     // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
-    if (war != null && war.getPath() != null) {
-      war.setOriginalPath(war.getPath());
-      war.setPath(fixFilePath(war.getPath()));
+    if (war != null && war.getDir()!= null) {
+      war.setOriginalDir(war.getDir());
+      war.setDir(fixFilePath(war.getDir()));
       model.setWar(war);
     }
   }

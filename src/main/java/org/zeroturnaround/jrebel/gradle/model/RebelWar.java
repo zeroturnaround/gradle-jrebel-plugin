@@ -23,39 +23,40 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class RebelWar {
 
-  private String path;
+  private String dir;
   
   /**
    * The path value before we did the "fixPath()". Internal.
    */
-  private String originalPath;
+  private String originalDir;
 
-  public String getPath() {
-    return path;
+  public String getDir() {
+    return dir;
   }
 
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  /**
-   * (internal, for unit tests)
-   */
-  public String getOriginalPath() {
-    return originalPath;
+  public void setDir(String path) {
+    this.dir = path;
   }
 
   /**
    * (internal, for unit tests)
    */
-  public void setOriginalPath(String originalPath) {
-    this.originalPath = originalPath;
+  public String getOriginalDir() {
+    return originalDir;
   }
 
+  /**
+   * (internal, for unit tests)
+   */
+  public void setOriginalDir(String value) {
+    this.originalDir = value;
+  }
+
+  @Override
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
-    builder.append("path", path);
-    builder.append("originalPath", path);
+    builder.append("dir", this.dir);
+    builder.append("originalDir", this.dir);
     return builder.toString();
   }
   

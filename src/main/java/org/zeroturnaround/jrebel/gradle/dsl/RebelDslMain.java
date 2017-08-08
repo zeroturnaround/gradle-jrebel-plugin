@@ -158,6 +158,7 @@ public class RebelDslMain {
     ConfigureUtil.configure(closure, war);
   }
 
+  @Override
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("packaging", packaging);

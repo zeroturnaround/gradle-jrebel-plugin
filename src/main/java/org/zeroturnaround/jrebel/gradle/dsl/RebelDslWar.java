@@ -25,14 +25,14 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
  */
 public class RebelDslWar {
 
-  private String path;
+  private String dir;
   
-  public String getPath() {
-    return path;
+  public String getDir() {
+    return dir;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setDir(String value) {
+    this.dir = value;
   }
   
   /**
@@ -40,13 +40,14 @@ public class RebelDslWar {
    */
   public RebelWar toRebelWar() {
     RebelWar war = new RebelWar();
-    war.setPath(this.path);
+    war.setDir(this.dir);
     return war;
   }
 
+  @Override
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
-    builder.append("path", path);
+    builder.append("dir", this.dir);
     return builder.toString();
   }
   
