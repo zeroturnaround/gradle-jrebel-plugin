@@ -52,6 +52,13 @@ repositories {
   mavenCentral()
 }
 
+// add version of the plugin into MANIFEST.MF to add it into generated rebel.xml files
+jar {
+  manifest {
+    attributes("Gradle-JR-Plugin-Version":version)
+  }
+}
+
 /**
 * This method helps to run certain parts of config only when these tasks are really going to be executed.
 * This is very useful as to not force somebody who just wants to build locally define nexus usernames/passwords, etc.
