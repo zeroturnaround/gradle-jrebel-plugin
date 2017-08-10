@@ -17,11 +17,7 @@ package org.zeroturnaround.jrebel.gradle;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.DefaultTask;
@@ -240,37 +236,8 @@ public class RebelGenerateTask extends DefaultTask {
     }
   }
 
-  public static Manifest getManifest(Class<?> clz) {
-    String resource = "/" + clz.getName().replace(".", "/") + ".class";
-    String fullPath = clz.getResource(resource).toString();
-    String archivePath = fullPath.substring(0, fullPath.length() - resource.length());
-    if (archivePath.endsWith("\\WEB-INF\\classes") || archivePath.endsWith("/WEB-INF/classes")) {
-      archivePath = archivePath.substring(0, archivePath.length() - "/WEB-INF/classes".length());
-    }
-
-    InputStream input = null;
-    try {
-      input = new URL(archivePath + "/META-INF/MANIFEST.MF").openStream();
-      return new Manifest(input);
-    }
-    catch (Exception e) {
-      return new Manifest();
-    }
-    finally {
-      if (input != null) {
-        try {
-          input.close();
-        }
-        catch (IOException ex) {
-        }
-      }
-    }
-  }
-
   private static String extractVersionOfPluginFromManifest() {
-    Manifest mf = getManifest(RebelGenerateTask.class);
-    Attributes attrs = mf.getMainAttributes();
-    String result = attrs.getValue("Gradle-JR-Plugin-Version");
+    String result = RebelGenerateTask.class.getPackage().getImplementationVersion();
     return result == null ? "Unknown" : result;
   }
 
@@ -311,7 +278,6 @@ public class RebelGenerateTask extends DefaultTask {
     if (classpath == null) {
       log.info("No custom classpath configuration found .. using the defaults");
       buildDefaultClasspath(model, null);
-      return;
     }
 
     // User has provided custom 'classpath {}' configuration
@@ -352,7 +318,6 @@ public class RebelGenerateTask extends DefaultTask {
           model.addClasspathDir(resource);
         }
       }
-
     }
   }
 

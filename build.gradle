@@ -55,7 +55,7 @@ repositories {
 // add version of the plugin into MANIFEST.MF to add it into generated rebel.xml files
 jar {
   manifest {
-    attributes("Gradle-JR-Plugin-Version":version)
+    attributes("Implementation-Version":version)
   }
 }
 
