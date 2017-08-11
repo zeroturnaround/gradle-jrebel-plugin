@@ -24,18 +24,30 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class RebelWar {
 
   private String dir;
+
+  private String file;
   
   /**
    * The path value before we did the "fixPath()". Internal.
    */
   private String originalDir;
 
+  private String originalFile;
+
   public String getDir() {
     return dir;
   }
 
-  public void setDir(String path) {
-    this.dir = path;
+  public void setDir(String value) {
+    this.dir = value;
+  }
+
+  public String getFile() {
+    return file;
+  }
+
+  public void setFile(String value) {
+    this.file = value;
   }
 
   /**
@@ -52,11 +64,27 @@ public class RebelWar {
     this.originalDir = value;
   }
 
+  /**
+   * (internal, for unit tests)
+   */
+  public String getOriginalFile() {
+    return originalFile;
+  }
+
+  /**
+   * (internal, for unit tests)
+   */
+  public void setOriginalFile(String value) {
+    this.originalFile = value;
+  }
+
   @Override
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("dir", this.dir);
     builder.append("originalDir", this.dir);
+    builder.append("file", this.file);
+    builder.append("originalFile", this.originalFile);
     return builder.toString();
   }
   

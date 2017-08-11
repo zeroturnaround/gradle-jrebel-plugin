@@ -134,8 +134,12 @@ public class RebelXmlWriter {
    */
   private void writeWar(RebelMainModel model, Writer writer) throws IOException {
     RebelWar war = model.getWar();
-    if (war != null && war.getDir()!= null) {
-      writer.write("  <war dir=\"" + escapeXml(war.getDir()) + "\"/>\n");
+    if (war != null) {
+      if (war.getDir()!= null) {
+        writer.write("  <war dir=\"" + escapeXml(war.getDir()) + "\"/>\n");
+      } else if (war.getFile()!= null) {
+        writer.write("  <war file=\"" + escapeXml(war.getFile()) + "\"/>\n");
+      }
       writer.write("\n");
     }
   }

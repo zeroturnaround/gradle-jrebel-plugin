@@ -26,6 +26,8 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 public class RebelDslWar {
 
   private String dir;
+
+  private String file;
   
   public String getDir() {
     return dir;
@@ -34,13 +36,22 @@ public class RebelDslWar {
   public void setDir(String value) {
     this.dir = value;
   }
-  
+
+  public String getFile() {
+    return file;
+  }
+
+  public void setFile(String value) {
+    this.file = value;
+  }
+
   /**
    * Convert from DSL-level model objects to the backend model objects.
    */
   public RebelWar toRebelWar() {
     RebelWar war = new RebelWar();
     war.setDir(this.dir);
+    war.setFile(this.file);
     return war;
   }
 
@@ -48,6 +59,7 @@ public class RebelDslWar {
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this);
     builder.append("dir", this.dir);
+    builder.append("file", this.file);
     return builder.toString();
   }
   

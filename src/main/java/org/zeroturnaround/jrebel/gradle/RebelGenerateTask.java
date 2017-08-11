@@ -457,9 +457,15 @@ public class RebelGenerateTask extends DefaultTask {
    */
   private void buildWar(RebelMainModel model) {
     // fix the path on the RebelWar object (whoooh...not nicest and not the nicest placing)
-    if (war != null && war.getDir()!= null) {
-      war.setOriginalDir(war.getDir());
-      war.setDir(fixFilePath(war.getDir()));
+    if (war != null) {
+      if (war.getDir()!= null) {
+        war.setOriginalDir(war.getDir());
+        war.setDir(fixFilePath(war.getDir()));
+      }
+      if (war.getFile()!= null) {
+        war.setOriginalFile(war.getFile());
+        war.setFile(fixFilePath(war.getFile()));
+      }
       model.setWar(war);
     }
   }

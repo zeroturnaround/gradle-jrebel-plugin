@@ -229,10 +229,10 @@ public class RebelXmlWriterTest extends XMLTestCase {
   }
   
   /**
-   * Test writing the <war> eĺement.
+   * Test writing the <war> eĺement and custom dir.
    */
   @Test
-  public void testXmlWithWar() throws Exception {
+  public void testXmlWithWarCustomDir() throws Exception {
     RebelMainModel model = new RebelMainModel();
     
     RebelWar rebelWar = new RebelWar();
@@ -252,8 +252,33 @@ public class RebelXmlWriterTest extends XMLTestCase {
       "</application>";
     
     log.info("testXmlWithWar -- generated xml: \n" + generatedXml);    
-    
-    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);    
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
   }
 
+  /**
+   * Test writing the <war> eĺement and custom file.
+   */
+  @Test
+  public void testXmlWithWarCustomFile() throws Exception {
+    RebelMainModel model = new RebelMainModel();
+
+    RebelWar rebelWar = new RebelWar();
+    rebelWar.setFile("/my/path/file.war");
+    model.setWar(rebelWar);
+
+    String generatedXml = writer.toXmlString(model);
+
+    String expectedResult =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    "<application generated-by=\"gradle\" " +
+                    "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
+                    "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+                    "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
+                    "  <classpath />" +
+                    "  <war file=\"/my/path/file.war\" />" +
+                    "</application>";
+
+    log.info("testXmlWithWar -- generated xml: \n" + generatedXml);
+    assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
+  }
 }
