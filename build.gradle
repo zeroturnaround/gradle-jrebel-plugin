@@ -24,7 +24,7 @@ apply plugin: 'com.gradle.plugin-publish'
 
 // Artifact settings
 group = 'org.zeroturnaround'
-version = '1.1.7-SNAPSHOT'
+version = '1.1.7'
 
 // Compiler settings
 targetCompatibility = "1.5"
