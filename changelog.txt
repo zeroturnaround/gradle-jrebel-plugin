@@ -10,7 +10,7 @@ JRebel Gradle Plugin changelog
 1.1.6 (2017-07-24)
 ------------------
 
-* Improvement: added support for Gradle 4.0 SourceSetOutput.getClassesDirs .
+* Improvement: added support for Gradle 4.0 SourceSetOutput.getClassesDirs.
 
 1.1.5 (2017-01-18)
 ------------------
@@ -30,8 +30,8 @@ JRebel Gradle Plugin changelog
 1.1.1 (2013-07-31)
 ------------------
 
-* Bug fix: fixed a bug of empty XML being generated when DSL configuration blocks ('web', 'classpath') were not specified in build.gradle (issue # 4).
-* Bug fix: stopped using the deprecated API TaskContainer#add() (issue # 2).
+* Bug fix: fixed a bug of empty XML being generated when DSL configuration blocks ('web', 'classpath') were not specified in build.gradle.
+* Bug fix: stopped using the deprecated API TaskContainer#add().
 * Improvement: cleaner info-level logging.
 
 
