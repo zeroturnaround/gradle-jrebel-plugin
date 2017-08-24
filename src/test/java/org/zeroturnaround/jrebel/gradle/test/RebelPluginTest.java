@@ -34,7 +34,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
-import org.gradle.api.plugins.jetty.JettyPlugin;
+import org.gradle.api.plugins.tomcat.TomcatPlugin;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.Before;
@@ -164,13 +164,13 @@ public class RebelPluginTest {
   }
   
   /**
-   * Test that the plugin uses war packaging mode after JettyPlugin gets applied
+   * Test that the plugin uses war packaging mode after TomcatPlugin gets applied
    */
   @Test
-  public void testUsesWarPackagingWithJettyPlugin() {
+  public void testUsesWarPackagingWithTomcatPlugin() {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(RebelPlugin.class);
-    project.getProject().getPlugins().apply(JettyPlugin.class);
+    project.getProject().getPlugins().apply(TomcatPlugin.class);
 
     Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof RebelGenerateTask);

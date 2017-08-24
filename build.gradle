@@ -32,6 +32,8 @@ dependencies {
   compile 'commons-io:commons-io:2.2'
   testCompile 'junit:junit:4.8.2'
   testCompile 'xmlunit:xmlunit:1.4'
+  testCompile 'org.gradle.api.plugins:gradle-tomcat-plugin:0.9.9'
+
   deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.0'
 }
 
