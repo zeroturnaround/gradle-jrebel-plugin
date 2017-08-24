@@ -113,7 +113,7 @@ public class RebelPlugin implements Plugin<Project> {
         }
         else {
           JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDirs().getSingleFile();
         }
       }
     });
@@ -154,7 +154,7 @@ public class RebelPlugin implements Plugin<Project> {
       public Object call() {
         try {
           JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDir();
+          return javaConvention.getSourceSets().getByName("main").getOutput().getClassesDirs().getSingleFile();
         }
         catch (Exception e) {
           return null;
@@ -201,7 +201,7 @@ public class RebelPlugin implements Plugin<Project> {
         String rootPathFromProjectProperties = (String) properties.get("rebel.rootPath");
         
         // The value from external configuration wins
-        String rootPath = null;
+        String rootPath;
         if (rootPathFromProjectProperties != null) {
           rootPath = rootPathFromProjectProperties;
         }
