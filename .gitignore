@@ -6,3 +6,6 @@
 /.classpath
 /.project
 /gradle.properties
+/*.ipr
+/*.iws
+/*.iml
