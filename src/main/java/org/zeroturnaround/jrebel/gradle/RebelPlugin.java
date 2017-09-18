@@ -210,8 +210,7 @@ public class RebelPlugin implements Plugin<Project> {
         Boolean alwaysGenerate = BooleanUtil.convertNullToFalse(rebelExtension.getAlwaysGenerate());
         generateRebelTask.setAlwaysGenerate(alwaysGenerate);
 
-        Map<String, ?> properties = project.getProperties();
-        String rootPathFromProjectProperties = (String) properties.get("rebel.rootPath");
+        String rootPathFromProjectProperties = project.hasProperty("rebel.rootPath") ? project.property("rebel.rootPath").toString() : null;
 
         // The value from external configuration wins
         String rootPath;
