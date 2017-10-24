@@ -81,9 +81,6 @@ public class RebelPlugin implements Plugin<Project> {
     final RebelGenerateTask generateRebelTask = (RebelGenerateTask) project.getTasks().getByName(GENERATE_REBEL_TASK_NAME);
     final IConventionAware conventionAwareRebelTask = (IConventionAware) generateRebelTask;
 
-    // let everything be compiled and processed so that classes / resources directories are there
-    generateRebelTask.dependsOn(project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME));
-
     final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
 
     configureRebelXmlDirectory(project, conventionAwareRebelTask, rebelExtension);

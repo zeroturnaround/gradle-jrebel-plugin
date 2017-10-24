@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 import java.io.File;
@@ -114,9 +115,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
 
-    // check that the dependsOn got set
+    // check that the dependsOn is not set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertTrue(task.getDependsOn().contains(classesTask));
+    assertFalse(task.getDependsOn().contains(classesTask));
 
     cleanUp(project);
   }
@@ -136,9 +137,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
 
-    // check that the dependsOn got set
+    // check that the dependsOn is not set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertTrue(task.getDependsOn().contains(classesTask));
+    assertFalse(task.getDependsOn().contains(classesTask));
 
     cleanUp(project);
   }
@@ -158,9 +159,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
 
-    // check that the dependsOn got set
+    // check that the dependsOn is not set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertTrue(task.getDependsOn().contains(classesTask));
+    assertFalse(task.getDependsOn().contains(classesTask));
 
     cleanUp(project);
   }
@@ -180,9 +181,9 @@ public class RebelPluginTest {
     RebelGenerateTask rebelTask = (RebelGenerateTask) task;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
 
-    // check that the dependsOn got set
+    // check that the dependsOn is not set
     Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertTrue(task.getDependsOn().contains(classesTask));
+    assertFalse(task.getDependsOn().contains(classesTask));
 
     cleanUp(project);
   }
@@ -228,6 +229,27 @@ public class RebelPluginTest {
 
     // 'warPath'
     assertEquals(myWarPath, task.getWar().getDir());
+
+    cleanUp(project);
+  }
+
+  @Test
+  public void testJarProjectDefaultsWithCleanProject() throws Exception {
+    Project project = ProjectBuilder.builder().build();
+    project.getPlugins().apply(JavaPlugin.class);
+    project.getPlugins().apply(RebelPlugin.class);
+
+    callAfterEvaluated(project);
+
+    // Get and execute the rebel task
+    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    task.skipWritingRebelXml();
+    task.generate();
+
+    RebelMainModel model = task.getRebelModel();
+
+    // Check the classpath directories
+    Assert.assertEquals(2, model.getClasspathDirs().size());
 
     cleanUp(project);
   }

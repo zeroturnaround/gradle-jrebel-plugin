@@ -348,11 +348,6 @@ public class RebelGenerateTask extends DefaultTask {
       log.info("fixed default classes directory : " + fixedDefaultClassesDirectory);
 
       classpathResource.setDirectory(fixedDefaultClassesDirectory);
-      // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
-      if (!new File(fixedDefaultClassesDirectory).isDirectory()) {
-        log.info("Not adding default classes directory as it doesn't exist or is not a directory");
-        return;
-      }
 
       if (defaultClasspath != null) {
         classpathResource.setIncludes(defaultClasspath.getIncludes());
@@ -374,11 +369,6 @@ public class RebelGenerateTask extends DefaultTask {
     log.info("Default resources directory after normalizing: " + fixedDefaultResourcesDir);
 
     resourcesClasspathResource.setDirectory(fixedDefaultResourcesDir);
-    // XXX sure about this? what if i specified an absolute path with a placeholder in it?? this wouldn't work if i do this check!
-    if (!new File(resourcesClasspathResource.getDirectory()).isDirectory()) {
-      log.info("Didn't add default resources directory as it doesn't exist or is not a directory!");
-      return;
-    }
     model.addClasspathDir(resourcesClasspathResource);
   }
 
