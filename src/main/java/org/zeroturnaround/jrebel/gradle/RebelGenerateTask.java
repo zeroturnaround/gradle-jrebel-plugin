@@ -337,7 +337,7 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   /**
-   * Add the default classes directory to classpath
+   * Add the default classes directory to classpath (create the dirs if dont exist yet)
    */
   private void addDefaultClassesDirToClasspath(RebelMainModel model, RebelClasspathResource defaultClasspath) {
     for (File classesDir : defaultClassesDirectories) {
@@ -355,11 +355,12 @@ public class RebelGenerateTask extends DefaultTask {
       }
 
       model.addClasspathDir(classpathResource);
+      createIfDoesNotExist(classesDir);
     }
   }
 
   /**
-   * Add the default resources directory to classpath
+   * Add the default resources directory to classpath (create the dir if dont exist yet)
    */
   private void addDefaultResourcesDirToClasspath(RebelMainModel model) throws BuildException {
     log.info("Adding default resources directory to classpath ..");
@@ -370,6 +371,7 @@ public class RebelGenerateTask extends DefaultTask {
 
     resourcesClasspathResource.setDirectory(fixedDefaultResourcesDir);
     model.addClasspathDir(resourcesClasspathResource);
+    createIfDoesNotExist(defaultResourcesDirectory);
   }
 
   /**
@@ -543,6 +545,12 @@ public class RebelGenerateTask extends DefaultTask {
     }
     else {
       return getProject().getProjectDir().getAbsolutePath();
+    }
+  }
+
+  private void createIfDoesNotExist(File dir) {
+    if (!dir.exists()) {
+      dir.mkdirs();
     }
   }
 

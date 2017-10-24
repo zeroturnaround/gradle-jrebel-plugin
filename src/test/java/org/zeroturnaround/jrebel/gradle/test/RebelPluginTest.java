@@ -240,6 +240,7 @@ public class RebelPluginTest {
     project.getPlugins().apply(RebelPlugin.class);
 
     callAfterEvaluated(project);
+    project.getTasks().getByName("clean");
 
     // Get and execute the rebel task
     RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
@@ -248,8 +249,11 @@ public class RebelPluginTest {
 
     RebelMainModel model = task.getRebelModel();
 
-    // Check the classpath directories
+    // Check the classpath directories and if they exist
     Assert.assertEquals(2, model.getClasspathDirs().size());
+    for (RebelClasspathResource resource : model.getClasspathDirs()) {
+      assertTrue(new File(resource.getDirectory()).exists());
+    }
 
     cleanUp(project);
   }
