@@ -18,7 +18,6 @@ package org.zeroturnaround.jrebel.gradle;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
@@ -80,6 +79,11 @@ public class RebelPlugin implements Plugin<Project> {
 
     final RebelGenerateTask generateRebelTask = (RebelGenerateTask) project.getTasks().getByName(GENERATE_REBEL_TASK_NAME);
     final IConventionAware conventionAwareRebelTask = (IConventionAware) generateRebelTask;
+
+    // Automatically configure every Java plugin so that processResources.dependsOn(generateRebel)
+    if (project.getPlugins().hasPlugin("java")) {
+      project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME).dependsOn(generateRebelTask);
+    }
 
     final RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(REBEL_EXTENSION_NAME);
 

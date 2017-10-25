@@ -15,6 +15,9 @@
  */
 package org.zeroturnaround.jrebel.gradle.test;
 
+import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME;
+import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME;
+import static org.gradle.api.plugins.JavaPlugin.PROCESS_RESOURCES_TASK_NAME;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
@@ -109,15 +112,15 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(JavaPlugin.class);
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof RebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) task;
+    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
 
-    // check that the dependsOn is not set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertFalse(task.getDependsOn().contains(classesTask));
+    // check that the dependsOn is set properly
+    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
+    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
 
     cleanUp(project);
   }
@@ -131,15 +134,15 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(RebelPlugin.class);
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
-    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof RebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) task;
+    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
 
-    // check that the dependsOn is not set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertFalse(task.getDependsOn().contains(classesTask));
+    // check that the dependsOn is set properly
+    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
+    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
 
     cleanUp(project);
   }
@@ -153,15 +156,15 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(WarPlugin.class);
     project.getProject().getPlugins().apply(RebelPlugin.class);
 
-    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof RebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) task;
+    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
 
-    // check that the dependsOn is not set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertFalse(task.getDependsOn().contains(classesTask));
+    // check that the dependsOn is set properly
+    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
+    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
 
     cleanUp(project);
   }
@@ -175,15 +178,15 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(RebelPlugin.class);
     project.getProject().getPlugins().apply(WarPlugin.class);
 
-    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof RebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) task;
+    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
     assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
 
-    // check that the dependsOn is not set
-    Task classesTask = project.getTasks().getByName(JavaPlugin.CLASSES_TASK_NAME);
-    assertFalse(task.getDependsOn().contains(classesTask));
+    // check that the dependsOn is set properly
+    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
+    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
 
     cleanUp(project);
   }
@@ -215,7 +218,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Just get the rebel task (don't execute it)
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     assertNotNull(task);
 
@@ -240,14 +243,14 @@ public class RebelPluginTest {
     project.getPlugins().apply(RebelPlugin.class);
 
     callAfterEvaluated(project);
-    project.getTasks().getByName("clean");
+    project.getTasks().getByName(CLEAN_TASK_NAME);
 
     // Get and execute the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    task.skipWritingRebelXml();
-    task.generate();
+    RebelGenerateTask genRebelTask = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    genRebelTask.skipWritingRebelXml();
+    genRebelTask.generate();
 
-    RebelMainModel model = task.getRebelModel();
+    RebelMainModel model = genRebelTask.getRebelModel();
 
     // Check the classpath directories and if they exist
     Assert.assertEquals(2, model.getClasspathDirs().size());
@@ -278,7 +281,7 @@ public class RebelPluginTest {
     }
 
     // Get and execute the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
 
@@ -326,7 +329,7 @@ public class RebelPluginTest {
     log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
 
     // Get and execute the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
 
@@ -374,7 +377,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Get the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
@@ -427,7 +430,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Execute the rebel task, validate the generated model
-    RebelGenerateTask task = (RebelGenerateTask) project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
@@ -494,4 +497,7 @@ public class RebelPluginTest {
     evaluationListener.afterEvaluate(project, projectState);
   }
 
+  private Task getTask(Project project, String taskName) {
+    return project.getTasks().getByName(taskName);
+  }
 }
