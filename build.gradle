@@ -227,5 +227,5 @@ pluginBundle {
 
 // Gradle 2.0+ is required
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.0.0'
+  gradleVersion = '4.2.1'
 }
