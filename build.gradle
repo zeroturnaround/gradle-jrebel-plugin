@@ -1,4 +1,7 @@
 /**
+ * To deploy to local maven repository, run:
+ * ./gradlew install -x sign
+ *
  * To release to Sonatype's central nexus, run:
  *   ./gradlew clean release -Prelease_to_central
  *
@@ -26,9 +29,9 @@ apply plugin: 'com.gradle.plugin-publish'
 group = 'org.zeroturnaround'
 version = '1.1.8-SNAPSHOT'
 
-// Compiler settings
-targetCompatibility = "1.5"
-sourceCompatibility = "1.5"
+// Compiler settings (Gradle 2.0 requires Java 6+)
+targetCompatibility = "1.6"
+sourceCompatibility = "1.6"
 
 configurations {
   deployerJars
@@ -222,6 +225,7 @@ pluginBundle {
   }
 }
 
+// Gradle 2.0+ is required
 task wrapper(type: Wrapper) {
-  gradleVersion = '3.2.1'
+  gradleVersion = '2.0.0'
 }
