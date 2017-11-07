@@ -1,6 +1,6 @@
 # JRebel Gradle Plugin 
 
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/zeroturnaround/gradle-jrebel-plugin?branch=master)](https://travis-ci.org/zeroturnaround/gradle-jrebel-plugin) https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/org/zeroturnaround/gradle-jrebel-plugin/maven-metadata.xml.svg [![Twitter Follow](https://img.shields.io/twitter/follow/zeroturnaround.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/zeroturnaround)
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/zeroturnaround/gradle-jrebel-plugin.svg?branch=master)](https://travis-ci.org/zeroturnaround/gradle-jrebel-plugin) [![Maven metadata](https://img.shields.io/maven-metadata/v/http/central.maven.org/maven2/org/zeroturnaround/gradle-jrebel-plugin/maven-metadata.xml.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.zeroturnaround%22%20AND%20a%3A%22gradle-jrebel-plugin%22) [![Twitter Follow](https://img.shields.io/twitter/follow/zeroturnaround.svg?style=social&label=Follow&maxAge=2592000)](https://twitter.com/zeroturnaround)
 
 JRebel Gradle plugin generates the *rebel.xml* file for your project during the Gradle build (requires Gradle 2.0+ and Java 1.6+).
 
