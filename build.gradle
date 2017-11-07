@@ -150,6 +150,7 @@ onlyFor(uploadPublished) {
 }
 
 signing {
+  required { gradle.taskGraph.hasTask("release") }
   sign configurations.archives
 }
 
