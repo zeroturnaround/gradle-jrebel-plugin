@@ -112,7 +112,10 @@ public class RebelPlugin implements Plugin<Project> {
   {
     conventionAwareRebelTask.getConventionMapping().map(RebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
-        if (rebelExtension.getRebelXmlDirectory() != null) {
+        if (project.hasProperty("rebel.rebelXmlDirectory")) {
+          return new File(project.property("rebel.rebelXmlDirectory").toString());
+        }
+        else if (rebelExtension.getRebelXmlDirectory() != null) {
           return new File(rebelExtension.getRebelXmlDirectory());
         }
         else {
