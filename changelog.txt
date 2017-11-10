@@ -1,6 +1,11 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.1.8 (2017-11-10)
+------------------
+
+* Improvement: the generateRebel task no longer triggers class compilation and is automatically added to the Java project.
+
 1.1.7 (2017-08-17)
 ------------------
 
