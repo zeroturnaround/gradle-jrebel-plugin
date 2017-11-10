@@ -8,16 +8,12 @@
  * To release to gradle plugin portal run:
  *   ./gradlew clean publishPlugins
  */
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
-    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6"    
-  }
+plugins {
+  id "com.gradle.plugin-publish" version "0.9.9"
+  id "org.sonarqube" version "2.6"
+}
+dependencies {
+  testCompile gradleTestKit()
 }
 
 apply plugin: 'java'
