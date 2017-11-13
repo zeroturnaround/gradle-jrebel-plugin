@@ -21,7 +21,8 @@ apply plugin: 'signing'
 apply plugin: 'project-report'
 apply plugin: 'maven'
 apply plugin: 'com.gradle.plugin-publish'
-apply plugin: "org.sonarqube"
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
 
 // Artifact settings
 group = 'org.zeroturnaround'
