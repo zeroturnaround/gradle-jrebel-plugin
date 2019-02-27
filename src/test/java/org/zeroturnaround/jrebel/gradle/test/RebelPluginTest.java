@@ -492,7 +492,7 @@ public class RebelPluginTest {
    */
   private static void callAfterEvaluated(Project project) {
     ProjectStateInternal projectState = new ProjectStateInternal();
-    projectState.executed();
+  //  projectState.executed();
     ProjectEvaluationListener evaluationListener = ((ProjectInternal) project).getProjectEvaluationBroadcaster();
     evaluationListener.afterEvaluate(project, projectState);
   }
