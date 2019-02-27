@@ -102,6 +102,7 @@ public class RebelPlugin implements Plugin<Project> {
 
     // raise the flag that plugin configuration has been executed.
     generateRebelTask.setPluginConfigured();
+
   }
 
   /**
@@ -208,6 +209,7 @@ public class RebelPlugin implements Plugin<Project> {
     project.afterEvaluate(new Action<Project>() {
 
       public void execute(Project project) {
+
         Boolean showGenerated = BooleanUtil.convertNullToFalse(rebelExtension.getShowGenerated());
         generateRebelTask.setShowGenerated(showGenerated);
 
