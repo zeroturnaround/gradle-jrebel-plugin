@@ -21,15 +21,16 @@ import static org.gradle.api.plugins.JavaPlugin.PROCESS_RESOURCES_TASK_NAME;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -53,9 +54,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
+import org.zeroturnaround.jrebel.gradle.BaseRebelGenerateTask;
+import org.zeroturnaround.jrebel.gradle.IncrementalRebelPlugin;
+import org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask;
+import org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin;
 import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
@@ -66,11 +72,13 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
+
 /**
  * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
  *
  * @author Sander Sonajalg, Igor Bljahhin
  */
+@RunWith(Parameterized.class)
 public class RebelPluginTest {
 
   private static final Logger log = LoggerFactory.getLogger(RebelPluginTest.class);
@@ -85,6 +93,21 @@ public class RebelPluginTest {
     log.info("\n\n === Executing test " + name.getMethodName() + "\n");
   }
 
+  private final Class pluginClass;
+
+  @Parameterized.Parameters
+  public static Collection<Object[]> data() {
+    return Arrays.asList(new Object[][] {
+        { RebelPlugin.class },
+        { IncrementalRebelPlugin.class }
+      }
+    );
+  }
+
+  public RebelPluginTest(Class pluginClass) {
+    this.pluginClass = pluginClass;
+  }
+
   /**
    * Test that the plugin adds a dummy task to the project when no JavaPlugin is applied
    */
@@ -94,9 +117,9 @@ public class RebelPluginTest {
     ex.expectCause(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
 
     Project project = ProjectBuilder.builder().build();
-    project.getProject().getPlugins().apply(RebelPlugin.class);
+    project.getProject().getPlugins().apply(pluginClass);
 
-    Task task = project.getTasks().getByName(RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    Task task = project.getTasks().getByName(LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
     assertTrue(task instanceof DefaultTask);
     ((DefaultTask) task).execute();
 
@@ -110,13 +133,13 @@ public class RebelPluginTest {
   public void testAddsRebelTaskWhenJavaPluginApplied() {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(JavaPlugin.class);
-    project.getProject().getPlugins().apply(RebelPlugin.class);
+    project.getProject().getPlugins().apply(pluginClass);
 
-    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
+    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
+    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_JAR));
 
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
@@ -131,14 +154,14 @@ public class RebelPluginTest {
   @Test
   public void testAddsRebelTaskAfterGroovyPluginApplied() {
     Project project = ProjectBuilder.builder().build();
-    project.getProject().getPlugins().apply(RebelPlugin.class);
+    project.getProject().getPlugins().apply(pluginClass);
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
-    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_JAR));
+    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
+    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_JAR));
 
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
@@ -154,13 +177,13 @@ public class RebelPluginTest {
   public void testUsesWarPackagingWithWarPlugin() {
     Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(WarPlugin.class);
-    project.getProject().getPlugins().apply(RebelPlugin.class);
+    project.getProject().getPlugins().apply(pluginClass);
 
-    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
+    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
+    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_WAR));
 
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
@@ -175,14 +198,14 @@ public class RebelPluginTest {
   @Test
   public void testUsesWarPackagingWithJettyPlugin() {
     Project project = ProjectBuilder.builder().build();
-    project.getProject().getPlugins().apply(RebelPlugin.class);
+    project.getProject().getPlugins().apply(pluginClass);
     project.getProject().getPlugins().apply(WarPlugin.class);
 
-    Task genRebelTask = getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof RebelGenerateTask);
+    Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
 
-    RebelGenerateTask rebelTask = (RebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(RebelGenerateTask.PACKAGING_TYPE_WAR));
+    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
+    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_WAR));
 
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
@@ -199,10 +222,10 @@ public class RebelPluginTest {
   public void testConfigurationOptionPropagation() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     // Configure the rebel plugin
-    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(LegacyRebelPlugin.REBEL_EXTENSION_NAME);
 
     String myWarPath = "/my/war/path";
     RebelDslWar dslWar = new RebelDslWar();
@@ -218,11 +241,13 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Just get the rebel task (don't execute it)
-    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     assertNotNull(task);
 
     task.propagateConventionMappingSettings();
+    task.skipWritingRebelXml();
+    task.generate();
 
     // 'showGenerate'
     assertEquals(myShowGenerated, task.getShowGenerated());
@@ -240,13 +265,13 @@ public class RebelPluginTest {
   public void testJarProjectDefaultsWithCleanProject() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(JavaPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     callAfterEvaluated(project);
     project.getTasks().getByName(CLEAN_TASK_NAME);
 
     // Get and execute the rebel task
-    RebelGenerateTask genRebelTask = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask genRebelTask = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
     genRebelTask.skipWritingRebelXml();
     genRebelTask.generate();
 
@@ -268,7 +293,7 @@ public class RebelPluginTest {
   public void testJarProjectDefaults() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(JavaPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     callAfterEvaluated(project);
 
@@ -281,7 +306,7 @@ public class RebelPluginTest {
     }
 
     // Get and execute the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
 
@@ -308,7 +333,7 @@ public class RebelPluginTest {
 
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     callAfterEvaluated(project);
 
@@ -329,7 +354,7 @@ public class RebelPluginTest {
     log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
 
     // Get and execute the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
     task.skipWritingRebelXml();
     task.generate();
 
@@ -363,10 +388,10 @@ public class RebelPluginTest {
   public void testWar() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     // Configure the rebel plugin
-    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(LegacyRebelPlugin.REBEL_EXTENSION_NAME);
 
     String myWarPath = "/my/war/path";
 
@@ -377,7 +402,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Get the rebel task
-    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();
@@ -404,10 +429,10 @@ public class RebelPluginTest {
   public void testWeb() throws Exception {
     Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
-    project.getPlugins().apply(RebelPlugin.class);
+    project.getPlugins().apply(pluginClass);
 
     // Configure the rebel plugin
-    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(RebelPlugin.REBEL_EXTENSION_NAME);
+    RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(LegacyRebelPlugin.REBEL_EXTENSION_NAME);
 
     RebelDslWeb web = new RebelDslWeb();
 
@@ -430,7 +455,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Execute the rebel task, validate the generated model
-    RebelGenerateTask task = (RebelGenerateTask) getTask(project, RebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
 
     // tell the task to actually not write any rebel.xml down to file system when running in test mode!
     task.skipWritingRebelXml();

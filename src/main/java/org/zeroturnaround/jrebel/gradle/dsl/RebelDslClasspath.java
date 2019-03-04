@@ -15,6 +15,7 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,9 @@ import groovy.lang.Closure;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.Optional;
 import org.gradle.util.ConfigureUtil;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 
@@ -30,7 +34,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslClasspath {
+public class RebelDslClasspath implements Serializable {
 
   private String fallback;
   
@@ -49,11 +53,14 @@ public class RebelDslClasspath {
   public RebelDslClasspath() {
     resources = new ArrayList<RebelDslClasspathResource>();
   }
-  
+
+  @Optional
+  @Input
   public String getFallback() {
     return fallback;
   }
 
+  @Nested
   public List<RebelDslClasspathResource> getResources() {
     return resources;
   }
@@ -70,6 +77,7 @@ public class RebelDslClasspath {
     this.resources.add(resource);
   }
 
+  @Input
   public Boolean getOmitDefaultClassesDir() {
     return omitDefaultClassesDir;
   }
@@ -78,6 +86,7 @@ public class RebelDslClasspath {
     this.omitDefaultClassesDir = omitDefaultClassesDir;
   }
 
+  @Input
   public Boolean getOmitDefaultResourcesDir() {
     return omitDefaultResourcesDir;
   }

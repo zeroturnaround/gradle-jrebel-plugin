@@ -30,7 +30,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 import org.zeroturnaround.jrebel.gradle.util.FileUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
-public class RebelGenerateTask extends DefaultTask {
+public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGenerateTask {
 
   public static final String PACKAGING_TYPE_JAR = "jar";
 
@@ -242,7 +242,7 @@ public class RebelGenerateTask extends DefaultTask {
   }
 
   private static String extractVersionOfPluginFromManifest() {
-    String result = RebelGenerateTask.class.getPackage().getImplementationVersion();
+    String result = LegacyRebelGenerateTask.class.getPackage().getImplementationVersion();
     return result == null ? "Unknown" : result;
   }
 

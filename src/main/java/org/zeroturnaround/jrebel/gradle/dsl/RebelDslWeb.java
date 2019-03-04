@@ -15,12 +15,16 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import groovy.lang.Closure;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.Optional;
 import org.gradle.util.ConfigureUtil;
 import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
@@ -29,7 +33,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslWeb {
+public class RebelDslWeb implements Serializable {
 
   private List<RebelDslWebResource> webResources;
   
@@ -42,6 +46,7 @@ public class RebelDslWeb {
     webResources = new ArrayList<RebelDslWebResource>();
   }
 
+  @Nested
   public List<RebelDslWebResource> getWebResources() {
     return webResources;
   }
@@ -56,7 +61,8 @@ public class RebelDslWeb {
   public void addWebResources(RebelDslWebResource webResources) {
     this.webResources.add(webResources);
   }
-  
+
+  @Input
   public Boolean getOmitDefault() {
     return omitDefault;
   }
@@ -89,5 +95,5 @@ public class RebelDslWeb {
     }
     return web;
   }
-
 }
+

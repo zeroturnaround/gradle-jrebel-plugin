@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.zeroturnaround.jrebel.gradle.test.util.TestUtils;
 
 /**
  * Functional Test class using TestKit based on https://docs.gradle.org/current/userguide/test_kit.html

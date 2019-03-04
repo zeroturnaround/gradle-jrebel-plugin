@@ -1,7 +1,7 @@
 package org.zeroturnaround.jrebel.gradle;
 
-import static org.zeroturnaround.jrebel.gradle.RebelGenerateTask.PACKAGING_TYPE_JAR;
-import static org.zeroturnaround.jrebel.gradle.RebelGenerateTask.PACKAGING_TYPE_WAR;
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_JAR;
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_WAR;
 
 import java.io.File;
 import java.util.List;

@@ -20,7 +20,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zeroturnaround.jrebel.gradle.RebelGenerateTask;
+import org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
@@ -62,8 +62,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<application generated-by=\"gradle\" " +
-        "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-        "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+        "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+        "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
         "  <classpath> " +
         "    <dir name=\"build/classes\" />" +
@@ -91,8 +91,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath> " +
       "    <jar name=\"/my/library.jar\" />" +
@@ -120,8 +120,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath> " +
       "    <dirset dir=\"/my/workspace/build/classes\" />" +
@@ -146,8 +146,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath> " +
       "    <jarset dir=\"/my/workspace/build/classes\" />" +
@@ -176,8 +176,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath />" +
       "  <web>" +
@@ -211,8 +211,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath> " +
       "    <dir name=\"build/classes\">" +
@@ -244,8 +244,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult = 
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
       "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
       "  <classpath />" +
       "  <war dir=\"/my/path\" />" +
@@ -271,8 +271,8 @@ public class RebelXmlWriterTest extends XMLTestCase {
     String expectedResult =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                     "<application generated-by=\"gradle\" " +
-                    "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " +
-                    "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+                    "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
+                    "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
                     "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
                     "  <classpath />" +
                     "  <war file=\"/my/path/file.war\" />" +
