@@ -218,7 +218,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         JavaPluginConvention javaConvention = getProject().getConvention().findPlugin(JavaPluginConvention.class);
         if (javaConvention != null ) {
           SourceSetOutput main = javaConvention.getSourceSets().getByName("main").getOutput();
-          return new ArrayList(main.getClassesDirs().getFiles());
+          return new ArrayList<File>(main.getClassesDirs().getFiles());
         } else {
           return null;
         }
