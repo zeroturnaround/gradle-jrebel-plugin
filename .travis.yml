@@ -9,7 +9,7 @@ addons:
 jdk:
   - oraclejdk8
 script:
-  - ./gradlew sonarqube
+  - ./gradlew sonarqube --info --stacktrace
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
