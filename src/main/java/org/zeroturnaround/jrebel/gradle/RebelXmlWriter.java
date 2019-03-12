@@ -63,7 +63,7 @@ public class RebelXmlWriter {
     writer.write("\n<!--\n" +
       "  This is the JRebel configuration file. It maps the running application to your IDE workspace, enabling JRebel reloading for this project.\n" +
       "  Refer to https://manuals.zeroturnaround.com/jrebel/standalone/config.html for more information.\n" + "-->\n" +
-      "<application generated-by=\"gradle\" " + "build-tool-version=\""+RebelGenerateTask.GRADLE_VERSION+"\" " + "plugin-version=\""+RebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
+      "<application generated-by=\"gradle\" " + "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " + "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">\n");
   }
   

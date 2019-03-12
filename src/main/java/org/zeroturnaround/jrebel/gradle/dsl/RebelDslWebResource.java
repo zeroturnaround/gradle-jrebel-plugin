@@ -15,10 +15,13 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
 
 
@@ -27,7 +30,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslWebResource {
+public class RebelDslWebResource implements Serializable {
 
   private String directory;
   
@@ -37,18 +40,26 @@ public class RebelDslWebResource {
   
   private String target;
 
+  @Optional
+  @Input
   public String getDirectory() {
     return directory;
   }
 
+  @Optional
+  @Input
   public List<String> getExcludes() {
     return excludes;
   }
 
+  @Optional
+  @Input
   public List<String> getIncludes() {
     return includes;
   }
 
+  @Optional
+  @Input
   public String getTarget() {
     return target;
   }
@@ -89,5 +100,5 @@ public class RebelDslWebResource {
     resource.setTarget(target);
     return resource;
   }
-
 }
+

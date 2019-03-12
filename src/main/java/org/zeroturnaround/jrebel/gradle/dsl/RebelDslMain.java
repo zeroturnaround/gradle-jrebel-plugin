@@ -15,19 +15,25 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
-import groovy.lang.Closure;
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_JAR;
 
 import java.io.File;
+import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.Optional;
 import org.gradle.util.ConfigureUtil;
+
+import groovy.lang.Closure;
 
 /**
  * The parent class of the Rebel plugin's DSL extension. 
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslMain {
+public class RebelDslMain implements Serializable {
 
   private String packaging;
 
@@ -50,8 +56,11 @@ public class RebelDslMain {
   private RebelDslWeb web;
 
   private RebelDslWar war;
-  
+
   public RebelDslMain() {
+    this.packaging = PACKAGING_TYPE_JAR;
+    this.showGenerated = false;
+    this.alwaysGenerate = false;
   }
   
   public String getPackaging() {
@@ -70,6 +79,8 @@ public class RebelDslMain {
     this.webappDirectory = webappDirectory;
   }
 
+  @Optional
+  @Nested
   public RebelDslWeb getWeb() {
     return web;
   }
@@ -78,6 +89,8 @@ public class RebelDslMain {
     this.web = _web;
   }
 
+  @Optional
+  @Nested
   public RebelDslClasspath getClasspath() {
     return classpath;
   }
@@ -94,6 +107,8 @@ public class RebelDslMain {
     this.rootPath = rootPath;
   }
 
+  @Optional
+  @Input
   public File getRelativePath() {
     return relativePath;
   }
@@ -110,6 +125,7 @@ public class RebelDslMain {
     this.rebelXmlDirectory = rebelXmlDirectory;
   }
 
+  @Input
   public Boolean getShowGenerated() {
     return showGenerated;
   }
@@ -126,6 +142,8 @@ public class RebelDslMain {
     this.alwaysGenerate = alwaysGenerate;
   }
 
+  @Optional
+  @Nested
   public RebelDslWar getWar() {
     return war;
   }

@@ -26,7 +26,7 @@ apply plugin: 'jacoco'
 
 // Artifact settings
 group = 'org.zeroturnaround'
-version = '1.1.8'
+version = '1.1.9-SNAPSHOT'
 
 // Compiler settings (Gradle 2.0 requires Java 6+)
 targetCompatibility = "1.6"
@@ -35,6 +35,19 @@ sourceCompatibility = "1.6"
 configurations {
   deployerJars
   published.extendsFrom archives, signatures
+}
+
+// Write the plugin's classpath to a file to share with the tests
+task createClasspathManifest {
+  def outputDir = file("$buildDir/$name")
+
+  inputs.files sourceSets.main.runtimeClasspath
+  outputs.dir outputDir
+
+  doLast {
+    outputDir.mkdirs()
+    file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+  }
 }
 
 // === Dependency management
@@ -47,7 +60,10 @@ dependencies {
   testCompile 'junit:junit:4.12'
   testCompile 'xmlunit:xmlunit:1.6'
   testCompile 'org.hamcrest:hamcrest-library:1.3'
+  testCompile 'commons-io:commons-io:2.6'
   deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12'
+
+  testRuntimeOnly files(createClasspathManifest)
 }
 
 repositories {

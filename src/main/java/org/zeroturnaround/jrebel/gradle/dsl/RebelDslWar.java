@@ -15,7 +15,11 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
 /**
@@ -23,12 +27,14 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslWar {
+public class RebelDslWar implements Serializable {
 
   private String dir;
 
   private String file;
-  
+
+  @Optional
+  @Input
   public String getDir() {
     return dir;
   }
@@ -37,6 +43,8 @@ public class RebelDslWar {
     this.dir = value;
   }
 
+  @Optional
+  @Input
   public String getFile() {
     return file;
   }
@@ -62,5 +70,5 @@ public class RebelDslWar {
     builder.append("file", this.file);
     return builder.toString();
   }
-  
 }
+

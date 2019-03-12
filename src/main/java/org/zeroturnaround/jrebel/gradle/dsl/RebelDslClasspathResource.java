@@ -15,11 +15,14 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 
 /**
@@ -27,7 +30,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
  * 
  * @author Sander Sonajalg
  */
-public class RebelDslClasspathResource {
+public class RebelDslClasspathResource implements Serializable {
 
   private String directory;
   
@@ -41,26 +44,38 @@ public class RebelDslClasspathResource {
   
   private String jarset;
 
+  @Optional
+  @Input
   public String getDirectory() {
     return directory;
   }
 
+  @Optional
+  @Input
   public String getDirset() {
     return dirset;
   }
 
+  @Optional
+  @Input
   public List<String> getExcludes() {
     return excludes;
   }
 
+  @Optional
+  @Input
   public List<String> getIncludes() {
     return includes;
   }
 
+  @Optional
+  @Input
   public String getJar() {
     return jar;
   }
 
+  @Optional
+  @Input
   public String getJarset() {
     return jarset;
   }
