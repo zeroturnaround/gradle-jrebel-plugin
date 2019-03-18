@@ -260,7 +260,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
       @Override
       public File call() throws Exception {
         if (getProject().hasProperty("rebel.rebelXmlDirectory")) {
-          return new File(getProject().getProjectDir(), getProject().property("rebel.rebelXmlDirectory").toString());
+          return new File(getProject().property("rebel.rebelXmlDirectory").toString());
         }
         else if (rebelDsl.getRebelXmlDirectory() != null) {
           return new File(getProject().getProjectDir(), rebelDsl.getRebelXmlDirectory());
