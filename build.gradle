@@ -27,7 +27,7 @@ apply plugin: 'jacoco'
 // Artifact settings
 
 project.group = 'org.zeroturnaround'
-project.version = '1.1.9'
+project.version = '1.1.10-SNAPSHOT'
 
 project.ext.name = 'JRebel Gradle plugin'
 project.ext.description = 'JRebel Gradle plugin'
