@@ -25,12 +25,22 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 
 // Artifact settings
-group = 'org.zeroturnaround'
-version = '1.1.9-SNAPSHOT'
+
+project.group = 'org.zeroturnaround'
+project.version = '1.1.9'
+
+project.ext.name = 'JRebel Gradle plugin'
+project.ext.description = 'JRebel Gradle plugin'
+project.ext.vcs = 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
+project.ext.website = 'https://jrebel.com'
 
 // Compiler settings (Gradle 2.0 requires Java 6+)
 targetCompatibility = "1.6"
 sourceCompatibility = "1.6"
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
 
 configurations {
   deployerJars
@@ -99,9 +109,9 @@ jar.dependsOn(test)
 // Contents of pom.xml that will be created for publishing to the maven-style artifact repository
 def pomFile = pom {
   project {
-    name 'ZeroTurnaround JRebel Gradle plugin'
-    description 'ZeroTurnaround JRebel Gradle plugin'
-    url 'http://www.zeroturnaround.com/jrebel'
+    name project.ext.name
+    description project.ext.description
+    url project.ext.website
     licenses {
       license {
         name 'The Apache Software License, Version 2.0'
@@ -228,20 +238,15 @@ artifacts {
 }
 
 pluginBundle {
-  website = 'http://www.zeroturnaround.com/jrebel'
-  vcsUrl = 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
-  description = 'ZeroTurnaround JRebel Gradle plugin!'
+  website = project.ext.website
+  vcsUrl = project.ext.vcs
+  description = project.ext.description
   tags = ['JRebel', 'rebel.xml', 'ZeroTurnaround']
 
   plugins {
     rebelPlugin {
       id = 'org.zeroturnaround.gradle.jrebel'
-      displayName = 'ZeroTurnaround JRebel Gradle plugin'
+      displayName = project.ext.name
     }
   }
-}
-
-// Gradle 2.0+ is required
-task wrapper(type: Wrapper) {
-  gradleVersion = '4.2.1'
 }
