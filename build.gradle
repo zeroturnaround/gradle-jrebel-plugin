@@ -121,14 +121,9 @@ def pomFile = pom {
     }
     developers {
       developer {
-        id 'DA'
-        name 'Daniel Anjos'
-        email 'daniel.anjos@zeroturnaround.com'
-      }
-      developer {
-        id 'sander24'
-        name 'Sander Sonajalg'
-        email 'sander.sonajalg@zeroturnaround.com'
+        id 'jrebel_support'
+        name 'JRebel Support'
+        email 'support@jrebel.com'
       }
     }
     inceptionYear '2011'
