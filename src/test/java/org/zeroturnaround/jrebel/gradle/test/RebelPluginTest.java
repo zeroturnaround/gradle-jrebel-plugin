@@ -227,7 +227,7 @@ public class RebelPluginTest {
     // Configure the rebel plugin
     RebelDslMain rebelExtension = (RebelDslMain) project.getExtensions().getByName(LegacyRebelPlugin.REBEL_EXTENSION_NAME);
 
-    String myWarPath = "/my/war/path";
+    String myWarPath = new File("/my/war/path").getAbsolutePath().replace('\\', '/');
     RebelDslWar dslWar = new RebelDslWar();
     rebelExtension.setWar(dslWar);
     dslWar.setDir(myWarPath);

@@ -66,8 +66,8 @@ public class BaseRebelPluginFunctionalIntegrationTest {
     return runner.build();
   }
 
-  protected String absolutePath(String path) {
-    return new File(testProjectDir.getRoot(), path).getAbsolutePath();
+  protected String absolutePath(String path) throws IOException {
+    return new File(testProjectDir.getRoot().getCanonicalFile(), path).getAbsolutePath().replace('\\', '/');
   }
 
   protected String getRebelXML() throws IOException {
