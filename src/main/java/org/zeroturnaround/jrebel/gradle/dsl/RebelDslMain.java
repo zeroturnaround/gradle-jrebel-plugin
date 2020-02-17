@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.util.ConfigureUtil;
@@ -62,7 +63,8 @@ public class RebelDslMain implements Serializable {
     this.showGenerated = false;
     this.alwaysGenerate = false;
   }
-  
+
+  @Input
   public String getPackaging() {
     return packaging;
   }
@@ -71,6 +73,8 @@ public class RebelDslMain implements Serializable {
     this.packaging = packaging;
   }
 
+  @Optional
+  @Input
   public String getWebappDirectory() {
     return webappDirectory;
   }
@@ -98,7 +102,9 @@ public class RebelDslMain implements Serializable {
   public void setClasspath(RebelDslClasspath _classpath) {
     this.classpath = _classpath;
   }
-  
+
+  @Optional
+  @Input
   public String getRootPath() {
     return rootPath;
   }
@@ -107,16 +113,23 @@ public class RebelDslMain implements Serializable {
     this.rootPath = rootPath;
   }
 
-  @Optional
-  @Input
+  @Internal
   public File getRelativePath() {
     return relativePath;
+  }
+
+  @Optional
+  @Input
+  public String getRelativePathName() {
+    return relativePath != null ? relativePath.getAbsolutePath() : null;
   }
 
   public void setRelativePath(File relativePath) {
     this.relativePath = relativePath;
   }
 
+  @Optional
+  @Input
   public String getRebelXmlDirectory() {
     return rebelXmlDirectory;
   }
@@ -134,6 +147,7 @@ public class RebelDslMain implements Serializable {
     this.showGenerated = showGenerated;
   }
 
+  @Input
   public Boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }

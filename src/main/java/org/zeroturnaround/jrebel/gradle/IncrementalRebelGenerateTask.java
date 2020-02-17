@@ -19,6 +19,7 @@ import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
@@ -79,10 +80,16 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     jrebelBuildDir = provider;
   }
 
-  @Input
-  @Optional
+  @Internal
   public File getDefaultWebappDirectory() {
     return defaultWebappDirectory != null ? defaultWebappDirectory.getOrNull() : null;
+  }
+
+  @Input
+  @Optional
+  public String getDefaultWebappDirectoryPath() {
+    File webappDirectory = getDefaultWebappDirectory();
+    return webappDirectory != null ? webappDirectory.getAbsolutePath() : null;
   }
 
   public void setDefaultWebappDirectory(Provider<File> provider) {
@@ -100,10 +107,16 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     this.defaultClassesDirectory = provider;
   }
 
-  @Optional
-  @Input
+  @Internal
   public File getDefaultResourcesDirectory() {
     return defaultResourcesDirectory.getOrNull();
+  }
+
+  @Input
+  @Optional
+  public String getDefaultResourcesDirectoryPath() {
+    File resourcesDirectory = getDefaultResourcesDirectory();
+    return resourcesDirectory != null ? resourcesDirectory.getAbsolutePath() : null;
   }
 
   public void setDefaultResourcesDirectory(Provider<File> provider) {
@@ -137,10 +150,10 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     log.info("rebel.web = " + rebelDsl.getWeb());
     log.info("rebel.classpath = " + rebelDsl.getClasspath());
     log.info("rebel.defaultClassesDirectories = " + getDefaultClassesDirectory());
-    log.info("rebel.defaultResourcesDirectory = " + getDefaultResourcesDirectory());
-    log.info("rebel.defaultWebappDirectory = " + getDefaultWebappDirectory());
+    log.info("rebel.defaultResourcesDirectory = " + getDefaultResourcesDirectoryPath());
+    log.info("rebel.defaultWebappDirectory = " + getDefaultWebappDirectoryPath());
     log.info("rebel.configuredRootPath = " + getConfiguredRootPath());
-    log.info("rebel.configuredRelativePath = " + getRebelDsl().getRelativePath());
+    log.info("rebel.configuredRelativePath = " + getRebelDsl().getRelativePathName());
 
 
     log.info("jrebel output dir " + jrebelBuildDir.getOrNull());
@@ -323,7 +336,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
 
   @Override
   public RebelWar getWar() {
-    return rebelModel.getWar();
+    return rebelModel != null ? rebelModel.getWar() : null;
   }
 
   void setPluginConfigured() {
