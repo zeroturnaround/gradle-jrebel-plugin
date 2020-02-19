@@ -1,6 +1,11 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.1.10 (2020-02-19)
+------------------
+
+* Improvement: fixed deprecation warnings when running the generateRebel task on Gradle 6.x
+
 1.1.9 (2019-10-07)
 ------------------
 
