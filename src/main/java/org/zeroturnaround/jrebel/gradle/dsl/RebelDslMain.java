@@ -58,6 +58,8 @@ public class RebelDslMain implements Serializable {
 
   private RebelDslWar war;
 
+  private String remoteId;
+
   public RebelDslMain() {
     this.packaging = PACKAGING_TYPE_JAR;
     this.showGenerated = false;
@@ -166,6 +168,16 @@ public class RebelDslMain implements Serializable {
     this.war = war;
   }
 
+  @Input
+  @Optional
+  public String getRemoteId() {
+    return remoteId;
+  }
+
+  public void setRemoteId(String remoteId) {
+    this.remoteId = remoteId;
+  }
+
   /**
    * Evaluate the 'classpath {..}' block
    */
@@ -203,6 +215,7 @@ public class RebelDslMain implements Serializable {
     builder.append("showGenerated", showGenerated);
     builder.append("alwaysGenerate", alwaysGenerate);
     builder.append("war", war);
+    builder.append("remoteId", remoteId);
     return builder.toString();
   }
   

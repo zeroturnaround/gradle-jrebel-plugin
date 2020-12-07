@@ -30,6 +30,8 @@ public class RebelXmlWriter {
 
     try {
       writeHeader(writer);
+
+      writeId(model, writer);
       
       writeClasspath(model, writer);
   
@@ -64,7 +66,13 @@ public class RebelXmlWriter {
       "  This is the JRebel configuration file. It maps the running application to your IDE workspace, enabling JRebel reloading for this project.\n" +
       "  Refer to https://manuals.zeroturnaround.com/jrebel/standalone/config.html for more information.\n" + "-->\n" +
       "<application generated-by=\"gradle\" " + "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " + "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">\n");
+      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com https://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">\n");
+    writer.write("\n");
+  }
+
+  private void writeId(RebelMainModel model, Writer writer) throws IOException {
+    writer.write("  <id>" + model.getRemoteId() + "</id>\n");
+    writer.write("\n");
   }
   
   /**

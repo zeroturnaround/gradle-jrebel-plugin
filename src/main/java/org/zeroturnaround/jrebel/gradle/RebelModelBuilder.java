@@ -33,7 +33,8 @@ public class RebelModelBuilder {
       File defaultWebappDirectory,
       String configuredRootPath,
       File configuredRelativePath,
-      File projectDir) {
+      File projectDir,
+      String remoteId) {
     this.log = new LoggerWrapper(project.getLogger());
 
     this.packaging = packaging;
@@ -46,23 +47,23 @@ public class RebelModelBuilder {
     this.configuredRootPath = configuredRootPath;
     this.configuredRelativePath = configuredRelativePath;
     this.projectDir = projectDir;
+    this.remoteId = remoteId == null ? project.getPath() : remoteId;
   }
 
   private final String packaging;
 
-  private RebelClasspath classpath;
+  private final RebelClasspath classpath;
+  private final RebelWeb web;
+  private final RebelWar war;
 
-  private RebelWeb web;
+  private final List<File> defaultClassesDirectories;
 
-  private RebelWar war;
+  private final File defaultResourcesDirectory;
+  private final File defaultWebappDirectory;
 
-  private List<File> defaultClassesDirectories;
+  private final String configuredRootPath;
 
-  private File defaultResourcesDirectory;
-
-  private File defaultWebappDirectory;
-
-  private String configuredRootPath;
+  private final String remoteId;
 
   /**
    * XXX -- i'm not sure about this property at all. this is used in fixPath, so i don't dare to delete it as well.. ask
@@ -94,6 +95,7 @@ public class RebelModelBuilder {
   private RebelMainModel buildModelForJar() {
     log.info("Building rebel backend model for jar ..");
     RebelMainModel model = new RebelMainModel();
+    model.setRemoteId(remoteId);
 
     buildClasspath(model);
 
@@ -107,6 +109,7 @@ public class RebelModelBuilder {
   private RebelMainModel buildModelForWar() {
     log.info("Building rebel backend model for war ..");
     RebelMainModel model = new RebelMainModel();
+    model.setRemoteId(remoteId);
 
     buildWeb(model);
     buildClasspath(model);

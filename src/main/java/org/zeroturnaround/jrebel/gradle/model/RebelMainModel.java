@@ -27,19 +27,16 @@ import org.zeroturnaround.jrebel.gradle.RebelXmlWriter;
  */
 public class RebelMainModel {
 
-  private List<RebelClasspathResource> classpathDirs = new ArrayList<RebelClasspathResource>();
-
-  private List<RebelClasspathResource> classpathDirsets = new ArrayList<RebelClasspathResource>();
-
-  private List<RebelClasspathResource> classpathJars = new ArrayList<RebelClasspathResource>();
-
-  private List<RebelClasspathResource> classpathJarsets = new ArrayList<RebelClasspathResource>();
+  private final List<RebelClasspathResource> classpathDirs = new ArrayList<RebelClasspathResource>();
+  private final List<RebelClasspathResource> classpathDirsets = new ArrayList<RebelClasspathResource>();
+  private final List<RebelClasspathResource> classpathJars = new ArrayList<RebelClasspathResource>();
+  private final List<RebelClasspathResource> classpathJarsets = new ArrayList<RebelClasspathResource>();
+  private final List<RebelWebResource> webResources = new ArrayList<RebelWebResource>();
 
   private String fallbackClasspath;
-
   private RebelWar war;
 
-  private List<RebelWebResource> webResources = new ArrayList<RebelWebResource>();
+  private String remoteId;
 
   public List<RebelClasspathResource> getClasspathDirs() {
     return classpathDirs;
@@ -97,6 +94,14 @@ public class RebelMainModel {
     this.war = war;
   }
 
+  public String getRemoteId() {
+    return remoteId;
+  }
+
+  public void setRemoteId(String remoteId) {
+    this.remoteId = remoteId;
+  }
+
   /**
    * Construct the actual XML stream (string) from the model in memory.
    */
@@ -113,6 +118,7 @@ public class RebelMainModel {
     builder.append("fallbackClasspath", fallbackClasspath);
     builder.append("war", war);
     builder.append("webResources", webResources);
+    builder.append("remoteId", remoteId);
     return builder.toString();
   }
 

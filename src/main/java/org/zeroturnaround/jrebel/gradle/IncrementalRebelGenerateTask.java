@@ -149,6 +149,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     log.info("rebel.war = " + rebelDsl.getWar());
     log.info("rebel.web = " + rebelDsl.getWeb());
     log.info("rebel.classpath = " + rebelDsl.getClasspath());
+    log.info("rebel.remoteId = " + rebelDsl.getRemoteId());
     log.info("rebel.defaultClassesDirectories = " + getDefaultClassesDirectory());
     log.info("rebel.defaultResourcesDirectory = " + getDefaultResourcesDirectoryPath());
     log.info("rebel.defaultWebappDirectory = " + getDefaultWebappDirectoryPath());
@@ -172,7 +173,8 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         getDefaultWebappDirectory(),
         getConfiguredRootPath(),
         getRebelDsl().getRelativePath(),
-        getProject().getProjectDir()
+        getProject().getProjectDir(),
+        getRebelDsl().getRemoteId()
     ).build();
 
     if (!skipWritingRebelXml) {
