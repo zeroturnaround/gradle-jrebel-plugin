@@ -39,7 +39,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectEvaluationListener;
 import org.gradle.api.Task;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.project.ProjectStateInternal;
 import org.gradle.api.plugins.GroovyPlugin;
@@ -130,14 +129,14 @@ public class RebelPluginTest {
    */
   @Test
   public void testAddsDummyTaskWhenJavaPluginNotApplied() {
-    ex.expectCause(CoreMatchers.<Throwable>instanceOf(IllegalStateException.class));
-    ex.expectCause(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
+    ex.expect(CoreMatchers.<Throwable>instanceOf(IllegalStateException.class));
+    ex.expect(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
 
     project.getProject().getPlugins().apply(pluginClass);
 
     Task task = project.getTasks().getByName(LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof AbstractTask);
-    ((AbstractTask) task).execute();
+    assertTrue(task instanceof BaseRebelGenerateTask);
+    ((BaseRebelGenerateTask) task).generate();
   }
 
   /**
