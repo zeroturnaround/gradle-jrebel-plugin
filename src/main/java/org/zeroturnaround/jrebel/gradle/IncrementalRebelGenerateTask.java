@@ -1,14 +1,17 @@
 package org.zeroturnaround.jrebel.gradle;
 
-import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.REBEL_EXTENSION_NAME;
 import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_WAR;
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.REBEL_EXTENSION_NAME;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.io.IOUtils;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
@@ -39,9 +42,9 @@ import groovy.lang.Closure;
 
 public class IncrementalRebelGenerateTask extends DefaultTask implements BaseRebelGenerateTask {
 
-  private LoggerWrapper log = new LoggerWrapper(getProject().getLogger());
+  private final LoggerWrapper log = new LoggerWrapper(getProject().getLogger());
 
-  private RebelDslMain rebelDsl;
+  private final RebelDslMain rebelDsl;
 
   private Provider<String> configuredRootPath;
   private Provider<File> jrebelBuildDir;
@@ -49,7 +52,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
   private Provider<File> defaultWebappDirectory;
   private Provider<List<File>> defaultClassesDirectory;
   private Provider<File> defaultResourcesDirectory;
-  private Long alwaysGenerateTrigger;
+  private final Provider<String> remoteId;
 
   private boolean isPluginConfigured;
   private boolean skipWritingRebelXml;
@@ -155,9 +158,18 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     log.info("rebel.defaultWebappDirectory = " + getDefaultWebappDirectoryPath());
     log.info("rebel.configuredRootPath = " + getConfiguredRootPath());
     log.info("rebel.configuredRelativePath = " + getRebelDsl().getRelativePathName());
-
+    log.info("rebel.generateRebelRemote = " + getRebelDsl().getGenerateRebelRemote());
 
     log.info("jrebel output dir " + jrebelBuildDir.getOrNull());
+
+    generateRebelXml();
+    generateRemoteXml();
+  }
+
+  private void generateRebelXml() {
+    if (skipWritingRebelXml) {
+      return;
+    }
 
     RebelDslClasspath classpath = getRebelDsl().getClasspath();
     RebelDslWeb web = getRebelDsl().getWeb();
@@ -174,33 +186,66 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         getConfiguredRootPath(),
         getRebelDsl().getRelativePath(),
         getProject().getProjectDir(),
-        getRebelDsl().getRemoteId()
+        remoteId.getOrNull()
     ).build();
 
-    if (!skipWritingRebelXml) {
-      File buildDir = jrebelBuildDir.get();
-      if (!buildDir.exists()) {
-        buildDir.mkdir();
+    File buildDir = jrebelBuildDir.get();
+    File rebelXmlFile = new File(buildDir, "rebel.xml");
+    try {
+      if (!buildDir.exists() && !buildDir.mkdirs()) {
+        throw new IOException("Failed to create directory for rebel.xml: " + buildDir);
       }
 
-      File rebelXmlFile = new File(buildDir, "rebel.xml");
-      log.info("Processing " + getProject().getGroup() + ":" + getProject().getName()  + " with packaging " + getRebelDsl().getPackaging());
+      log.info("Processing " + getProject().getGroup() + ":" + getProject().getName() + " with packaging " + getRebelDsl().getPackaging());
       log.info("Generating \"" + rebelXmlFile.getAbsolutePath() + "\"...");
 
-      try {
-        String xmlFileContents = rebelModel.toXmlString();
+      String xmlFileContents = rebelModel.toXmlString();
 
-        if (getRebelDsl().getShowGenerated()) {
-          System.out.println(xmlFileContents);
-        }
-
-        rebelXmlFile.getParentFile().mkdirs();
-
-        FileUtil.writeToFile(rebelXmlFile, xmlFileContents);
+      if (getRebelDsl().getShowGenerated()) {
+        log.lifecycle(xmlFileContents);
       }
-      catch (IOException e) {
-        throw new BuildException("Failed writing \"${rebelXmlFile}\"", e);
+
+      FileUtil.writeToFile(rebelXmlFile, xmlFileContents);
+    }
+    catch (IOException e) {
+      throw new BuildException("Failed writing " + rebelXmlFile, e);
+    }
+  }
+
+  private void generateRemoteXml() {
+    if (!getRebelDsl().getGenerateRebelRemote()) {
+      return;
+    }
+
+    File buildDir = this.jrebelBuildDir.get();
+    File rebelRemoteFile = new File(buildDir, "rebel-remote.xml");
+
+    if (!buildDir.exists() && !buildDir.mkdirs()) {
+      log.error("Failed to create directory for rebel-remote.xml: " + buildDir);
+      return;
+    }
+
+    log.info("Generating rebel-remote.xml with id " + remoteId.getOrNull() + " to \"" + buildDir + "\"");
+
+    Writer writer = null;
+    try {
+      writer = new StringWriter();
+
+      RebelRemoteWriter remoteWriter = new RebelRemoteWriter(remoteId.getOrNull());
+      remoteWriter.writeXml(writer);
+
+      String contents = writer.toString();
+      if (getRebelDsl().getShowGenerated()) {
+        log.lifecycle(contents);
       }
+      FileUtil.writeToFile(rebelRemoteFile, contents);
+      writer.close();
+    }
+    catch (IOException e) {
+      throw new BuildException("Failed writing " + rebelRemoteFile, e);
+    }
+    finally {
+      IOUtils.closeQuietly(writer);
     }
   }
 
@@ -294,6 +339,25 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     };
 
     setJRebelBuildDir(jRebelBuildDir);
+
+    remoteId = getProject().provider(new Callable<String>() {
+      @Override
+      public String call() throws Exception {
+        if (getProject().hasProperty("rebel.remoteId")) {
+          return (String) getProject().property("rebel.remoteId");
+        }
+
+        if (rebelDsl.getRemoteId() != null) {
+          return rebelDsl.getRemoteId();
+        }
+
+        String remoteId = getProject().getPath().replace(':', '.');
+        if (remoteId.charAt(0) == '.') {
+          remoteId = remoteId.substring(1);
+        }
+        return remoteId;
+      }
+    });
 
     final IncrementalRebelGenerateTask generateTask = this;
     getProject().getPlugins().withType(JavaPlugin.class).all(new Action<Plugin>() {

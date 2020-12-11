@@ -78,6 +78,8 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
 
   private String remoteId;
 
+  private boolean generateRebelRemote;
+
 
   public String getConfiguredRootPath() {
     return configuredRootPath;
@@ -167,6 +169,14 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.remoteId = remoteId;
   }
 
+  public boolean getGenerateRebelRemote() {
+    return generateRebelRemote;
+  }
+
+  public void setGenerateRebelRemote(boolean generateRebelRemote) {
+    this.generateRebelRemote = generateRebelRemote;
+  }
+
   /**
    * Getter for the functional tests to examine the model
    */
@@ -224,6 +234,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     log.info("rebel.configuredRootPath = " + configuredRootPath);
     log.info("rebel.configuredRelativePath = " + configuredRelativePath);
     log.info("rebel.remoteId = " + remoteId);
+    log.info("rebel.generateRebelRemote = " + generateRebelRemote);
 
     File rebelXmlFile = getRebelXml();
     File buildXmlFile = getProject().getBuildFile();

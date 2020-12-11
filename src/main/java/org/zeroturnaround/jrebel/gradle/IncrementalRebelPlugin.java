@@ -21,6 +21,6 @@ public class IncrementalRebelPlugin implements Plugin<Project> {
     IncrementalRebelGenerateTask generateTask = project.getTasks().create(GENERATE_REBEL_TASK_NAME, IncrementalRebelGenerateTask.class);
     generateTask.setDescription("Generate rebel.xml mappings file to use this project with JRebel.");
 
-    log.info("Configuring Rebel plugin...");
+    log.info("Configuring Rebel plugin for project " + project.getName());
   }
 }

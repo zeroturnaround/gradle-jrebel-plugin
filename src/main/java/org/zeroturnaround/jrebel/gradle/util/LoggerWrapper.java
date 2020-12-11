@@ -21,16 +21,16 @@ public class LoggerWrapper {
     wrappedLogger.error(PREFIX + msg);
   }
 
+  public void lifecycle(String msg) {
+    wrappedLogger.lifecycle(PREFIX + msg);
+  }
+
   public void info(String msg) {
     wrappedLogger.info(PREFIX + msg);
   }
 
   public void debug(String msg) {
     wrappedLogger.debug(PREFIX + msg);
-  }
-
-  public void trace(String msg) {
-    wrappedLogger.trace(PREFIX + msg);
   }
   
 }

@@ -33,7 +33,6 @@ import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
-import org.zeroturnaround.jrebel.gradle.util.BooleanUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
 /**
@@ -211,11 +210,8 @@ public class LegacyRebelPlugin implements Plugin<Project> {
 
       public void execute(Project project) {
 
-        Boolean showGenerated = BooleanUtil.convertNullToFalse(rebelExtension.getShowGenerated());
-        generateRebelTask.setShowGenerated(showGenerated);
-
-        Boolean alwaysGenerate = BooleanUtil.convertNullToFalse(rebelExtension.getAlwaysGenerate());
-        generateRebelTask.setAlwaysGenerate(alwaysGenerate);
+        generateRebelTask.setShowGenerated(rebelExtension.getShowGenerated());
+        generateRebelTask.setAlwaysGenerate(rebelExtension.getAlwaysGenerate());
 
         String rootPathFromProjectProperties = project.hasProperty("rebel.rootPath") ? project.property("rebel.rootPath").toString() : null;
 
@@ -249,6 +245,17 @@ public class LegacyRebelPlugin implements Plugin<Project> {
         if (web != null) {
           generateRebelTask.setWeb(rebelExtension.getWeb().toRebelWeb());
         }
+
+        String remoteId = rebelExtension.getRemoteId();
+        if (remoteId == null) {
+          remoteId = project.getPath().replace(':', '.');
+          if (remoteId.charAt(0) == '.') {
+            remoteId = remoteId.substring(1);
+          }
+        }
+        generateRebelTask.setRemoteId(remoteId);
+
+        generateRebelTask.setGenerateRebelRemote(rebelExtension.getGenerateRebelRemote());
       }
 
     });

@@ -47,7 +47,7 @@ public class RebelModelBuilder {
     this.configuredRootPath = configuredRootPath;
     this.configuredRelativePath = configuredRelativePath;
     this.projectDir = projectDir;
-    this.remoteId = remoteId == null ? project.getPath() : remoteId;
+    this.remoteId = remoteId;
   }
 
   private final String packaging;

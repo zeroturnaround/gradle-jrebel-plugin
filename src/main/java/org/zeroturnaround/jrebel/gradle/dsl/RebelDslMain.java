@@ -50,15 +50,17 @@ public class RebelDslMain implements Serializable {
 
   private String rebelXmlDirectory;
 
-  private Boolean showGenerated;
+  private boolean showGenerated;
 
-  private Boolean alwaysGenerate;
+  private boolean alwaysGenerate;
 
   private RebelDslWeb web;
 
   private RebelDslWar war;
 
   private String remoteId;
+
+  private boolean generateRebelRemote = false;
 
   public RebelDslMain() {
     this.packaging = PACKAGING_TYPE_JAR;
@@ -141,20 +143,25 @@ public class RebelDslMain implements Serializable {
   }
 
   @Input
-  public Boolean getShowGenerated() {
+  public boolean getShowGenerated() {
     return showGenerated;
   }
 
-  public void setShowGenerated(Boolean showGenerated) {
+  /**
+   * <p>Display the generated xml configuration files in gradle output under <code>lifecycle</code> level</p>
+   *
+   * default: false
+   */
+  public void setShowGenerated(boolean showGenerated) {
     this.showGenerated = showGenerated;
   }
 
   @Input
-  public Boolean getAlwaysGenerate() {
+  public boolean getAlwaysGenerate() {
     return alwaysGenerate;
   }
 
-  public void setAlwaysGenerate(Boolean alwaysGenerate) {
+  public void setAlwaysGenerate(boolean alwaysGenerate) {
     this.alwaysGenerate = alwaysGenerate;
   }
 
@@ -174,8 +181,35 @@ public class RebelDslMain implements Serializable {
     return remoteId;
   }
 
+  /**
+   * <p>Set the remote id in rebel.xml and rebel-remote.xml files.
+   * The JRebel IDE plugin must find a matching id in the corresponding xml configuration file under project sources.</p>
+   *
+   * <p><b>Warning</b>: Resulting id in rebel-remote.xml may have certain characters and words filtered out</p>
+   *
+   * <b>default</b>: dot-separated path (example: {@code myproject.mymodule.main})
+   */
   public void setRemoteId(String remoteId) {
     this.remoteId = remoteId;
+  }
+
+
+  @Input
+  public boolean getGenerateRebelRemote() {
+    return generateRebelRemote;
+  }
+
+  /**
+   * <p>Generate a rebel-remote.xml file that is required for JRebel Remote functionality.</p>
+   *
+   * <p>The id in this file identifies the application or library on the remote server.
+   * The default value may be overridden using {@link RebelDslMain#setRemoteId}.
+   * The JRebel IDE plugin will use the id in the same file under project sources when syncing.</p>
+   *
+   * default: false
+   */
+  public void setGenerateRebelRemote(boolean generateRebelRemote) {
+    this.generateRebelRemote = generateRebelRemote;
   }
 
   /**
@@ -216,6 +250,7 @@ public class RebelDslMain implements Serializable {
     builder.append("alwaysGenerate", alwaysGenerate);
     builder.append("war", war);
     builder.append("remoteId", remoteId);
+    builder.append("generateRebelRemote", generateRebelRemote);
     return builder.toString();
   }
   
