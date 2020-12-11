@@ -41,6 +41,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
         { "5.0", },
         { "5.1", },
         { "5.2.1", },
+        { "6.7" }
     });
   }
 

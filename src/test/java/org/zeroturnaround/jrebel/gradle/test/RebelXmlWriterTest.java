@@ -55,16 +55,17 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelClasspathResource resource = new RebelClasspathResource();
     resource.setDirectory("build/classes");
     model.addClasspathDir(resource);
+    model.setRemoteId("testXmlWithClasspathDir");
     
     String generatedXml = writer.toXmlString(model);
-    
-    
-    String expectedResult =
+
+    String expectedResult = "" +
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
         "<application generated-by=\"gradle\" " +
-        "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-        "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithClasspathDir</id>" +
         "  <classpath> " +
         "    <dir name=\"build/classes\" />" +
         "  </classpath>" +
@@ -85,19 +86,21 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelClasspathResource resource = new RebelClasspathResource();
     resource.setJar("/my/library.jar");
     model.addClasspathJar(resource);
+    model.setRemoteId("testXmlWithClasspathJar");
     
     String generatedXml = writer.toXmlString(model);
-    
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath> " +
-      "    <jar name=\"/my/library.jar\" />" +
-      "  </classpath>" +
-      "</application>";
+
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithClasspathJar</id>" +
+        "  <classpath> " +
+        "    <jar name=\"/my/library.jar\" />" +
+        "  </classpath>" +
+        "</application>";
     
     log.info("testXmlWithClasspathJar -- generated xml: \n" + generatedXml);    
     
@@ -114,19 +117,21 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelClasspathResource resource = new RebelClasspathResource();
     resource.setDirset("/my/workspace/build/classes");
     model.addClasspathDirset(resource);
+    model.setRemoteId("testXmlWithClasspathDirset");
     
     String generatedXml = writer.toXmlString(model);
-    
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath> " +
-      "    <dirset dir=\"/my/workspace/build/classes\" />" +
-      "  </classpath>" +
-      "</application>";
+
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithClasspathDirset</id>" +
+        "  <classpath>" +
+        "    <dirset dir=\"/my/workspace/build/classes\" />" +
+        "  </classpath>" +
+        "</application>";
     
     log.info("testXmlWithClasspathDirset -- generated xml: \n" + generatedXml);    
     
@@ -140,19 +145,21 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelClasspathResource resource = new RebelClasspathResource();
     resource.setJarset("/my/workspace/build/classes");
     model.addClasspathJarset(resource);
+    model.setRemoteId("testXmlWithClasspathJarset");
     
     String generatedXml = writer.toXmlString(model);
-    
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath> " +
-      "    <jarset dir=\"/my/workspace/build/classes\" />" +
-      "  </classpath>" +
-      "</application>";
+
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithClasspathJarset</id>" +
+        "  <classpath> " +
+        "    <jarset dir=\"/my/workspace/build/classes\" />" +
+        "  </classpath>" +
+        "</application>";
     
     log.info("testXmlWithClasspathJarset -- generated xml: \n" + generatedXml);    
     
@@ -170,22 +177,24 @@ public class RebelXmlWriterTest extends XMLTestCase {
     resource.setDirectory("build/webapp");
     resource.setTarget("/");
     model.addWebResource(resource);
+    model.setRemoteId("testXmlWithWebResource");
     
     String generatedXml = writer.toXmlString(model);
-    
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath />" +
-      "  <web>" +
-      "    <link target=\"/\">" +
-      "      <dir name=\"build/webapp\" />" +
-      "    </link>" +
-      "  </web>" +
-      "</application>";
+
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithWebResource</id>" +
+        "  <classpath />" +
+        "  <web>" +
+        "    <link target=\"/\">" +
+        "      <dir name=\"build/webapp\" />" +
+        "    </link>" +
+        "  </web>" +
+        "</application>";
     
     log.info("testXmlWithWebResource -- generated xml: \n" + generatedXml);    
     
@@ -205,23 +214,25 @@ public class RebelXmlWriterTest extends XMLTestCase {
     resource.addExclude("*.properties");
     resource.addInclude("**/*.java");
     model.addClasspathDir(resource);
+    model.setRemoteId("testXmlWithClasspathIncludesExcludes");
     
     String generatedXml = writer.toXmlString(model);
-    
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath> " +
-      "    <dir name=\"build/classes\">" +
-      "      <exclude name=\"*.xml\"/>" +
-      "      <exclude name=\"*.properties\"/>" +
-      "      <include name=\"**/*.java\"/>" +
-      "    </dir>" +
-      "  </classpath>" +
-      "</application>";
+
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithClasspathIncludesExcludes</id>" +
+        "  <classpath> " +
+        "    <dir name=\"build/classes\">" +
+        "      <exclude name=\"*.xml\"/>" +
+        "      <exclude name=\"*.properties\"/>" +
+        "      <include name=\"**/*.java\"/>" +
+        "    </dir>" +
+        "  </classpath>" +
+        "</application>";
     
     log.info("testXmlWithClasspathIncludesExcludes -- generated xml: \n" + generatedXml);    
     
@@ -238,18 +249,20 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelWar rebelWar = new RebelWar();
     rebelWar.setDir("/my/path");
     model.setWar(rebelWar);
+    model.setRemoteId("testXmlWithWarCustomDir");
     
     String generatedXml = writer.toXmlString(model);
     
-    String expectedResult = 
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-      "<application generated-by=\"gradle\" " +
-      "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-      "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-      "  <classpath />" +
-      "  <war dir=\"/my/path\" />" +
-      "</application>";
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithWarCustomDir</id>" +
+        "  <classpath />" +
+        "  <war dir=\"/my/path\" />" +
+        "</application>";
     
     log.info("testXmlWithWar -- generated xml: \n" + generatedXml);    
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);
@@ -265,18 +278,20 @@ public class RebelXmlWriterTest extends XMLTestCase {
     RebelWar rebelWar = new RebelWar();
     rebelWar.setFile("/my/path/file.war");
     model.setWar(rebelWar);
+    model.setRemoteId("testXmlWithWarCustomFile");
 
     String generatedXml = writer.toXmlString(model);
 
-    String expectedResult =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                    "<application generated-by=\"gradle\" " +
-                    "build-tool-version=\""+ LegacyRebelGenerateTask.GRADLE_VERSION+"\" " +
-                    "plugin-version=\""+ LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION+"\" " +
-                    "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"http://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_2.xsd\">" +
-                    "  <classpath />" +
-                    "  <war file=\"/my/path/file.war\" />" +
-                    "</application>";
+    String expectedResult = "" +
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<application generated-by=\"gradle\" " +
+        "build-tool-version=\"" + LegacyRebelGenerateTask.GRADLE_VERSION + "\" " +
+        "plugin-version=\"" + LegacyRebelGenerateTask.GRADLE_PLUGIN_VERSION + "\" " +
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.zeroturnaround.com\" xsi:schemaLocation=\"https://www.zeroturnaround.com http://update.zeroturnaround.com/jrebel/rebel-2_3.xsd\">" +
+        "  <id>testXmlWithWarCustomFile</id>" +
+        "  <classpath />" +
+        "  <war file=\"/my/path/file.war\" />" +
+        "</application>";
 
     log.info("testXmlWithWar -- generated xml: \n" + generatedXml);
     assertXMLEqual("Generated rebel.xml not matching with expectation!", expectedResult, generatedXml);

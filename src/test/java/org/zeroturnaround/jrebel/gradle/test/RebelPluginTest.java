@@ -35,10 +35,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.gradle.api.DefaultTask;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectEvaluationListener;
 import org.gradle.api.Task;
+import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.project.ProjectStateInternal;
 import org.gradle.api.plugins.GroovyPlugin;
@@ -48,6 +49,7 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,12 +90,27 @@ public class RebelPluginTest {
   @Rule
   public ExpectedException ex = ExpectedException.none();
 
+  private Project project;
+
+  private final Class<? extends Plugin<Project>> pluginClass;
+
   @Before
   public void beforeEachTest() {
     log.info("\n\n === Executing test " + name.getMethodName() + "\n");
+    project = ProjectBuilder.builder().build();
   }
 
-  private final Class pluginClass;
+  @After
+  public void tearDown() {
+    File projectDir = project.getProjectDir();
+    try {
+      FileUtils.deleteDirectory(projectDir);
+    }
+    catch (IOException e) {
+      log.info("Exception while deleting the temporary project directory when running unit tests : ");
+      e.printStackTrace();
+    }
+  }
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
@@ -104,7 +121,7 @@ public class RebelPluginTest {
     );
   }
 
-  public RebelPluginTest(Class pluginClass) {
+  public RebelPluginTest(Class<? extends Plugin<Project>> pluginClass) {
     this.pluginClass = pluginClass;
   }
 
@@ -116,14 +133,11 @@ public class RebelPluginTest {
     ex.expectCause(CoreMatchers.<Throwable>instanceOf(IllegalStateException.class));
     ex.expectCause(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
 
-    Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(pluginClass);
 
     Task task = project.getTasks().getByName(LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(task instanceof DefaultTask);
-    ((DefaultTask) task).execute();
-
-    cleanUp(project);
+    assertTrue(task instanceof AbstractTask);
+    ((AbstractTask) task).execute();
   }
 
   /**
@@ -131,7 +145,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testAddsRebelTaskWhenJavaPluginApplied() {
-    Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(JavaPlugin.class);
     project.getProject().getPlugins().apply(pluginClass);
 
@@ -144,8 +157,6 @@ public class RebelPluginTest {
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
     assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
-
-    cleanUp(project);
   }
 
   /**
@@ -153,7 +164,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testAddsRebelTaskAfterGroovyPluginApplied() {
-    Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(pluginClass);
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
@@ -166,8 +176,6 @@ public class RebelPluginTest {
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
     assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
-
-    cleanUp(project);
   }
 
   /**
@@ -175,7 +183,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testUsesWarPackagingWithWarPlugin() {
-    Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(WarPlugin.class);
     project.getProject().getPlugins().apply(pluginClass);
 
@@ -188,8 +195,6 @@ public class RebelPluginTest {
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
     assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
-
-    cleanUp(project);
   }
 
   /**
@@ -197,7 +202,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testUsesWarPackagingWithJettyPlugin() {
-    Project project = ProjectBuilder.builder().build();
     project.getProject().getPlugins().apply(pluginClass);
     project.getProject().getPlugins().apply(WarPlugin.class);
 
@@ -210,8 +214,6 @@ public class RebelPluginTest {
     // check that the dependsOn is set properly
     assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
     assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
-
-    cleanUp(project);
   }
 
   /**
@@ -220,7 +222,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testConfigurationOptionPropagation() throws Exception {
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -232,11 +233,8 @@ public class RebelPluginTest {
     rebelExtension.setWar(dslWar);
     dslWar.setDir(myWarPath);
 
-    Boolean myShowGenerated = getRandomBoolean();
-    rebelExtension.setShowGenerated(myShowGenerated);
-
-    Boolean myAlwaysGenerate = getRandomBoolean();
-    rebelExtension.setAlwaysGenerate(myAlwaysGenerate);
+    rebelExtension.setShowGenerated(true);
+    rebelExtension.setAlwaysGenerate(true);
 
     callAfterEvaluated(project);
 
@@ -246,24 +244,20 @@ public class RebelPluginTest {
     assertNotNull(task);
 
     task.propagateConventionMappingSettings();
-    task.skipWritingRebelXml();
     task.generate();
 
     // 'showGenerate'
-    assertEquals(myShowGenerated, task.getShowGenerated());
+    assertTrue("task.getShowGenerated()", task.getShowGenerated());
 
     // 'alwasGenerate'
-    assertEquals(myAlwaysGenerate, task.getAlwaysGenerate());
+    assertTrue("task.getAlwaysGenerate()", task.getAlwaysGenerate());
 
     // 'warPath'
     assertEquals(myWarPath, task.getWar().getDir());
-
-    cleanUp(project);
   }
 
   @Test
   public void testJarProjectDefaultsWithCleanProject() throws Exception {
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(JavaPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -272,7 +266,6 @@ public class RebelPluginTest {
 
     // Get and execute the rebel task
     BaseRebelGenerateTask genRebelTask = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    genRebelTask.skipWritingRebelXml();
     genRebelTask.generate();
 
     RebelMainModel model = genRebelTask.getRebelModel();
@@ -282,8 +275,6 @@ public class RebelPluginTest {
     for (RebelClasspathResource resource : model.getClasspathDirs()) {
       assertTrue(new File(resource.getDirectory()).exists());
     }
-
-    cleanUp(project);
   }
 
   /**
@@ -291,7 +282,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testJarProjectDefaults() throws Exception {
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(JavaPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -307,7 +297,6 @@ public class RebelPluginTest {
 
     // Get and execute the rebel task
     BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    task.skipWritingRebelXml();
     task.generate();
 
     RebelMainModel model = task.getRebelModel();
@@ -321,8 +310,6 @@ public class RebelPluginTest {
       File dir = new File(resource.getDirectory());
       assertThat(defaultOutputDirs, hasItem(dir));
     }
-
-    cleanUp(project);
   }
 
   /**
@@ -330,8 +317,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testWarProjectDefaults() throws Exception {
-
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -355,7 +340,6 @@ public class RebelPluginTest {
 
     // Get and execute the rebel task
     BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    task.skipWritingRebelXml();
     task.generate();
 
     RebelMainModel model = task.getRebelModel();
@@ -377,8 +361,6 @@ public class RebelPluginTest {
       File dir = new File(resource.getDirectory());
       assertEquals(defaultWebappDirectory, dir);
     }
-
-    cleanUp(project);
   }
 
   /**
@@ -386,7 +368,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testWar() throws Exception {
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -404,9 +385,6 @@ public class RebelPluginTest {
     // Get the rebel task
     BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
 
-    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
-    task.skipWritingRebelXml();
-
     // execute the task
     task.generate();
 
@@ -416,8 +394,6 @@ public class RebelPluginTest {
 
     assertNotNull(war);
     assertEquals(myWarPath, war.getOriginalDir());
-
-    cleanUp(project);
   }
 
   /**
@@ -427,7 +403,6 @@ public class RebelPluginTest {
    */
   @Test
   public void testWeb() throws Exception {
-    Project project = ProjectBuilder.builder().build();
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(pluginClass);
 
@@ -457,9 +432,6 @@ public class RebelPluginTest {
     // Execute the rebel task, validate the generated model
     BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
 
-    // tell the task to actually not write any rebel.xml down to file system when running in test mode!
-    task.skipWritingRebelXml();
-
     // execute the task
     task.generate();
 
@@ -474,8 +446,6 @@ public class RebelPluginTest {
     assertTrue(webResources.size() > 0);
 
     log.info("testWeb() XML :  \n" + model.toXmlString());
-
-    cleanUp(project);
   }
 
   // TODO tests for other properties -- what should the model look like after setting those config options
@@ -493,24 +463,6 @@ public class RebelPluginTest {
 
 
   // TODO a test for the fixPath... somehow
-
-  /**
-   * Make sure the temporary project folder gets deleted after running the test
-   */
-  private static void cleanUp(Project project) {
-    File projectDir = project.getProjectDir();
-    try {
-      FileUtils.deleteDirectory(projectDir);
-    }
-    catch (IOException e) {
-      log.info("Exception while deleting the temporary project directory when running unit tests : ");
-      e.printStackTrace();
-    }
-  }
-
-  private static boolean getRandomBoolean() {
-    return Math.random() < 0.5;
-  }
 
   /**
    * Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called

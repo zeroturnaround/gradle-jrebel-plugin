@@ -58,7 +58,7 @@ public class BaseRebelPluginFunctionalIntegrationTest {
 
 
   protected void assertGenerateRebelIsUpToDateOnRebuild() throws IOException {
-    TaskOutcome expectedStatus = version.startsWith("4") || version.startsWith("5") ? UP_TO_DATE : SUCCESS;
+    TaskOutcome expectedStatus = version.startsWith("2") || version.startsWith("3")  ? SUCCESS : UP_TO_DATE;
     assertEquals(expectedStatus, build().task(":generateRebel").getOutcome());
   }
 
