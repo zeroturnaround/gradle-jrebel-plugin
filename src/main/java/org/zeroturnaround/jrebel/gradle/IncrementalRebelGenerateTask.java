@@ -7,26 +7,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.SourceSetOutput;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
@@ -38,8 +34,6 @@ import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.util.FileUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
-import groovy.lang.Closure;
-
 public class IncrementalRebelGenerateTask extends DefaultTask implements BaseRebelGenerateTask {
 
   private final LoggerWrapper log = new LoggerWrapper(getProject().getLogger());
@@ -50,14 +44,12 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
   private Provider<File> jrebelBuildDir;
 
   private Provider<File> defaultWebappDirectory;
-  private Provider<List<File>> defaultClassesDirectory;
+  private Provider<Collection<File>> defaultClassesDirectory;
   private Provider<File> defaultResourcesDirectory;
-  private final Provider<String> remoteId;
+  private Provider<String> remoteId;
 
-  private boolean isPluginConfigured;
   private boolean skipWritingRebelXml;
   private RebelMainModel rebelModel;
-
 
   @Nested
   public RebelDslMain getRebelDsl() {
@@ -101,12 +93,12 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
 
   @Input
   @Optional
-  public List<File> getDefaultClassesDirectory() {
+  public Collection<File> getDefaultClassesDirectory() {
     return defaultClassesDirectory.getOrNull();
   }
 
 
-  public void setDefaultClassesDirectory(Provider<List<File>> provider) {
+  public void setDefaultClassesDirectory(Provider<Collection<File>> provider) {
     this.defaultClassesDirectory = provider;
   }
 
@@ -136,14 +128,6 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
 
   @TaskAction
   public void generate() {
-    // Only able to run if the 'RebelPlugin#configure' block has been executed, i.e. if the Java Plugin has been added.
-    if (!isPluginConfigured) {
-      throw new IllegalStateException(
-          "generateRebel is only valid when JavaPlugin is applied directly or indirectly " +
-              "(via other plugins that apply it implicitly, like Groovy or War); please update your build"
-      );
-    }
-
     RebelDslMain rebelDsl = getRebelDsl();
     log.info("rebel.alwaysGenerate = " + rebelDsl.getAlwaysGenerate());
     log.info("rebel.showGenerated = " + rebelDsl.getShowGenerated());
@@ -272,31 +256,6 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
       }
     });
 
-    setDefaultClassesDirectory(getProject().provider(new Callable<List<File>>() {
-      @Override
-      public List<File> call() {
-        JavaPluginConvention javaConvention = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-        if (javaConvention != null ) {
-          SourceSetOutput main = javaConvention.getSourceSets().getByName("main").getOutput();
-          return new ArrayList<File>(main.getClassesDirs().getFiles());
-        } else {
-          return null;
-        }
-      }
-    }));
-
-    setDefaultResourcesDirectory(getProject().provider(new Callable<File>() {
-      @Override
-      public File call() {
-        JavaPluginConvention javaConvention = getProject().getConvention().findPlugin(JavaPluginConvention.class);
-        if (javaConvention != null ) {
-          return javaConvention.getSourceSets().getByName("main").getOutput().getResourcesDir();
-        } else {
-          return null;
-        }
-      }
-    }));
-
     setConfiguredRootPath(
         getProject().getProviders().provider(new Callable<String>() {
           @Override
@@ -315,58 +274,64 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
           }
         })
     );
+  }
+
+  public void configureSourceSet(final SourceSetDefaults sourceSetDefaults) {
+    setDefaultClassesDirectory(sourceSetDefaults.classesDirs);
+    setDefaultResourcesDirectory(sourceSetDefaults.resourcesDir);
 
     final Provider<File> jRebelBuildDir = getProject().provider(new Callable<File>() {
       @Override
       public File call() throws Exception {
+        File outputBase;
         if (getProject().hasProperty("rebel.rebelXmlDirectory")) {
           return new File(getProject().property("rebel.rebelXmlDirectory").toString());
         }
         else if (rebelDsl.getRebelXmlDirectory() != null) {
-          return new File(getProject().getProjectDir(), rebelDsl.getRebelXmlDirectory());
+          outputBase = new File(getProject().getProjectDir(), rebelDsl.getRebelXmlDirectory());
         }
         else {
-          return new File(getProject().getBuildDir(), "jrebel");
+          outputBase = new File(getProject().getBuildDir(), "jrebel");
         }
+        if (sourceSetDefaults.xmlOutputDirName != null) {
+          return new File(outputBase, sourceSetDefaults.xmlOutputDirName);
+        }
+        return outputBase;
       }
     });
-
-    final Closure<File> fileClosure = new Closure<File>(this) {
-      @Override
-      public File call() {
-        return jRebelBuildDir.getOrNull();
-      }
-    };
 
     setJRebelBuildDir(jRebelBuildDir);
 
     remoteId = getProject().provider(new Callable<String>() {
       @Override
       public String call() throws Exception {
-        if (getProject().hasProperty("rebel.remoteId")) {
-          return (String) getProject().property("rebel.remoteId");
-        }
-
         if (rebelDsl.getRemoteId() != null) {
           return rebelDsl.getRemoteId();
         }
 
-        String remoteId = getProject().getPath().replace(':', '.');
-        if (remoteId.charAt(0) == '.') {
-          remoteId = remoteId.substring(1);
+        String projectPath = getProject().getPath();
+        StringTokenizer tokenizer = new StringTokenizer(projectPath, ":");
+        StringBuilder remoteIdBuilder = new StringBuilder();
+
+        boolean first = true;
+        if (projectPath.charAt(0) == ':') {
+          remoteIdBuilder.append(getProject().getRootProject().getName());
+          first = false;
         }
-        return remoteId;
-      }
-    });
 
-    final IncrementalRebelGenerateTask generateTask = this;
-    getProject().getPlugins().withType(JavaPlugin.class).all(new Action<Plugin>() {
-      public void execute(Plugin p) {
-        Copy processResourcesTask = (Copy) getProject().getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME);
-        processResourcesTask.dependsOn(generateTask);
-        processResourcesTask.from(fileClosure);
+        while (tokenizer.hasMoreTokens()) {
+          if (!first) {
+            remoteIdBuilder.append('.');
+          } else {
+            first = false;
+          }
+          remoteIdBuilder.append(tokenizer.nextToken());
+        }
 
-        setPluginConfigured();
+        if (sourceSetDefaults.remoteIdSuffix != null) {
+          remoteIdBuilder.append('.').append(sourceSetDefaults.remoteIdSuffix);
+        }
+        return remoteIdBuilder.toString();
       }
     });
   }
@@ -403,9 +368,5 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
   @Override
   public RebelWar getWar() {
     return rebelModel != null ? rebelModel.getWar() : null;
-  }
-
-  void setPluginConfigured() {
-    this.isPluginConfigured = true;
   }
 }

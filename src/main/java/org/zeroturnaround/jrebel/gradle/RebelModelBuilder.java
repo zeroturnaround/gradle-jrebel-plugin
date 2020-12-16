@@ -4,6 +4,7 @@ import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING
 import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_WAR;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +29,7 @@ public class RebelModelBuilder {
       RebelClasspath classpath,
       RebelWeb web,
       RebelWar war,
-      List<File> defaultClassesDirectories,
+      Collection<File> defaultClassesDirectories,
       File defaultResourcesDirectory,
       File defaultWebappDirectory,
       String configuredRootPath,
@@ -56,7 +57,7 @@ public class RebelModelBuilder {
   private final RebelWeb web;
   private final RebelWar war;
 
-  private final List<File> defaultClassesDirectories;
+  private final Collection<File> defaultClassesDirectories;
 
   private final File defaultResourcesDirectory;
   private final File defaultWebappDirectory;
@@ -213,6 +214,9 @@ public class RebelModelBuilder {
    * Add the default resources directory to classpath (create the dir if dont exist yet)
    */
   private void addDefaultResourcesDirToClasspath(RebelMainModel model) throws BuildException {
+    if (defaultResourcesDirectory == null) {
+      return;
+    }
     log.info("Adding default resources directory to classpath ..");
 
     RebelClasspathResource resourcesClasspathResource = new RebelClasspathResource();

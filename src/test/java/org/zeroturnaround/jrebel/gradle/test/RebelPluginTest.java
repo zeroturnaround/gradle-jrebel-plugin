@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 import java.io.File;
@@ -63,7 +64,6 @@ import org.zeroturnaround.jrebel.gradle.BaseRebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.IncrementalRebelPlugin;
 import org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask;
 import org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin;
-import org.zeroturnaround.jrebel.gradle.RebelPlugin;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
@@ -114,7 +114,7 @@ public class RebelPluginTest {
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
-        { RebelPlugin.class },
+        { LegacyRebelPlugin.class },
         { IncrementalRebelPlugin.class }
       }
     );
@@ -129,6 +129,10 @@ public class RebelPluginTest {
    */
   @Test
   public void testAddsDummyTaskWhenJavaPluginNotApplied() {
+    // This feature is controversial, helps notify why generateRebel task is missing in case of misconfiguration,
+    // but also prevents multi-project build from applying the plugin on all modules and expecting nothing to happen on incompatible ones
+    assumeFalse(pluginClass == IncrementalRebelPlugin.class);
+
     ex.expect(CoreMatchers.<Throwable>instanceOf(IllegalStateException.class));
     ex.expect(hasMessage(containsString("generateRebel is only valid when JavaPlugin is applied")));
 
@@ -167,9 +171,17 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
     Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
+    Task genRebelImplTask = genRebelTask;
+    for (Object dependent : genRebelTask.getDependsOn()) {
+      if (dependent instanceof BaseRebelGenerateTask && dependent instanceof Task &&
+          ((Task) dependent).getName().endsWith("Main")) {
+        genRebelImplTask = (Task) dependent;
+        break;
+      }
+    }
+    assertTrue(genRebelImplTask instanceof BaseRebelGenerateTask);
 
-    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
+    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelImplTask;
     assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_JAR));
 
     // check that the dependsOn is set properly
