@@ -38,6 +38,16 @@ public class RebelXMLHelper {
     }
   }
 
+  public String getRemoteId() {
+    try {
+      XPath xpath = XPathFactory.newInstance().newXPath();
+      return (String) xpath.evaluate("/application/id", document, XPathConstants.STRING);
+    }
+    catch (XPathExpressionException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public String getClasspathDir(int i) {
     try {
       XPath xpath = XPathFactory.newInstance().newXPath();

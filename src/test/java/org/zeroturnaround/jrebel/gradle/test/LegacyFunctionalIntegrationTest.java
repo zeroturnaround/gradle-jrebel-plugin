@@ -56,7 +56,7 @@ public class LegacyFunctionalIntegrationTest extends BaseRebelPluginFunctionalIn
   @Test
   public void testSecondBuildIsSkippedWhenNoChange() throws IOException {
     buildFileBuilder
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
 

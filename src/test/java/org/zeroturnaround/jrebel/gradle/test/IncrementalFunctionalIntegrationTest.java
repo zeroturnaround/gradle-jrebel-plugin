@@ -27,28 +27,20 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         { "4.0" },
-        { "4.1" },
-        { "4.2" },
         { "4.2.1" },
-        { "4.3" },
-        { "4.4" },
-        { "4.5" },
-        { "4.6" },
-        { "4.7" },
-        { "4.8" },
-        { "4.9" },
         { "4.10.3", },
         { "5.0", },
-        { "5.1", },
         { "5.2.1", },
-        { "6.7" }
+        { "5.6.4" },
+        { "6.0.1" },
+        { "6.7.1" }
     });
   }
 
   @Test
   public void testSecondBuildIsSkippedWhenNoChange() throws IOException {
     buildFileBuilder
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -60,7 +52,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   public void testAlwaysGenerateChangeTriggersRebuild() throws IOException {
     buildFileBuilder
         .rebelBlock("alwaysGenerate = false")
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -69,31 +61,31 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
 
     buildFileBuilder
         .rebelBlock("alwaysGenerate = true\n")
-        .write(buildFile);
+        .write();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
     assertDefaultRebelXMLContent();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
   }
 
   @Test
   public void testAlwaysGenerateTriggersRebuild() throws IOException {
     buildFileBuilder
         .rebelBlock("alwaysGenerate = true")
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
   }
 
   @Test
   public void testShowXmlChangeTriggersRebuild() throws IOException {
     buildFileBuilder
         .rebelBlock("showGenerated = false")
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -102,9 +94,9 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
 
     buildFileBuilder
         .rebelBlock("showGenerated = true")
-        .write(buildFile);
+        .write();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
     assertDefaultRebelXMLContent();
 
     assertGenerateRebelIsUpToDateOnRebuild();
@@ -114,7 +106,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   public void testRebelXmlDirectoryTriggersRebuild() throws IOException {
     buildFileBuilder
         .rebelBlock("rebelXmlDirectory = 'build/classes'")
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -123,9 +115,9 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
 
     buildFileBuilder
         .rebelBlock("rebelXmlDirectory = 'build/classes2'")
-        .write(buildFile);
+        .write();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
     assertDefaultRebelXMLContent();
 
     assertGenerateRebelIsUpToDateOnRebuild();
@@ -135,7 +127,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   public void testProjectRootFromCommandLineTriggersRebuild() throws IOException {
     buildFileBuilder
         .rebelBlock("rebelXmlDirectory = 'build/classes'")
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -145,7 +137,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
     runner = runner
         .withArguments("build", "--info", "--stacktrace", "-Prebel.rootPath=/some/root");
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
     RebelXMLHelper rebelXML = new RebelXMLHelper(getRebelXML());
     assertEquals("/some/root/build/resources/main", rebelXML.getClasspathDir(1));
     assertEquals("/some/root/build/classes/java/main", rebelXML.getClasspathDir(2));
@@ -157,7 +149,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   @Test
   public void testWebBlockChangeTriggersRebuild() throws IOException {
     buildFileBuilder
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -174,9 +166,9 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
             "    }\n" +
             "  }\n"
             )
-        .write(buildFile);
+        .write();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
 
     RebelXMLHelper rebelXML = new RebelXMLHelper(getRebelXML());
     assertEquals(absolutePath("build/resources/main"), rebelXML.getClasspathDir(1));
@@ -189,7 +181,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   @Test
   public void testClasspathBlockChangeTriggersRebuild() throws IOException {
     buildFileBuilder
-        .write(buildFile);
+        .write();
 
     assertEquals(SUCCESS, build().task(":build").getOutcome());
     assertDefaultRebelXMLContent();
@@ -208,9 +200,9 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
             "    }\n" +
             "  }"
         )
-        .write(buildFile);
+        .write();
 
-    assertEquals(SUCCESS, build().task(":generateRebel").getOutcome());
+    assertEquals(SUCCESS, buildAndGetRebelOutcome());
 
     RebelXMLHelper rebelXML = new RebelXMLHelper(getRebelXML());
     assertEquals(absolutePath("build/main/other-classes-dir"), rebelXML.getClasspathDir(1));
@@ -221,6 +213,7 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
 
   private void assertDefaultRebelXMLContent() throws IOException {
     RebelXMLHelper rebelXML = new RebelXMLHelper(getRebelXML());
+    assertEquals("testProject.main", rebelXML.getRemoteId());
     assertEquals(absolutePath("build/resources/main"), rebelXML.getClasspathDir(1));
     assertEquals(absolutePath("build/classes/java/main"), rebelXML.getClasspathDir(2));
     assertEquals(absolutePath("src/main/webapp"), rebelXML.getWebDir(1));

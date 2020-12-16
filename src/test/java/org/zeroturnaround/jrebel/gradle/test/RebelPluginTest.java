@@ -20,10 +20,9 @@ import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME;
 import static org.gradle.api.plugins.JavaPlugin.PROCESS_RESOURCES_TASK_NAME;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
@@ -49,6 +48,7 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -152,14 +152,14 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(pluginClass);
 
     Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
+    BaseRebelGenerateTask genRebelImplTask = getTaskImpl(genRebelTask);
 
-    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_JAR));
+    assertEquals(genRebelImplTask.getPackaging(), LegacyRebelGenerateTask.PACKAGING_TYPE_JAR);
 
     // check that the dependsOn is set properly
-    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
-    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
+    assertThat(genRebelTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(genRebelImplTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn(), Matchers.hasItem(genRebelImplTask));
   }
 
   /**
@@ -171,22 +171,14 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(GroovyPlugin.class);
 
     Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    Task genRebelImplTask = genRebelTask;
-    for (Object dependent : genRebelTask.getDependsOn()) {
-      if (dependent instanceof BaseRebelGenerateTask && dependent instanceof Task &&
-          ((Task) dependent).getName().endsWith("Main")) {
-        genRebelImplTask = (Task) dependent;
-        break;
-      }
-    }
-    assertTrue(genRebelImplTask instanceof BaseRebelGenerateTask);
+    BaseRebelGenerateTask genRebelImplTask = getTaskImpl(genRebelTask);
 
-    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelImplTask;
-    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_JAR));
+    assertEquals(genRebelImplTask.getPackaging(), LegacyRebelGenerateTask.PACKAGING_TYPE_JAR);
 
     // check that the dependsOn is set properly
-    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
-    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
+    assertThat(genRebelTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(genRebelImplTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn(), Matchers.hasItem(genRebelImplTask));
   }
 
   /**
@@ -198,14 +190,14 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(pluginClass);
 
     Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
+    BaseRebelGenerateTask genRebelImplTask = getTaskImpl(genRebelTask);
 
-    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_WAR));
+    assertEquals(genRebelImplTask.getPackaging(), LegacyRebelGenerateTask.PACKAGING_TYPE_WAR);
 
     // check that the dependsOn is set properly
-    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
-    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
+    assertThat(genRebelTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(genRebelImplTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn(), Matchers.hasItem(genRebelImplTask));
   }
 
   /**
@@ -217,14 +209,14 @@ public class RebelPluginTest {
     project.getProject().getPlugins().apply(WarPlugin.class);
 
     Task genRebelTask = getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
-    assertTrue(genRebelTask instanceof BaseRebelGenerateTask);
+    BaseRebelGenerateTask genRebelImplTask = getTaskImpl(genRebelTask);
 
-    BaseRebelGenerateTask rebelTask = (BaseRebelGenerateTask) genRebelTask;
-    assertTrue(rebelTask.getPackaging().equals(LegacyRebelGenerateTask.PACKAGING_TYPE_WAR));
+    assertEquals(genRebelImplTask.getPackaging(), LegacyRebelGenerateTask.PACKAGING_TYPE_WAR);
 
     // check that the dependsOn is set properly
-    assertFalse(genRebelTask.getDependsOn().contains(getTask(project, CLASSES_TASK_NAME)));
-    assertTrue(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn().contains(genRebelTask));
+    assertThat(genRebelTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(genRebelImplTask.getDependsOn(), Matchers.not(Matchers.hasItem(getTask(project, CLASSES_TASK_NAME))));
+    assertThat(getTask(project, PROCESS_RESOURCES_TASK_NAME).getDependsOn(), Matchers.hasItem(genRebelImplTask));
   }
 
   /**
@@ -250,7 +242,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Just get the rebel task (don't execute it)
-    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
 
     assertNotNull(task);
 
@@ -276,7 +268,7 @@ public class RebelPluginTest {
     project.getTasks().getByName(CLEAN_TASK_NAME);
 
     // Get and execute the rebel task
-    BaseRebelGenerateTask genRebelTask = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask genRebelTask = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
     genRebelTask.generate();
 
     RebelMainModel model = genRebelTask.getRebelModel();
@@ -307,7 +299,7 @@ public class RebelPluginTest {
     }
 
     // Get and execute the rebel task
-    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
     task.generate();
 
     RebelMainModel model = task.getRebelModel();
@@ -350,7 +342,7 @@ public class RebelPluginTest {
     log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
 
     // Get and execute the rebel task
-    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
     task.generate();
 
     RebelMainModel model = task.getRebelModel();
@@ -394,7 +386,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Get the rebel task
-    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
 
     // execute the task
     task.generate();
@@ -441,7 +433,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Execute the rebel task, validate the generated model
-    BaseRebelGenerateTask task = (BaseRebelGenerateTask) getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME);
+    BaseRebelGenerateTask task = getTaskImpl(getTask(project, LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME));
 
     // execute the task
     task.generate();
@@ -474,6 +466,19 @@ public class RebelPluginTest {
 
 
   // TODO a test for the fixPath... somehow
+
+  // generateRebel may be a dummy that depends on actual BaseRebelGenerateTask named "generateRebelMain"
+  private BaseRebelGenerateTask getTaskImpl(Task generateRebel) {
+    Task genRebelImplTask = generateRebel;
+    for (Object dependent : generateRebel.getDependsOn()) {
+      if (dependent instanceof BaseRebelGenerateTask && ((Task) dependent).getName().endsWith("Main")) {
+        genRebelImplTask = (Task) dependent;
+        break;
+      }
+    }
+    assertTrue(genRebelImplTask instanceof BaseRebelGenerateTask);
+    return (BaseRebelGenerateTask) genRebelImplTask;
+  }
 
   /**
    * Bad, internal-API-dependent code that works around the issue of 'afterEvaluated' not being called

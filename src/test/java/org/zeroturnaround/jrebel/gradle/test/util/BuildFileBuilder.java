@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.rules.TemporaryFolder;
+
 public class BuildFileBuilder {
 
+  TemporaryFolder projectDir;
   List<String> statements = new ArrayList<String>();
   List<String> pluginStatements = new ArrayList<String>();
   String rebelBlock = "";
 
-  public BuildFileBuilder() {
+  public BuildFileBuilder(TemporaryFolder projectDir) {
+    this.projectDir = projectDir;
     addPlugin("id 'java'");
     addPlugin("id 'war'");
     addPlugin("id \"org.zeroturnaround.gradle.jrebel\"");
@@ -53,7 +57,7 @@ public class BuildFileBuilder {
     return this;
   }
 
-  public BuildFileBuilder write(File output) {
+  public BuildFileBuilder write() {
     StringBuilder sb = new StringBuilder();
 
     if (!pluginStatements.isEmpty()) {
@@ -79,7 +83,8 @@ public class BuildFileBuilder {
     }
 
     try {
-      TestUtils.writeFile(output, sb.toString());
+      TestUtils.writeFile(new File(projectDir.getRoot(), "build.gradle"), sb.toString());
+      TestUtils.writeFile(new File(projectDir.getRoot(), "settings.gradle"), "rootProject.name = 'testProject'");
     }
     catch (IOException e) {
       throw new RuntimeException(e);

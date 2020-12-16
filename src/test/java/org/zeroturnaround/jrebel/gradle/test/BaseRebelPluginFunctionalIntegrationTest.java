@@ -15,6 +15,7 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Before;
@@ -28,7 +29,6 @@ public class BaseRebelPluginFunctionalIntegrationTest {
   public final TemporaryFolder testProjectDir = new TemporaryFolder();
 
   protected GradleRunner runner;
-  protected File buildFile;
   protected BuildFileBuilder buildFileBuilder;
 
   protected final String version;
@@ -39,8 +39,6 @@ public class BaseRebelPluginFunctionalIntegrationTest {
 
   @Before
   public void setup() throws IOException {
-    buildFile = testProjectDir.newFile("build.gradle");
-
     runner = GradleRunner.create()
         .withProjectDir(testProjectDir.getRoot())
         .withPluginClasspath(TestUtils.getPluginTestClasspath())
@@ -53,13 +51,21 @@ public class BaseRebelPluginFunctionalIntegrationTest {
       runner.withGradleVersion(version);
     }
 
-    buildFileBuilder = new BuildFileBuilder();
+    buildFileBuilder = new BuildFileBuilder(testProjectDir);
   }
 
+  protected TaskOutcome buildAndGetRebelOutcome() throws IOException {
+    BuildResult build = build();
+    BuildTask generateRebel = build.task(":generateRebelMain");
+    if (generateRebel == null) {
+      generateRebel = build.task(":generateRebel");
+    }
+    return generateRebel.getOutcome();
+  }
 
   protected void assertGenerateRebelIsUpToDateOnRebuild() throws IOException {
     TaskOutcome expectedStatus = version.startsWith("2") || version.startsWith("3")  ? SUCCESS : UP_TO_DATE;
-    assertEquals(expectedStatus, build().task(":generateRebel").getOutcome());
+    assertEquals(expectedStatus, buildAndGetRebelOutcome());
   }
 
   protected BuildResult build() throws IOException {

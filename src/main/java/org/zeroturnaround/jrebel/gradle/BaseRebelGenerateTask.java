@@ -1,11 +1,12 @@
 package org.zeroturnaround.jrebel.gradle;
 
+import org.gradle.api.Task;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 
-public interface BaseRebelGenerateTask {
+public interface BaseRebelGenerateTask extends Task {
 
   @Input
   String getPackaging();
