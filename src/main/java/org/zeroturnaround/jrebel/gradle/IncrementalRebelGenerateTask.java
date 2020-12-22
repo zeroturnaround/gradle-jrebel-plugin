@@ -33,6 +33,7 @@ import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.util.FileUtil;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
+import org.zeroturnaround.jrebel.gradle.util.RemoteUtil;
 
 public class IncrementalRebelGenerateTask extends DefaultTask implements BaseRebelGenerateTask {
 
@@ -309,29 +310,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
           return rebelDsl.getRemoteId();
         }
 
-        String projectPath = getProject().getPath();
-        StringTokenizer tokenizer = new StringTokenizer(projectPath, ":");
-        StringBuilder remoteIdBuilder = new StringBuilder();
-
-        boolean first = true;
-        if (projectPath.charAt(0) == ':') {
-          remoteIdBuilder.append(getProject().getRootProject().getName());
-          first = false;
-        }
-
-        while (tokenizer.hasMoreTokens()) {
-          if (!first) {
-            remoteIdBuilder.append('.');
-          } else {
-            first = false;
-          }
-          remoteIdBuilder.append(tokenizer.nextToken());
-        }
-
-        if (sourceSetDefaults.remoteIdSuffix != null) {
-          remoteIdBuilder.append('.').append(sourceSetDefaults.remoteIdSuffix);
-        }
-        return remoteIdBuilder.toString();
+        return RemoteUtil.getRemoteId(getProject(), sourceSetDefaults.remoteIdSuffix);
       }
     });
   }

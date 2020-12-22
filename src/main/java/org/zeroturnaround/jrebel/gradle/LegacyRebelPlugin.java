@@ -34,6 +34,7 @@ import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
+import org.zeroturnaround.jrebel.gradle.util.RemoteUtil;
 
 /**
  * The main entry-point for the JRebel Gradle plugin.
@@ -248,10 +249,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
 
         String remoteId = rebelExtension.getRemoteId();
         if (remoteId == null) {
-          remoteId = project.getPath().replace(':', '.');
-          if (remoteId.charAt(0) == '.') {
-            remoteId = remoteId.substring(1);
-          }
+          remoteId = RemoteUtil.getRemoteId(project, null);
         }
         generateRebelTask.setRemoteId(remoteId);
 
