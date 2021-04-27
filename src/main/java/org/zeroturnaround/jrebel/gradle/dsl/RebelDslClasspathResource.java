@@ -80,11 +80,6 @@ public class RebelDslClasspathResource implements Serializable {
     return jarset;
   }
 
-  public boolean isTargetSet() {
-    return directory != null || jar != null || jarset != null
-        || dirset != null;
-  }
-
   public void setDirectory(String directory) {
     this.directory = directory;
   }
