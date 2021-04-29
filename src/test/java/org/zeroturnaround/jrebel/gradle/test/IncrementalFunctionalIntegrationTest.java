@@ -27,13 +27,13 @@ public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctio
   public static Collection<Object[]> data() {
     return Arrays.asList(new Object[][] {
         { "4.0" },
-        { "4.2.1" },
         { "4.10.3", },
         { "5.0", },
         { "5.2.1", },
         { "5.6.4" },
         { "6.0.1" },
-        { "6.7.1" }
+        { "6.7.1" },
+        { "7.0" }
     });
   }
 
