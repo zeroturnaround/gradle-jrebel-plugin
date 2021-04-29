@@ -1,9 +1,9 @@
 /**
  * To deploy to local maven repository, run:
- * ./gradlew install -x sign
+ * ./gradlew publishToMavenLocal
  *
  * To release to Sonatype's central nexus, run:
- *   ./gradlew clean release -Prelease_to_central
+ *   ./gradlew clean publish -Prelease_to_central
  *
  * To release to gradle plugin portal run:
  *   ./gradlew clean publishPlugins
@@ -11,12 +11,13 @@
 plugins {
   id "com.gradle.plugin-publish" version "0.9.9"
   id "org.sonarqube" version "2.6"
+  id "java-gradle-plugin"
 }
 
 apply plugin: 'java'
 apply plugin: 'signing'
 apply plugin: 'project-report'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
@@ -57,6 +58,21 @@ task createClasspathManifest {
   }
 }
 
+// add version of the plugin into MANIFEST.MF to add it into generated rebel.xml files
+jar {
+  manifest {
+    attributes("Implementation-Version":project.version)
+  }
+}
+
+javadoc {
+  options.addBooleanOption('Xdoclint:none', true)
+}
+
+tasks.withType(GenerateModuleMetadata) {
+  enabled = false
+}
+
 // === Dependency management
 
 dependencies {
@@ -80,25 +96,6 @@ repositories {
   mavenCentral()
 }
 
-// add version of the plugin into MANIFEST.MF to add it into generated rebel.xml files
-jar {
-  manifest {
-    attributes("Implementation-Version":project.version)
-  }
-}
-
-/**
-* This method helps to run certain parts of config only when these tasks are really going to be executed.
-* This is very useful as to not force somebody who just wants to build locally define nexus usernames/passwords, etc.
-*/
-def onlyFor(task, config) {
- gradle.taskGraph.whenReady { graph ->
-   if (graph.hasTask(task)) {
-     project.configure(project, config)
-   }
- }
-}
-
 // =========================== TESTING ===========================
 
 // Run tests before installing the artifact
@@ -106,130 +103,9 @@ jar.dependsOn(test)
 
 // =========================== PUBLISHING ===========================
 
-// Contents of pom.xml that will be created for publishing to the maven-style artifact repository
-def pomFile = pom {
-  project {
-    name project.ext.name
-    description project.ext.description
-    url project.ext.website
-    licenses {
-      license {
-        name 'The Apache Software License, Version 2.0'
-        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-        distribution 'repo'
-      }
-    }
-    developers {
-      developer {
-        id 'jrebel_support'
-        name 'JRebel Support'
-        email 'support@jrebel.com'
-      }
-    }
-    inceptionYear '2011'
-    scm {
-      url 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
-      connection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
-      developerConnection 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
-    }
-  }
-}
-
-onlyFor(uploadPublished) {
-  uploadPublished {
-    repositories {
-      mavenDeployer {
-        configuration = configurations.deployerJars
-
-        // Use sonatype central
-        if (project.hasProperty("release_to_central")) {
-          repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-            authentication(userName: sonatypeNexusStagingUsername, password: sonatypeNexusStagingPassword)
-          }
-
-          snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots') {
-            authentication(userName: sonatypeNexusSnapshotsUsername, password: sonatypeNexusSnapshotsPassword)
-          }
-        }
-
-        // Use zeroturnaround central
-        else {
-          repository(url: 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/') {
-            authentication(userName: zeroturnaroundNexusReleasesUsername, password: zeroturnaroundNexusReleasesPassword)
-          }
-
-          snapshotRepository(url: 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/') {
-            authentication(userName: zeroturnaroundNexusSnapshotsUsername, password: zeroturnaroundNexusSnapshotsPassword)
-          }
-        }
-
-        pom = pomFile
-      }
-    }
-  }
-}
-
-signing {
-  required { gradle.taskGraph.hasTask("release") }
-  sign configurations.archives
-}
-
-task release( dependsOn: uploadPublished ) {
-  description = 'Releases the plugin, sign artifacts and upload them to Nexus. The bundle with artifacts for Sonatype is included into release.'
-}
-
-javadoc {
-  options.addBooleanOption('Xdoclint:none', true)
-}
-
-// Prepare bundle for Sonatype
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-}
-
-class GeneratePomTask extends DefaultTask {
-  File destFile
-}
-
-task generatePom(type: GeneratePomTask) {
-  destFile = file("${buildDir}/generatedPoms/${project.name}-${project.version}.pom")
-
-  inputs.file project.buildFile
-  outputs.file destFile
-  enabled = false
-
-  doLast {
-    println "Generate POM into " + destFile
-    pomFile.writeTo(destFile)
-  }
-}
-
-signArchives.dependsOn generatePom
-
-// portal task publishPlugins generates own pom.xml
-onlyFor(uploadPublished) {
-  generatePom.enabled = true
-  artifacts {
-    archives (generatePom.destFile) {
-      name 'pom'
-      type 'pom'
-    }
-  }
-
-  println 'Project artifacts: ' + artifacts
-}
-
-// Define list of artifacts
-artifacts {
-  archives jar
-  archives sourcesJar
-  archives javadocJar
+java {
+  withSourcesJar()
+  withJavadocJar()
 }
 
 pluginBundle {
@@ -237,11 +113,105 @@ pluginBundle {
   vcsUrl = project.ext.vcs
   description = project.ext.description
   tags = ['JRebel', 'rebel.xml', 'ZeroTurnaround']
+}
 
+gradlePlugin {
   plugins {
-    rebelPlugin {
+    jrebel {
       id = 'org.zeroturnaround.gradle.jrebel'
-      displayName = project.ext.name
+      implementationClass = 'org.zeroturnaround.jrebel.gradle.RebelPlugin'
     }
+  }
+}
+
+// Required data for maven central
+def pomFile = {
+  name = project.ext.name
+  description = project.ext.description
+  url = project.ext.website
+  licenses {
+    license {
+      name = 'The Apache Software License, Version 2.0'
+      url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+      distribution = 'repo'
+    }
+  }
+  developers {
+    developer {
+      id = 'jrebel_support'
+      name = 'JRebel Support'
+      email = 'support@jrebel.com'
+    }
+  }
+  inceptionYear = '2011'
+  scm {
+    url = 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
+    connection = 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
+    developerConnection = 'scm:git:git@github.com:zeroturnaround/gradle-jrebel-plugin.git'
+  }
+}
+
+publishing {
+  publications {
+    pluginMaven(MavenPublication) { // publication name is defined by java-gradle-plugin
+      pom pomFile
+    }
+  }
+  repositories {
+    maven {
+      // Use sonatype central
+      if (project.hasProperty("release_to_central")) {
+        if (project.version.endsWith("-SNAPSHOT")) {
+          name = 'sonatypeNexusSnapshots'
+          url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        } else {
+          name = 'sonatypeNexusStaging'
+          url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+        }
+      }
+      // Use zeroturnaround public repo
+      else {
+        if (project.version.endsWith("-SNAPSHOT")) {
+          name = 'zeroturnaroundNexusSnapshots'
+          url = 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots/'
+        } else {
+          name = 'zeroturnaroundNexusReleases'
+          url = 'https://repos.zeroturnaround.com/nexus/content/repositories/zt-public-releases/'
+        }
+      }
+      // name+"Username" and name+"Password" are looked up as credential properties
+      credentials(PasswordCredentials)
+    }
+  }
+}
+
+afterEvaluate {
+  publishing {
+    publications {
+      // Created by java-gradle-plugin very late, can't be configured above
+      jrebelPluginMarkerMaven(MavenPublication) {
+        pom pomFile
+      }
+    }
+  }
+  tasks.withType(PublishToMavenRepository) {
+    // Releases can be published to plugin portal, don't need the marker nonsense (gradle could have designed plugin id as group:id so no redirection or conventions needed)
+    onlyIf {
+      project.version.endsWith("-SNAPSHOT") || publication != publishing.publications.jrebelPluginMarkerMaven
+    }
+  }
+}
+
+signing {
+  required {
+    gradle.taskGraph.hasTask(publish) || gradle.taskGraph.hasTask(publishPlugins)
+  }
+  sign publishing.publications.pluginMaven
+}
+
+// java-gradle-plugin creates name+"PluginMarkerMaven" in afterEvaluate
+afterEvaluate {
+  signing {
+    sign publishing.publications.jrebelPluginMarkerMaven
   }
 }
