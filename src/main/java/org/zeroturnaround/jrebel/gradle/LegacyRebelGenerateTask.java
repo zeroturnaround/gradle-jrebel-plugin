@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.tooling.BuildException;
 import org.gradle.util.GradleVersion;
@@ -80,7 +81,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
 
   private boolean generateRebelRemote;
 
-
+  @Internal
   public String getConfiguredRootPath() {
     return configuredRootPath;
   }
@@ -89,6 +90,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.configuredRootPath = path;
   }
 
+  @Internal
   public File getConfiguredRelativePath() {
     return configuredRelativePath;
   }
@@ -113,6 +115,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.showGenerated = showGenerated;
   }
 
+  @Internal
   public RebelClasspath getClasspath() {
     return classpath;
   }
@@ -121,6 +124,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.classpath = path;
   }
 
+  @Internal
   public RebelWeb getWeb() {
     return web;
   }
@@ -145,22 +149,27 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.alwaysGenerate = alwaysGenerate;
   }
 
+  @Internal
   public List<File> getDefaultClassesDirectory() {
     return defaultClassesDirectories;
   }
 
+  @Internal
   public File getDefaultResourcesDirectory() {
     return defaultResourcesDirectory;
   }
 
+  @Internal
   public File getDefaultWebappDirectory() {
     return defaultWebappDirectory;
   }
 
+  @Internal
   public File getRebelXmlDirectory() {
     return rebelXmlDirectory;
   }
 
+  @Internal
   public String getRemoteId() {
     return remoteId;
   }
@@ -169,6 +178,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     this.remoteId = remoteId;
   }
 
+  @Internal
   public boolean getGenerateRebelRemote() {
     return generateRebelRemote;
   }
@@ -306,18 +316,22 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
 
   public static final String NAME_REBEL_XML_DIRECTORY = "rebelXmlDirectory$MAGIC";
 
+  @Internal
   public List<File> getDefaultClassesDirectories$MAGIC() {
     return null;
   }
 
+  @Internal
   public File getDefaultResourcesDirectory$MAGIC() {
     return null;
   }
 
+  @Internal
   public File getDefaultWebappDirectory$MAGIC() {
     return null;
   }
 
+  @Internal
   public File getRebelXmlDirectory$MAGIC() {
     return null;
   }
