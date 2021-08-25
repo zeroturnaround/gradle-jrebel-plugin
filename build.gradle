@@ -9,7 +9,7 @@
  *   ./gradlew clean publishPlugins
  */
 plugins {
-  id "com.gradle.plugin-publish" version "0.9.9"
+  id "com.gradle.plugin-publish" version "0.15.0"
   id "org.sonarqube" version "2.6"
   id "java-gradle-plugin"
 }
