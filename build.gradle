@@ -113,6 +113,12 @@ pluginBundle {
   vcsUrl = project.ext.vcs
   description = project.ext.description
   tags = ['JRebel', 'rebel.xml', 'ZeroTurnaround']
+
+  plugins {
+    jrebel {
+      displayName = 'Gradle JRebel plugin'
+    }
+  }
 }
 
 gradlePlugin {
