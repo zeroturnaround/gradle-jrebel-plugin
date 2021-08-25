@@ -116,7 +116,7 @@ pluginBundle {
 
   plugins {
     jrebel {
-      displayName = 'Gradle JRebel plugin'
+      id = 'org.zeroturnaround.gradle.jrebel'
     }
   }
 }
