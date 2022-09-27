@@ -27,7 +27,6 @@ import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
-import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
@@ -56,8 +55,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
     log = new LoggerWrapper(project.getLogger());
 
     // register the Rebel task
-    project.getTasks().create(GENERATE_REBEL_TASK_NAME, LegacyRebelGenerateTask.class).
-        setDescription("Generate rebel.xml mappings file to use this project with JRebel.");
+    project.getTasks().create(GENERATE_REBEL_TASK_NAME, LegacyRebelGenerateTask.class).setDescription("Generate rebel.xml mappings file to use this project with JRebel.");
 
     // only configure the real one if JavaPlugin gets enabled (it is pulled in by Groovy, Scala, War, ...)
     project.getLogger().info("Registering deferred Rebel plugin configuration...");
@@ -110,8 +108,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
    * Handle the 'rebelXmlDirectory' configuration option
    */
   private void configureRebelXmlDirectory(final Project project, final IConventionAware conventionAwareRebelTask,
-      final RebelDslMain rebelExtension)
-  {
+      final RebelDslMain rebelExtension) {
     conventionAwareRebelTask.getConventionMapping().map(LegacyRebelGenerateTask.NAME_REBEL_XML_DIRECTORY, new Callable<Object>() {
       public Object call() throws Exception {
         if (project.hasProperty("rebel.rebelXmlDirectory")) {
@@ -131,8 +128,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
    * Configure things that need to be configured exactly if the WarPlugin has been enabled
    */
   private void configureWarPluginSettings(final Project project, final LegacyRebelGenerateTask generateRebelTask,
-      final IConventionAware conventionAwareRebelTask, final RebelDslMain rebelExtension)
-  {
+      final IConventionAware conventionAwareRebelTask, final RebelDslMain rebelExtension) {
     // 'execute' will be run if WarPlugin is already applied, or if it will be applied later during the configuration lifecycle
     project.getPlugins().withType(WarPlugin.class).all(new Action<Plugin>() {
       public void execute(Plugin p) {
@@ -142,8 +138,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
         conventionAwareRebelTask.getConventionMapping().map(LegacyRebelGenerateTask.NAME_DEFAULT_WEBAPP_DIRECTORY, new Callable<Object>() {
           public Object call() throws Exception {
             try {
-              WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
-              return warConvention.getWebAppDir();
+              return new WarAdapter(project).getWebAppDir();
             }
             catch (Exception e) {
               return null;
@@ -172,7 +167,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
 
   private List<File> getClassesDirs(SourceSetOutput sourceSet) {
     // gradle 4.0 api
-    //return sourceSet.getClassesDirs().getFiles();
+    // return sourceSet.getClassesDirs().getFiles();
     List<File> files = new ArrayList<File>(sourceSet.getFiles());
     files.remove(sourceSet.getResourcesDir());
     return files;
@@ -199,14 +194,12 @@ public class LegacyRebelPlugin implements Plugin<Project> {
     return javaConvention.getSourceSets().getByName("main").getOutput();
   }
 
-
   /**
    * Things executed in the end of configuration lifecycle. Mostly have to be here.. rebel DSL is not yet evaluated and these
    * things cannot be called within RebelPlugin#configure.
    */
   private void configureProjectAfterEvaluate(final Project project, final LegacyRebelGenerateTask generateRebelTask,
-      final RebelDslMain rebelExtension)
-  {
+      final RebelDslMain rebelExtension) {
     project.afterEvaluate(new Action<Project>() {
 
       public void execute(Project project) {
@@ -228,7 +221,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
         generateRebelTask.setConfiguredRootPath(rootPath);
 
         // XXX i can't think of any use for this property and don't know how it works. ask Rein, it is
-        //     copy-pasted from maven plugin. maybe it is useless for Gradle and can be deleted.
+        // copy-pasted from maven plugin. maybe it is useless for Gradle and can be deleted.
         // XXX it is undocumented as well.
         generateRebelTask.setConfiguredRelativePath(rebelExtension.getRelativePath());
 

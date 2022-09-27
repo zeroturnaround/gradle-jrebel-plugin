@@ -24,7 +24,9 @@ public class FileUtil {
       w.write(contents);
     }
     finally {
-      w.close();
+      if (w != null) {
+        w.close();
+      }
     }
   }
  

@@ -1,6 +1,12 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.1.12 (2022-09-27)
+------------------
+
+* Improvement: removed compile-time dependency on WarPluginConvention which will be removed in Gradle 8.0.
+* Improvement: added null checks before closing I/O streams.
+
 1.1.11 (2021-08-25)
 ------------------
 

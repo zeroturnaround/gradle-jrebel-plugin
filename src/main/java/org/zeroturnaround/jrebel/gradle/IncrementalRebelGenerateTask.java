@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
@@ -16,7 +15,6 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.plugins.WarPlugin;
-import org.gradle.api.plugins.WarPluginConvention;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
@@ -98,7 +96,6 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     return defaultClassesDirectory.getOrNull();
   }
 
-
   public void setDefaultClassesDirectory(Provider<Collection<File>> provider) {
     this.defaultClassesDirectory = provider;
   }
@@ -120,7 +117,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
   }
 
   /*
-    Force a rebuild with ever changing input value if 'alwaysGenerate = true'
+   * Force a rebuild with ever changing input value if 'alwaysGenerate = true'
    */
   @Input
   public Long getAlwaysGenerateTrigger() {
@@ -164,15 +161,14 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         getRebelDsl().getPackaging(),
         classpath != null ? classpath.toRebelClasspath() : null,
         web != null ? web.toRebelWeb() : null,
-        war != null ? war.toRebelWar() :null,
+        war != null ? war.toRebelWar() : null,
         getDefaultClassesDirectory(),
         getDefaultResourcesDirectory(),
         getDefaultWebappDirectory(),
         getConfiguredRootPath(),
         getRebelDsl().getRelativePath(),
         getProject().getProjectDir(),
-        remoteId.getOrNull()
-    ).build();
+        remoteId.getOrNull()).build();
 
     File buildDir = jrebelBuildDir.get();
     File rebelXmlFile = new File(buildDir, "rebel.xml");
@@ -246,8 +242,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
           @Override
           public File call() {
             try {
-              WarPluginConvention warConvention = getProject().getConvention().getPlugin(WarPluginConvention.class);
-              return warConvention.getWebAppDir();
+              return new WarAdapter(getProject()).getWebAppDir();
             }
             catch (Exception e) {
               return null;
@@ -273,8 +268,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
             }
             return rootPath;
           }
-        })
-    );
+        }));
   }
 
   public void configureSourceSet(final SourceSetDefaults sourceSetDefaults) {

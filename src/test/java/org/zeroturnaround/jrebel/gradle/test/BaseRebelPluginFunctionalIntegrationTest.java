@@ -92,7 +92,9 @@ public class BaseRebelPluginFunctionalIntegrationTest {
             return IOUtils.toString(stream, Charset.forName("UTF-8"));
           }
         } finally {
-          stream.close();
+          if (stream != null) {
+            stream.close();
+          }
         }
       }
       throw new RuntimeException("RebelXML not found");
