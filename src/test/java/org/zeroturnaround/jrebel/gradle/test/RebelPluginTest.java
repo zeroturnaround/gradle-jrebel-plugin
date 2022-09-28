@@ -45,7 +45,7 @@ import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
-import org.gradle.api.plugins.WarPluginConvention;
+import org.gradle.api.tasks.bundling.War;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -335,8 +335,8 @@ public class RebelPluginTest {
     }
 
     // Default webapp directory
-    WarPluginConvention warConvention = project.getConvention().getPlugin(WarPluginConvention.class);
-    File defaultWebappDirectory = warConvention.getWebAppDir();
+    War warTask = project.getTasks().withType(War.class).iterator().next();
+    File defaultWebappDirectory = warTask.getWebAppDirectory().getAsFile().get();
     // create directory by hand, as the War plugin is not actually executing in our test
     defaultWebappDirectory.mkdirs();
     log.info("Default webapp dir: " + defaultWebappDirectory.getAbsolutePath());
