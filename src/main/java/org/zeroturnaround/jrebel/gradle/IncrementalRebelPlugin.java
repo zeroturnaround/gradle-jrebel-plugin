@@ -13,8 +13,11 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.util.GradleVersion;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
@@ -35,7 +38,7 @@ public class IncrementalRebelPlugin implements Plugin<Project> {
     project.getPlugins().withType(JavaBasePlugin.class).all(new Action<JavaBasePlugin>() {
       @Override
       public void execute(JavaBasePlugin javaPlugin) {
-        project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().all(new Action<SourceSet>() {
+        getJavaSourceSets(project).all(new Action<SourceSet>() {
           @Override
           public void execute(final SourceSet sourceSet) {
             log.info("Creating task for sourceSet " + sourceSet.getName());
@@ -90,6 +93,20 @@ public class IncrementalRebelPlugin implements Plugin<Project> {
       Task defaultTask = project.getTasks().create(GENERATE_REBEL_TASK_NAME);
       defaultTask.setDescription("Generate JRebel xml configuration for the main SourceSet");
       defaultTask.dependsOn(generateRebelSourceSet);
+    }
+  }
+
+  private static SourceSetContainer getJavaSourceSets(final Project project) {
+    try {
+      return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
+    }
+    catch (Throwable t) {
+      if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
+        return project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
+      }
+      else {
+        throw new RuntimeException(t);
+      }
     }
   }
 }

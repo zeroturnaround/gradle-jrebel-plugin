@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gradle.util.GradleVersion;
 import org.junit.rules.TemporaryFolder;
 
 public class BuildFileBuilder {
@@ -14,14 +15,15 @@ public class BuildFileBuilder {
   List<String> pluginStatements = new ArrayList<String>();
   String rebelBlock = "";
 
-  public BuildFileBuilder(TemporaryFolder projectDir) {
+  public BuildFileBuilder(TemporaryFolder projectDir, String gradleVersion) {
     this.projectDir = projectDir;
     addPlugin("id 'java'");
     addPlugin("id 'war'");
     addPlugin("id \"org.zeroturnaround.gradle.jrebel\"");
 
+    final String archiveNameProperty = GradleVersion.version(gradleVersion).compareTo(GradleVersion.version("6.0")) >= 0 ? "archiveFileName" : "archiveName";
     add("war {\n" +
-        "  archiveName = 'test.war'\n" +
+        "  " + archiveNameProperty + " = 'test.war'\n" +
         "}");
   }
 

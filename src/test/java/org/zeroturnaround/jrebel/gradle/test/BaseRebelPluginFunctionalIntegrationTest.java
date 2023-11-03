@@ -51,7 +51,7 @@ public class BaseRebelPluginFunctionalIntegrationTest {
       runner.withGradleVersion(version);
     }
 
-    buildFileBuilder = new BuildFileBuilder(testProjectDir);
+    buildFileBuilder = new BuildFileBuilder(testProjectDir, version);
   }
 
   protected TaskOutcome buildAndGetRebelOutcome() throws IOException {
