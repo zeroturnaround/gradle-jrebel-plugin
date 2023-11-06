@@ -33,8 +33,8 @@ project.ext.vcs = 'https://github.com/zeroturnaround/gradle-jrebel-plugin'
 project.ext.website = 'https://jrebel.com'
 
 // Compiler settings (Gradle 2.0 requires Java 6+)
-targetCompatibility = "1.6"
-sourceCompatibility = "1.6"
+targetCompatibility = "1.8"
+sourceCompatibility = "1.8"
 
 tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'
@@ -79,13 +79,12 @@ dependencies {
   compileOnly gradleApi()
 
   implementation 'commons-lang:commons-lang:2.6'
-  implementation 'commons-io:commons-io:2.5'
 
   testImplementation gradleTestKit()
   testImplementation 'junit:junit:4.13.1'
   testImplementation 'xmlunit:xmlunit:1.6'
   testImplementation 'org.hamcrest:hamcrest-library:1.3'
-  testImplementation 'commons-io:commons-io:2.6'
+  testImplementation 'commons-io:commons-io:2.15.0'
 
   deployerJars 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.12'
 

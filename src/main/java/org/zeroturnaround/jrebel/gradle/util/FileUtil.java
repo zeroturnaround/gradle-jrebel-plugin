@@ -2,9 +2,8 @@ package org.zeroturnaround.jrebel.gradle.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,17 +15,8 @@ public class FileUtil {
    * file writer helper
    */
   public static void writeToFile(File file, String contents) throws IOException {
-    Writer w = null;
-    try {
-      FileOutputStream is = new FileOutputStream(file);
-      OutputStreamWriter osw = new OutputStreamWriter(is);    
-      w = new BufferedWriter(osw);
+    try (Writer w = new BufferedWriter(new FileWriter(file))) {
       w.write(contents);
-    }
-    finally {
-      if (w != null) {
-        w.close();
-      }
     }
   }
  

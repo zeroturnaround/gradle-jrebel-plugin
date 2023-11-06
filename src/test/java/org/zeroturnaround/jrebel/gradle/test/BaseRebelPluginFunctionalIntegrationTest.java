@@ -77,30 +77,18 @@ public class BaseRebelPluginFunctionalIntegrationTest {
   }
 
   protected String getRebelXML() throws IOException {
-    ZipFile zipFile = null;
-    try {
-      zipFile = new ZipFile(absolutePath( "build/libs/test.war"));
-      InputStream stream = null;
-
+    try (ZipFile zipFile = new ZipFile(absolutePath("build/libs/test.war"))) {
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-      while(entries.hasMoreElements()){
+      while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
-        try {
-          stream = zipFile.getInputStream(entry);
+        try (InputStream stream = zipFile.getInputStream(entry)) {
           if ("WEB-INF/classes/rebel.xml".equals(entry.getName())) {
             return IOUtils.toString(stream, Charset.forName("UTF-8"));
-          }
-        } finally {
-          if (stream != null) {
-            stream.close();
           }
         }
       }
       throw new RuntimeException("RebelXML not found");
-    } finally {
-      if (zipFile != null)
-        zipFile.close();
     }
   }
 }

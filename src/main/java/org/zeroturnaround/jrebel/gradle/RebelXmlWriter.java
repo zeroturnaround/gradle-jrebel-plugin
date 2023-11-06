@@ -8,10 +8,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
+import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
-import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 
 /**
  * Generate XML based on the in-memory model (RebelMainModel instance).
@@ -26,9 +26,8 @@ public class RebelXmlWriter {
    * The main method generating the XML output.
    */
   public String toXmlString(RebelMainModel model) {
-    Writer writer = new StringWriter();
 
-    try {
+    try (Writer writer = new StringWriter()) {
       writeHeader(writer);
 
       writeId(model, writer);
@@ -48,16 +47,6 @@ public class RebelXmlWriter {
     catch (IOException e) {
       return null;
     }
-    finally {
-      // close the stream
-      if (writer != null) {
-        try {
-          writer.close();
-        }
-        catch (IOException e) {
-        }
-      }
-    } 
   }
 
   private void writeHeader(Writer writer) throws IOException {

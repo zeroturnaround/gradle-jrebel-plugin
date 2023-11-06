@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.io.IOUtils;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
@@ -208,9 +207,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
 
     log.info("Generating rebel-remote.xml with id " + remoteId.getOrNull() + " to \"" + buildDir + "\"");
 
-    Writer writer = null;
-    try {
-      writer = new StringWriter();
+    try(Writer writer = new StringWriter()) {
 
       RebelRemoteWriter remoteWriter = new RebelRemoteWriter(remoteId.getOrNull());
       remoteWriter.writeXml(writer);
@@ -220,13 +217,9 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         log.lifecycle(contents);
       }
       FileUtil.writeToFile(rebelRemoteFile, contents);
-      writer.close();
     }
     catch (IOException e) {
       throw new BuildException("Failed writing " + rebelRemoteFile, e);
-    }
-    finally {
-      IOUtils.closeQuietly(writer);
     }
   }
 
