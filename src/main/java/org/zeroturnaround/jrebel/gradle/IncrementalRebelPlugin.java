@@ -97,16 +97,11 @@ public class IncrementalRebelPlugin implements Plugin<Project> {
   }
 
   private static SourceSetContainer getJavaSourceSets(final Project project) {
-    try {
+    if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
       return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
     }
-    catch (Throwable t) {
-      if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
-        return project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
-      }
-      else {
-        throw new RuntimeException(t);
-      }
+    else {
+      return project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
     }
   }
 }
