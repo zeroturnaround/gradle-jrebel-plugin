@@ -1,6 +1,12 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.2.0 (2023-11-08)
+------------------
+
+* Improvement: set runtime JDK minimum to Java 8
+* Improvement: fixed deprecation warning about Project.getConvention() on Gradle 7.1+
+
 1.1.12 (2022-09-27)
 ------------------
 
