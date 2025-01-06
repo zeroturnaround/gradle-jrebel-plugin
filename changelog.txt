@@ -1,6 +1,11 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.2.1 (2025-01-06)
+------------------
+
+* Improvement: added Gradle configuration cache support
+
 1.2.0 (2023-11-08)
 ------------------
 
