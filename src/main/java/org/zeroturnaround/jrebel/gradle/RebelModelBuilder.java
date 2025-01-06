@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.gradle.api.Project;
+import org.gradle.api.logging.Logger;
 import org.gradle.tooling.BuildException;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
@@ -24,7 +25,7 @@ public class RebelModelBuilder {
   private LoggerWrapper log;
 
   public RebelModelBuilder(
-      Project project,
+      Logger logger,
       String packaging,
       RebelClasspath classpath,
       RebelWeb web,
@@ -36,7 +37,7 @@ public class RebelModelBuilder {
       File configuredRelativePath,
       File projectDir,
       String remoteId) {
-    this.log = new LoggerWrapper(project.getLogger());
+    this.log = new LoggerWrapper(logger);
 
     this.packaging = packaging;
     this.classpath = classpath;

@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
+import org.gradle.api.logging.Logger;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Input;
@@ -48,6 +49,11 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
 
   private boolean skipWritingRebelXml;
   private RebelMainModel rebelModel;
+
+  private final File projectDir;
+  private final Logger logger;
+  private final Object projectGroup;
+  private final String projectName;
 
   @Nested
   public RebelDslMain getRebelDsl() {
@@ -156,7 +162,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
     RebelDslWeb web = getRebelDsl().getWeb();
     RebelDslWar war = getRebelDsl().getWar();
     rebelModel = new RebelModelBuilder(
-        getProject(),
+        logger,
         getRebelDsl().getPackaging(),
         classpath != null ? classpath.toRebelClasspath() : null,
         web != null ? web.toRebelWeb() : null,
@@ -166,7 +172,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         getDefaultWebappDirectory(),
         getConfiguredRootPath(),
         getRebelDsl().getRelativePath(),
-        getProject().getProjectDir(),
+        projectDir,
         remoteId.getOrNull()).build();
 
     File buildDir = jrebelBuildDir.get();
@@ -176,7 +182,7 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
         throw new IOException("Failed to create directory for rebel.xml: " + buildDir);
       }
 
-      log.info("Processing " + getProject().getGroup() + ":" + getProject().getName() + " with packaging " + getRebelDsl().getPackaging());
+      log.info("Processing " + projectGroup + ":" + projectName + " with packaging " + getRebelDsl().getPackaging());
       log.info("Generating \"" + rebelXmlFile.getAbsolutePath() + "\"...");
 
       String xmlFileContents = rebelModel.toXmlString();
@@ -224,6 +230,11 @@ public class IncrementalRebelGenerateTask extends DefaultTask implements BaseReb
   }
 
   public IncrementalRebelGenerateTask() {
+    this.projectDir = getProject().getProjectDir();
+    this.logger = getProject().getLogger();
+    this.projectGroup = getProject().getGroup();
+    this.projectName = getProject().getName();
+
     this.rebelDsl = (RebelDslMain) getProject().getExtensions().getByName(REBEL_EXTENSION_NAME);
 
     getProject().getPlugins().withType(WarPlugin.class).all(new Action<Plugin>() {

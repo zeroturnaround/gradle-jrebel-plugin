@@ -254,7 +254,7 @@ public class LegacyRebelGenerateTask extends DefaultTask implements BaseRebelGen
     }
 
     rebelModel = new RebelModelBuilder(
-        getProject(),
+        getProject().getLogger(),
         getPackaging(),
         classpath,
         web,
