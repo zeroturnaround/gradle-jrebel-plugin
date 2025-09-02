@@ -6,7 +6,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.gradle.util.GradleVersion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -18,26 +20,17 @@ import org.zeroturnaround.jrebel.gradle.test.util.RebelXMLHelper;
 @RunWith(Parameterized.class)
 public class IncrementalFunctionalIntegrationTest extends BaseRebelPluginFunctionalIntegrationTest {
 
-
   public IncrementalFunctionalIntegrationTest(String version) {
     super(version);
   }
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
-    return Arrays.asList(new Object[][] {
-        { "4.0" },
-        { "4.10.3" },
-        { "5.0" },
-        { "5.2.1" },
-        { "5.6.4" },
-        { "6.0.1" },
-        { "6.9.4" },
-        { "7.0" },
-        { "7.6.3" },
-        { "8.0" },
-        { "8.4" }
-    });
+    String versions = System.getProperty("tested.gradle.versions");
+    return Arrays.stream(versions.split(","))
+        .filter(v -> GradleVersion.version(v).compareTo(GradleVersion.version("4.0")) >= 0)
+        .map(v -> new Object[]{v})
+        .collect(Collectors.toList());
   }
 
   @Test

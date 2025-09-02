@@ -15,18 +15,17 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
+import groovy.lang.Closure;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.gradle.api.Action;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
+import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
+import org.zeroturnaround.jrebel.gradle.util.ConfigureUtilAdapter;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import groovy.lang.Closure;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.Nested;
-import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
-import org.zeroturnaround.jrebel.gradle.model.RebelWeb;
 
 /**
  * Gradle DSL level model for &lt;web&gt; elements configuration (corresponds to RebelWeb in backend model).
@@ -72,12 +71,23 @@ public class RebelDslWeb implements Serializable {
   }
   
   /**
-   * DSL-backing method to add a new resource
+   * DSL-backing method to add a new resource.
+   * Groovy only.
    */
+  @Deprecated
   public void resource(Closure closure) {
     RebelDslWebResource webResource = new RebelDslWebResource();
-    ConfigureUtil.configure(closure, webResource);
+    ConfigureUtilAdapter.configure(closure, webResource);
     
+    webResources.add(webResource);
+  }
+
+  /**
+   * DSL-backing method to add a new resource.
+   */
+  public void resource(Action<RebelDslWebResource> action) {
+    RebelDslWebResource webResource = new RebelDslWebResource();
+    action.execute(webResource);
     webResources.add(webResource);
   }
 

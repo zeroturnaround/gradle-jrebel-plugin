@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.tooling.BuildException;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;

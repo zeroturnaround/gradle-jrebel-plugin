@@ -15,25 +15,6 @@
  */
 package org.zeroturnaround.jrebel.gradle.test;
 
-import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME;
-import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME;
-import static org.gradle.api.plugins.JavaPlugin.PROCESS_RESOURCES_TASK_NAME;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
-import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -43,17 +24,12 @@ import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.project.ProjectStateInternal;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
@@ -72,7 +48,24 @@ import org.zeroturnaround.jrebel.gradle.model.RebelClasspathResource;
 import org.zeroturnaround.jrebel.gradle.model.RebelMainModel;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;
 import org.zeroturnaround.jrebel.gradle.model.RebelWebResource;
+import org.zeroturnaround.jrebel.gradle.util.JavaSourceSetContainerAccessor;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import static org.gradle.api.plugins.BasePlugin.CLEAN_TASK_NAME;
+import static org.gradle.api.plugins.JavaPlugin.CLASSES_TASK_NAME;
+import static org.gradle.api.plugins.JavaPlugin.PROCESS_RESOURCES_TASK_NAME;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 /**
  * General tests for plugins integration with Gradle lifecycles, configuration option handling, etc.
@@ -291,8 +284,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Create the default classes directory by hand, as the Java plugin is not actually executing in our test
-    JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-    Set<File> defaultOutputDirs = javaConvention.getSourceSets().getByName("main").getOutput().getFiles();
+    Set<File> defaultOutputDirs = JavaSourceSetContainerAccessor.getSourceSets(project).getByName("main").getOutput().getFiles();
     for (File f : defaultOutputDirs) {
       f.mkdirs();
       log.info("defaultClassesDir: {}", f.getAbsolutePath());
@@ -326,8 +318,7 @@ public class RebelPluginTest {
     callAfterEvaluated(project);
 
     // Default classes directory
-    JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-    Set<File> defaultOutputDirs = javaConvention.getSourceSets().getByName("main").getOutput().getFiles();
+    Set<File> defaultOutputDirs = JavaSourceSetContainerAccessor.getSourceSets(project).getByName("main").getOutput().getFiles();
     // create directory by hand, as the Java plugin is not actually executing in our test
     for (File f : defaultOutputDirs) {
       f.mkdirs();

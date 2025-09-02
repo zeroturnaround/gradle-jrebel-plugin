@@ -6,7 +6,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.gradle.util.GradleVersion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -24,16 +26,10 @@ public class LegacyFunctionalIntegrationTest extends BaseRebelPluginFunctionalIn
 
   @Parameterized.Parameters
   public static Collection<Object[]> versions() {
-    return Arrays.asList(new Object[][] {
-        { "2.8" },
-        { "2.14" },
-        { "3.0" },
-        { "3.1" },
-        { "3.2.1" },
-        { "3.3" },
-        { "3.4.1" },
-        { "3.5.1" }
-    });
+    String versions = System.getProperty("tested.gradle.versions");
+    return Arrays.stream(versions.split(","))
+        .filter(v -> GradleVersion.version(v).compareTo(GradleVersion.version("4.0")) < 0)
+        .map(v -> new Object[]{v}).collect(Collectors.toList());
   }
 
   @Test

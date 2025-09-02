@@ -1,27 +1,24 @@
 package org.zeroturnaround.jrebel.gradle;
 
-import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME;
-import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.REBEL_EXTENSION_NAME;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
+import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaBasePlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.util.GradleVersion;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
+import org.zeroturnaround.jrebel.gradle.util.JavaSourceSetContainerAccessor;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 
-import groovy.lang.Closure;
+import java.io.File;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.GENERATE_REBEL_TASK_NAME;
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelPlugin.REBEL_EXTENSION_NAME;
 
 public class IncrementalRebelPlugin implements Plugin<Project> {
 
@@ -97,11 +94,6 @@ public class IncrementalRebelPlugin implements Plugin<Project> {
   }
 
   private static SourceSetContainer getJavaSourceSets(final Project project) {
-    if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) >= 0) {
-      return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
-    }
-    else {
-      return project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets();
-    }
+    return JavaSourceSetContainerAccessor.getSourceSets(project);
   }
 }

@@ -1,12 +1,13 @@
 package org.zeroturnaround.jrebel.gradle;
 
-import java.io.File;
-import java.lang.reflect.Method;
-
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.util.GradleVersion;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
+
+import java.io.File;
+import java.lang.reflect.Method;
 
 public class WarAdapter {
 
@@ -30,9 +31,14 @@ public class WarAdapter {
 
   // Legacy - from WarPluginConvention
   private File getWebAppDirFromConvention() {
+    if (GradleVersion.current().compareTo(GradleVersion.version("9.0")) >= 0) {
+      log.debug("Couldn't obtain webappdir from convention: no API in Gradle " + GradleVersion.current());
+      return null;
+    }
     try {
       Class<?> warPluginConventionClass = Class.forName("org.gradle.api.plugins.WarPluginConvention");
-      Object warPluginConvention = project.getConvention().getPlugin(warPluginConventionClass);
+      Object convention = project.getClass().getMethod("getConvention").invoke(project);
+      Object warPluginConvention = convention.getClass().getMethod("getPlugin", Class.class).invoke(convention, warPluginConventionClass);
       File webAppDir = (File) warPluginConventionClass.getMethod("getWebAppDir").invoke(warPluginConvention);
       log.debug("webappdir from convention: " + webAppDir);
       if (webAppDir != null) {

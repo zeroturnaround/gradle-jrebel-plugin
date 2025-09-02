@@ -15,19 +15,19 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
-import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_JAR;
-
-import java.io.File;
-import java.io.Serializable;
-
+import groovy.lang.Closure;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.gradle.api.Action;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
+import org.zeroturnaround.jrebel.gradle.util.ConfigureUtilAdapter;
 
-import groovy.lang.Closure;
+import java.io.File;
+import java.io.Serializable;
+
+import static org.zeroturnaround.jrebel.gradle.LegacyRebelGenerateTask.PACKAGING_TYPE_JAR;
 
 /**
  * The parent class of the Rebel plugin's DSL extension. 
@@ -213,27 +213,57 @@ public class RebelDslMain implements Serializable {
   }
 
   /**
-   * Evaluate the 'classpath {..}' block
+   * Evaluate the 'classpath {..}' block.
+   * Groovy only
    */
+  @Deprecated
   public void classpath(Closure closure) {
     classpath = new RebelDslClasspath();
-    ConfigureUtil.configure(closure, classpath);
+    ConfigureUtilAdapter.configure(closure, classpath);
   }
-  
+
   /**
-   * Evaluate the 'web {..}' block
+   * Evaluate the 'classpath {..}' block.
    */
+  public void classpath(Action<RebelDslClasspath> action) {
+    classpath = new RebelDslClasspath();
+    action.execute(classpath);
+  }
+
+  /**
+   * Evaluate the 'web {..}' block.
+   * Groovy only
+   */
+  @Deprecated
   public void web(Closure closure) {
     web = new RebelDslWeb();
-    ConfigureUtil.configure(closure, web);
+    ConfigureUtilAdapter.configure(closure, web);
   }
-  
+
   /**
-   * Evaluate the 'war {..}' block
+   * Evaluate the 'web {..}' block.
    */
+  public void web(Action<RebelDslWeb> action) {
+    web = new RebelDslWeb();
+    action.execute(web);
+  }
+
+  /**
+   * Evaluate the 'war {..}' block.
+   * Groovy only
+   */
+  @Deprecated
   public void war(Closure closure) {
     war = new RebelDslWar();
-    ConfigureUtil.configure(closure, war);
+    ConfigureUtilAdapter.configure(closure, war);
+  }
+
+  /**
+   * Evaluate the 'war {..}' block.
+   */
+  public void war(Action<RebelDslWar> action) {
+    war = new RebelDslWar();
+    action.execute(war);
   }
 
   @Override

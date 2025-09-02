@@ -15,25 +15,25 @@
  */
 package org.zeroturnaround.jrebel.gradle;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.SourceSetOutput;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslClasspath;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslMain;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWar;
 import org.zeroturnaround.jrebel.gradle.dsl.RebelDslWeb;
+import org.zeroturnaround.jrebel.gradle.util.JavaSourceSetContainerAccessor;
 import org.zeroturnaround.jrebel.gradle.util.LoggerWrapper;
 import org.zeroturnaround.jrebel.gradle.util.RemoteUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * The main entry-point for the JRebel Gradle plugin.
@@ -190,8 +190,7 @@ public class LegacyRebelPlugin implements Plugin<Project> {
   }
 
   private SourceSetOutput getMainOutput(Project project) {
-    JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention.class);
-    return javaConvention.getSourceSets().getByName("main").getOutput();
+    return JavaSourceSetContainerAccessor.getSourceSets(project).getByName("main").getOutput();
   }
 
   /**

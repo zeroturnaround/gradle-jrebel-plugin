@@ -15,19 +15,19 @@
  */
 package org.zeroturnaround.jrebel.gradle.dsl;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import groovy.lang.Closure;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.gradle.api.Action;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
-import org.gradle.util.ConfigureUtil;
 import org.zeroturnaround.jrebel.gradle.model.RebelClasspath;
+import org.zeroturnaround.jrebel.gradle.util.ConfigureUtilAdapter;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Gradle DSL level model for &lt;web&gt; elements configuration (corresponds to RebelWeb in backend model).
@@ -96,15 +96,26 @@ public class RebelDslClasspath implements Serializable {
   }
 
   /**
-   * DSL method to handle the 'resource { .. }' configuration block
+   * DSL method to handle the 'resource { .. }' configuration block.
+   * Groovy only
    */
+  @Deprecated
   public void resource(Closure closure) {
     RebelDslClasspathResource resource = new RebelDslClasspathResource();
-    ConfigureUtil.configure(closure, resource);
+    ConfigureUtilAdapter.configure(closure, resource);
     
     resources.add(resource);
   }
-  
+
+  /**
+   * DSL method to handle the 'resource { .. }' configuration block.
+   */
+  public void resource(Action<RebelDslClasspathResource> action) {
+    RebelDslClasspathResource resource = new RebelDslClasspathResource();
+    action.execute(resource);
+    resources.add(resource);
+  }
+
   public String toString() {
     ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.DEFAULT_STYLE);
     builder.append("resources", resources);
