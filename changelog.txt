@@ -1,6 +1,11 @@
 JRebel Gradle Plugin changelog
 ==============================
 
+1.2.2 (2025-09-05)
+------------------
+
+* Improvement: added support for Gradle 9.x.
+
 1.2.1 (2025-01-06)
 ------------------
 

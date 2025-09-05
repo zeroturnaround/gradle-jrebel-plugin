@@ -25,7 +25,7 @@ apply plugin: 'jacoco'
 // Artifact settings
 
 project.group = 'org.zeroturnaround'
-project.version = '1.2.2-SNAPSHOT'
+project.version = '1.2.2'
 
 project.ext.name = 'JRebel Gradle plugin'
 project.ext.description = 'JRebel Gradle plugin'
@@ -199,10 +199,10 @@ publishing {
       if (project.hasProperty("release_to_central")) {
         if (project.version.endsWith("-SNAPSHOT")) {
           name = 'sonatypeNexusSnapshots'
-          url = 'https://oss.sonatype.org/content/repositories/snapshots'
+          url = 'https://central.sonatype.com/repository/maven-snapshots'
         } else {
           name = 'sonatypeNexusStaging'
-          url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+          url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2'
         }
       }
       // Use zeroturnaround public repo
