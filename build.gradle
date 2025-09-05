@@ -156,6 +156,7 @@ gradlePlugin {
       id = 'org.zeroturnaround.gradle.jrebel'
       implementationClass = 'org.zeroturnaround.jrebel.gradle.RebelPlugin'
       tags = ['JRebel', 'rebel.xml', 'ZeroTurnaround']
+      displayName = 'JRebel Gradle plugin'
     }
   }
 }
