@@ -227,6 +227,10 @@ jreleaser {
           active = 'RELEASE' // only fires for non-SNAPSHOT versions
           url = 'https://central.sonatype.com/api/v1/publisher'
           stagingRepository('build/staging-deploy')
+          // Equivalent of central-publishing-maven-plugin's <autoPublish>false</autoPublish>:
+          // upload and wait for Central's validation only, don't trigger the actual publish
+          // (and its long poll for completion) - a human publishes it from the Portal UI.
+          stage = 'UPLOAD'
           sign = false // artifacts are already signed by the `signing` plugin below
           checksums = true
           sourceJar = true
