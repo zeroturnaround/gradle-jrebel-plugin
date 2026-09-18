@@ -17,7 +17,7 @@ package org.zeroturnaround.jrebel.gradle.dsl;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.zeroturnaround.jrebel.gradle.model.RebelWar;

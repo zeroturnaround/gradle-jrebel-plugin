@@ -1,7 +1,7 @@
 package org.zeroturnaround.jrebel.gradle;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeXml;
-import static org.apache.commons.lang.StringUtils.repeat;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeXml;
+import static org.apache.commons.lang3.StringUtils.repeat;
 
 import java.io.IOException;
 import java.io.StringWriter;
